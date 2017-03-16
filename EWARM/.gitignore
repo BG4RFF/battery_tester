@@ -1,4 +1,4 @@
-stm32f_bootloader/
+Battery_test/
 *.ewt
 *.ewd
 *.dep
