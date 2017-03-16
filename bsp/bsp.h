@@ -22,6 +22,8 @@ extern "C" {
 #endif /* __cplusplus */
 
 /* Includes ------------------------------------------------------------------*/
+#include <stdint.h>
+#include <stdbool.h>
 /* Exported types ------------------------------------------------------------*/
 
 typedef enum bsp_relay_swith_e {
@@ -37,6 +39,8 @@ bsp_relay_swith_t;
 /* Exported functions --------------------------------------------------------*/
 void bsp_switch_relay(const bsp_relay_swith_t select);
 void bsp_init(void);
+void bsp_debug_write(const uint8_t *data, uint32_t size);
+void bsp_delay_ms(uint32_t ms);
 
 #ifdef __cplusplus
  }

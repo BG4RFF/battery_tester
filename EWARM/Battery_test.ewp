@@ -321,6 +321,7 @@
           <state>$PROJ_DIR$/../Drivers/CMSIS/Device/ST/STM32F1xx/Include</state>
           <state>$PROJ_DIR$/../Drivers/CMSIS/Include</state>
           <state>$PROJ_DIR$\..\bsp</state>
+          <state>$PROJ_DIR$\..\user</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -996,6 +997,15 @@
     </group>
     <group>
       <name>User</name>
+      <group>
+        <name>logger</name>
+        <file>
+          <name>$PROJ_DIR$\..\user\logger\logger.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\user\logger\logger.h</name>
+        </file>
+      </group>
       <file>
         <name>$PROJ_DIR$\..\Src\main.c</name>
       </file>

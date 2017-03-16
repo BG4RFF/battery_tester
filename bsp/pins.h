@@ -84,6 +84,8 @@
 #define LED1_GPIO_PORT              GPIOA
 #define LED2_PIN                    GPIO_PIN_3
 #define LED2_GPIO_PORT              GPIOA
+#define LED3_PIN                    GPIO_PIN_2
+#define LED3_GPIO_PORT              GPIOB
 
 #define CS_TS_PIN                   GPIO_PIN_4
 #define CS_TS_GPIO_PORT             GPIOA
@@ -93,8 +95,6 @@
 #define ADC_VIN_PIN                 GPIO_PIN_1
 #define ADC_VIN_GPIO_PORT           GPIOB
 
-#define LED3_PIN                    GPIO_PIN_2
-#define LED3_GPIO_PORT              GPIOB
 
 #define LCD_RS_PIN                  GPIO_PIN_8
 #define LCD_RS_GPIO_PORT            GPIOC
@@ -124,6 +124,11 @@
 
 #define CS_SD_PIN                   GPIO_PIN_7
 #define CS_SD_GPIO_PORT             GPIOB
+
+#define UART1_TX_PIN                GPIO_PIN_9
+#define UART1_TX_PORT               GPIOA
+#define UART1_RX_PIN                GPIO_PIN_10
+#define UART1_RX_PORT               GPIOA
 
 
 /**

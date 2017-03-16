@@ -125,19 +125,15 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart) {
         /* Peripheral clock enable */
         __HAL_RCC_USART1_CLK_ENABLE();
 
-        /**USART1 GPIO Configuration
-        PA9     ------> USART1_TX
-        PA10     ------> USART1_RX
-        */
-        GPIO_InitStruct.Pin = GPIO_PIN_9;
+        GPIO_InitStruct.Pin = UART1_TX_PIN;
         GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
         GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-        HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+        HAL_GPIO_Init(UART1_TX_PORT, &GPIO_InitStruct);
 
-        GPIO_InitStruct.Pin = GPIO_PIN_10;
+        GPIO_InitStruct.Pin = UART1_RX_PIN;
         GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
         GPIO_InitStruct.Pull = GPIO_NOPULL;
-        HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+        HAL_GPIO_Init(UART1_RX_PORT, &GPIO_InitStruct);
     }
 
 }
@@ -150,12 +146,8 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart) {
         /* Peripheral clock disable */
         __HAL_RCC_USART1_CLK_DISABLE();
 
-        /**USART1 GPIO Configuration
-        PA9     ------> USART1_TX
-        PA10     ------> USART1_RX
-        */
-        HAL_GPIO_DeInit(GPIOA, GPIO_PIN_9|GPIO_PIN_10);
-
+        HAL_GPIO_DeInit(UART1_TX_PORT, UART1_TX_PIN);
+        HAL_GPIO_DeInit(UART1_RX_PORT, UART1_RX_PIN);
     }
 }
 
@@ -308,10 +300,12 @@ static void _spi_init(void) {
     }
 }
 
+/* -------------------------------------------------------------------------- */
+
 static void _uart_init(void) {
 
     huart1.Instance = USART1;
-    huart1.Init.BaudRate = 115200;
+    huart1.Init.BaudRate = 921600;
     huart1.Init.WordLength = UART_WORDLENGTH_8B;
     huart1.Init.StopBits = UART_STOPBITS_1;
     huart1.Init.Parity = UART_PARITY_NONE;
@@ -380,6 +374,15 @@ void bsp_switch_relay(const bsp_relay_swith_t select) {
     }
 }
 
+/* -------------------------------------------------------------------------- */
 
+void bsp_debug_write(const uint8_t *data, uint32_t size) {
+
+    HAL_UART_Transmit(&huart1, (uint8_t*)data, size, 1000);
+}
+
+void bsp_delay_ms(uint32_t ms) {
+    HAL_Delay(ms);
+}
 /* end: bsp.c ----- */
 

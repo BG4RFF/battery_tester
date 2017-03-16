@@ -32,6 +32,7 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "bsp.h"
+#include "logger/logger.h"
 
 /* Private variables ---------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -47,6 +48,8 @@ int main(void)
   /* Infinite loop */
   while (1)
   {
+      bsp_delay_ms(1000);
+      INFO("Test message\r\n");
   }
 }
 
