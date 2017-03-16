@@ -33,6 +33,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "bsp.h"
 #include "logger/logger.h"
+#include "charger/charger.h"
 
 /* Private variables ---------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -45,11 +46,46 @@ int main(void)
 
     bsp_init();
 
+    bsp_switch_relay(RELAY_CHARGE);
+    charger_init();
+
   /* Infinite loop */
   while (1)
   {
       bsp_delay_ms(1000);
-      INFO("Test message\r\n");
+
+      switch(charger_get_status()) {
+      case CHARGER_STATUS_NOT_VALID_INPUT:
+          INFO("CHARGER_STATUS_NOT_VALID_INPUT \r\n");
+          break;
+      case CHARGER_STATUS_VALID_INPUT:
+          INFO("CHARGER_STATUS_VALID_INPUT \r\n");
+          break;
+      case CHARGER_STATUS_END_OF_CHARGING:
+          INFO("CHARGER_STATUS_END_OF_CHARGING \r\n");
+          break;
+      case CHARGER_STATUS_CHARGING_PHASE:
+          INFO("CHARGER_STATUS_CHARGING_PHASE \r\n");
+          break;
+      case CHARGER_STATUS_OVER_CHARGE_FAULT:
+          INFO("CHARGER_STATUS_OVER_CHARGE_FAULT \r\n");
+          break;
+      case CHARGER_STATUS_CHARGING_TIMEOUT:
+          INFO("CHARGER_STATUS_CHARGING_TIMEOUT \r\n");
+          break;
+      case CHARGER_STATUS_BAT_VOLTAGE_BELOW_VPRE_AFTER_FAST_CHARGE:
+          INFO("CHARGER_STATUS_BAT_VOLTAGE_BELOW_VPRE_AFTER_FAST_CHARGE \r\n");
+          break;
+      case CHARGER_STATUS_CHARGING_THERMAL_LIMITATION:
+          INFO("CHARGER_STATUS_CHARGING_THERMAL_LIMITATION \r\n");
+          break;
+      case CHARGER_STATUS_BATTERY_TEMPERATURE_FAULT:
+          INFO("CHARGER_STATUS_BATTERY_TEMPERATURE_FAULT \r\n");
+          break;
+      default:
+          INFO("Error \r\n");
+          break;
+      }
   }
 }
 

@@ -15,6 +15,8 @@ static ADC_HandleTypeDef hadc1 = {0};
 static SPI_HandleTypeDef hspi1 = {0};
 static UART_HandleTypeDef huart1 = {0};
 
+void (*bsp_charger_flag_cb)(void) = NULL;
+
 /* ----- Local functions ---------------------------------------------------- */
 
 
@@ -195,8 +197,8 @@ static void _gpio_init(void) {
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-    /*Configure GPIO pins : BUTTON_1_PIN BUTTON_2_PIN CHARGER_STATUS_PIN */
-    GPIO_InitStruct.Pin = BUTTON_1_PIN|BUTTON_2_PIN|CHARGER_STATUS_PIN;
+    /*Configure GPIO pins : BUTTON_1_PIN BUTTON_2_PIN */
+    GPIO_InitStruct.Pin = BUTTON_1_PIN|BUTTON_2_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -226,6 +228,14 @@ static void _gpio_init(void) {
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(RELAY_CONTROL_GPIO_PORT, &GPIO_InitStruct);
 
+    GPIO_InitStruct.Pin = CHARGER_STATUS_PIN;
+    GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(CHARGER_STATUS_PORT, &GPIO_InitStruct);
+
+    __HAL_GPIO_EXTI_CLEAR_IT(CHARGER_STATUS_PIN);
+    HAL_NVIC_SetPriority(EXTI9_5_IRQn, 6, 0);
+    HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -381,8 +391,73 @@ void bsp_debug_write(const uint8_t *data, uint32_t size) {
     HAL_UART_Transmit(&huart1, (uint8_t*)data, size, 1000);
 }
 
+/* -------------------------------------------------------------------------- */
+
+
 void bsp_delay_ms(uint32_t ms) {
     HAL_Delay(ms);
 }
+
+/* -------------------------------------------------------------------------- */
+
+
+uint32_t bsp_get_tick_ms(void) {
+    return HAL_GetTick();
+}
+
+/* -------------------------------------------------------------------------- */
+
+
+void bsp_disable_irq(void) {
+    __disable_irq();
+}
+
+/* -------------------------------------------------------------------------- */
+
+
+void bsp_enable_irq(void) {
+    __enable_irq();
+}
+
+/* -------------------------------------------------------------------------- */
+
+bool bsp_is_charger_flag_high(void) {
+
+    if(HAL_GPIO_ReadPin(CHARGER_STATUS_PORT, CHARGER_STATUS_PIN) == GPIO_PIN_SET) {
+
+        return true;
+    }
+
+    return false;
+}
+
+/* -------------------------------------------------------------------------- */
+
+bool bsp_is_charger_swire_pin_high(void) {
+
+    if(HAL_GPIO_ReadPin(CHARGER_SW_SEL_PORT, CHARGER_SW_SEL_PIN) == GPIO_PIN_SET) {
+        return true;
+    }
+    return false;
+}
+
+/* -------------------------------------------------------------------------- */
+
+void bsp_togle_charger_swire_pin(void) {
+
+  HAL_GPIO_TogglePin(CHARGER_SW_SEL_PORT, CHARGER_SW_SEL_PIN);
+}
+
+/* -------------------------------------------------------------------------- */
+
+void bsp_register_charger_status_cb(void (*cb)(void)) {
+    if(cb == NULL) {
+        bsp_charger_flag_cb = NULL;
+
+    } else {
+        bsp_charger_flag_cb = cb;
+    }
+}
+
 /* end: bsp.c ----- */
 

@@ -41,6 +41,15 @@ void bsp_switch_relay(const bsp_relay_swith_t select);
 void bsp_init(void);
 void bsp_debug_write(const uint8_t *data, uint32_t size);
 void bsp_delay_ms(uint32_t ms);
+uint32_t bsp_get_tick_ms(void);
+void bsp_enable_irq(void);
+void bsp_disable_irq(void);
+bool bsp_is_charger_flag_high(void);
+bool bsp_is_charger_swire_pin_high(void);
+void bsp_toggle_charger_swire_pin(void);
+void bsp_timer0_set_period(uint32_t us, void (*cb)(void));
+void bsp_timer0_disable(void);
+void bsp_register_charger_status_cb(void (*cb)(void));
 
 #ifdef __cplusplus
  }

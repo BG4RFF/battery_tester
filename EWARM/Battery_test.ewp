@@ -998,6 +998,15 @@
     <group>
       <name>User</name>
       <group>
+        <name>charger</name>
+        <file>
+          <name>$PROJ_DIR$\..\user\charger\charger.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\user\charger\charger.h</name>
+        </file>
+      </group>
+      <group>
         <name>logger</name>
         <file>
           <name>$PROJ_DIR$\..\user\logger\logger.c</name>

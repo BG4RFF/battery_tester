@@ -34,13 +34,12 @@
 #include "stm32f1xx_hal.h"
 #include "stm32f1xx.h"
 #include "stm32f1xx_it.h"
+#include "pins.h"
 
-/* USER CODE BEGIN 0 */
 
-/* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-
+extern void (*bsp_charger_flag_cb)(void);
 /******************************************************************************/
 /*            Cortex-M3 Processor Interruption and Exception Handlers         */
 /******************************************************************************/
@@ -174,6 +173,22 @@ void SysTick_Handler(void)
   /* USER CODE BEGIN SysTick_IRQn 1 */
 
   /* USER CODE END SysTick_IRQn 1 */
+}
+
+/**
+  * @brief  This function handles External line 9 to 5 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI9_5_IRQHandler(void)
+{
+    if (__HAL_GPIO_EXTI_GET_IT(CHARGER_STATUS_PIN)) {
+
+        if(bsp_charger_flag_cb != NULL) {
+            bsp_charger_flag_cb();
+        }
+        __HAL_GPIO_EXTI_CLEAR_IT(CHARGER_STATUS_PIN);
+    }
 }
 
 /******************************************************************************/
