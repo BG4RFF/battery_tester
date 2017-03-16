@@ -1,0 +1,7 @@
+stm32f_bootloader/
+*.ewt
+*.ewd
+*.dep
+*.bat
+*.xcl
+*.wsdt
