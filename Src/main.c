@@ -49,6 +49,7 @@ int main(void)
     bsp_switch_relay(RELAY_CHARGE);
     charger_init();
 
+    charger_send_swp_message(SWPC_BATMS_ON);
   /* Infinite loop */
   while (1)
   {

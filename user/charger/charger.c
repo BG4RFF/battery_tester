@@ -43,7 +43,7 @@ static void _timer_handler(void);
 static void _status_pin_toggle_handler(void);
 /* ===== GLOBAL FUNCTIONS =================================================== */
 
-void charger_send_swp_message(uint8_t message) {
+void charger_send_swp_message(sw_codes_t message) {
 
     bsp_disable_irq();
 

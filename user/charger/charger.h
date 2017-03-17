@@ -79,7 +79,7 @@ typedef enum sw_program_codes_e {
     SWPC_last,
 
 
-} sw_program_codes_t;
+} sw_codes_t;
 
 /* -------------------------------------------------------------------------- */
 
@@ -101,11 +101,11 @@ typedef enum charger_status_e {
 /* ===== GLOBAL FUNCTIONS PROTOTYPES ======================================== */
 
 charger_status_t charger_get_status(void);
-void charger_send_swp_message(uint8_t message);
+void charger_send_swp_message(sw_codes_t message);
 void charger_irq_handler(void);
 void init_charger_int(void);
 void charger_tim_irq_handler(void);
-
+void charger_init(void);
 /* ----- cpp protection ----------------------------------------------------- */
 #ifdef __cplusplus
 }

@@ -14,8 +14,10 @@
 static ADC_HandleTypeDef hadc1 = {0};
 static SPI_HandleTypeDef hspi1 = {0};
 static UART_HandleTypeDef huart1 = {0};
+static TIM_HandleTypeDef htim1 = {0};
 
 void (*bsp_charger_flag_cb)(void) = NULL;
+void (*bsp_timer1_cb)(void) = NULL;
 
 /* ----- Local functions ---------------------------------------------------- */
 
@@ -155,6 +157,43 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart) {
 
 /* -------------------------------------------------------------------------- */
 
+static void _timer_init(void) {
+
+
+    /* Set TIMx instance */
+    htim1.Instance = TIM1;
+
+    /* Initialize TIMx peripheral as follows:
+    + Period = 10000 - 1
+    + Prescaler = (SystemCoreClock/10000) - 1
+    + ClockDivision = 0
+    + Counter direction = Up
+    */
+    htim1.Init.Period            = 10000 - 1;
+    htim1.Init.Prescaler         = 0;
+    htim1.Init.ClockDivision     = 0;
+    htim1.Init.CounterMode       = TIM_COUNTERMODE_UP;
+    htim1.Init.RepetitionCounter = 0;
+
+    if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
+    {
+        /* Initialization Error */
+        //Error_Handler();
+    }
+
+    /*##-2- Start the TIM Base generation in interrupt mode ####################*/
+    /* Start Channel1 */
+    if (HAL_TIM_Base_Start_IT(&htim1) != HAL_OK)
+    {
+        /* Starting Error */
+        //Error_Handler();
+    }
+
+
+}
+
+/* -------------------------------------------------------------------------- */
+
 static void _gpio_init(void) {
 
     GPIO_InitTypeDef GPIO_InitStruct;
@@ -165,60 +204,36 @@ static void _gpio_init(void) {
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
 
-    /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(GPIOC, DB00_PIN|DB01_PIN|DB02_PIN|DB03_PIN
-                      |DB04_PIN|DB05_PIN|DB06_PIN|DB07_PIN
-                          |LCD_RS_PIN|CS_LCD_PIN|LCD_WR_PIN|LCD_RD_PIN
-                              |LCD_BL_EN_PIN, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOC, DB00_PIN|DB01_PIN|DB02_PIN|DB03_PIN|DB04_PIN|DB05_PIN|DB06_PIN|DB07_PIN|LCD_RS_PIN|CS_LCD_PIN|LCD_WR_PIN|LCD_RD_PIN|LCD_BL_EN_PIN, GPIO_PIN_RESET);
 
-    /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(GPIOA, LED1_PIN|LED2_PIN|CS_TS_PIN|CHARGER_SW_SEL_PIN, GPIO_PIN_RESET);
 
-    /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(GPIOB, LED3_PIN|DB10_PIN|DB11_PIN|DB12_PIN
-                      |DB13_PIN|DB14_PIN|DB15_PIN|RELAY_CONTROL_PIN
-                          |CS_F_PIN|CS_SD_PIN|DB08_PIN|DB09_PIN, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOB, LED3_PIN|DB10_PIN|DB11_PIN|DB12_PIN|DB13_PIN|DB14_PIN|DB15_PIN|RELAY_CONTROL_PIN|CS_F_PIN|CS_SD_PIN|DB08_PIN|DB09_PIN, GPIO_PIN_RESET);
 
-    /*Configure GPIO pin : INT_TS_PIN */
     GPIO_InitStruct.Pin = INT_TS_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(INT_TS_GPIO_PORT, &GPIO_InitStruct);
 
-    /*Configure GPIO pins : DB00_PIN DB01_PIN DB02_PIN DB03_PIN
-    DB04_PIN DB05_PIN DB06_PIN DB07_PIN
-    LCD_RS_PIN CS_LCD_PIN LCD_WR_PIN LCD_RD_PIN
-    LCD_BL_EN_PIN */
-    GPIO_InitStruct.Pin = DB00_PIN|DB01_PIN|DB02_PIN|DB03_PIN
-        |DB04_PIN|DB05_PIN|DB06_PIN|DB07_PIN
-            |LCD_RS_PIN|CS_LCD_PIN|LCD_WR_PIN|LCD_RD_PIN
-                |LCD_BL_EN_PIN;
+    GPIO_InitStruct.Pin = DB00_PIN|DB01_PIN|DB02_PIN|DB03_PIN|DB04_PIN|DB05_PIN|DB06_PIN|DB07_PIN|LCD_RS_PIN|CS_LCD_PIN|LCD_WR_PIN|LCD_RD_PIN|LCD_BL_EN_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-    /*Configure GPIO pins : BUTTON_1_PIN BUTTON_2_PIN */
     GPIO_InitStruct.Pin = BUTTON_1_PIN|BUTTON_2_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    /*Configure GPIO pins : LED1_PIN LED2_PIN CS_TS_PIN CHARGER_SW_SEL_PIN */
-    GPIO_InitStruct.Pin = LED1_PIN|LED2_PIN|CS_TS_PIN|CHARGER_SW_SEL_PIN;
+    GPIO_InitStruct.Pin = LED1_PIN|LED2_PIN|CS_TS_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    /*Configure GPIO pins : LED3_PIN DB10_PIN DB11_PIN DB12_PIN
-    DB13_PIN DB14_PIN DB15_PIN
-    CS_F_PIN CS_SD_PIN DB08_PIN DB09_PIN */
-    GPIO_InitStruct.Pin = LED3_PIN|DB10_PIN|DB11_PIN|DB12_PIN
-        |DB13_PIN|DB14_PIN|DB15_PIN
-            |CS_F_PIN|CS_SD_PIN|DB08_PIN|DB09_PIN;
+    GPIO_InitStruct.Pin = LED3_PIN|DB10_PIN|DB11_PIN|DB12_PIN|DB13_PIN|DB14_PIN|DB15_PIN|CS_F_PIN|CS_SD_PIN|DB08_PIN|DB09_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
 
     HAL_GPIO_WritePin(RELAY_CONTROL_GPIO_PORT, RELAY_CONTROL_PIN, GPIO_PIN_RESET);
 
@@ -227,6 +242,10 @@ static void _gpio_init(void) {
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(RELAY_CONTROL_GPIO_PORT, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = CHARGER_SW_SEL_PIN;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    HAL_GPIO_Init(CHARGER_SW_SEL_PORT, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = CHARGER_STATUS_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
@@ -300,11 +319,12 @@ static void _spi_init(void) {
     hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
     hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
     hspi1.Init.NSS = SPI_NSS_SOFT;
-    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
     hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
     hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
     hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
     hspi1.Init.CRCPolynomial = 10;
+
     if (HAL_SPI_Init(&hspi1) != HAL_OK) {
         //    Error_Handler();
     }
@@ -371,6 +391,8 @@ void bsp_init(void) {
     _uart_init();
     _spi_init();
     _adc_init();
+
+    _timer_init();
 }
 
 /* -------------------------------------------------------------------------- */
@@ -443,7 +465,7 @@ bool bsp_is_charger_swire_pin_high(void) {
 
 /* -------------------------------------------------------------------------- */
 
-void bsp_togle_charger_swire_pin(void) {
+void bsp_toggle_charger_swire_pin(void) {
 
   HAL_GPIO_TogglePin(CHARGER_SW_SEL_PORT, CHARGER_SW_SEL_PIN);
 }
@@ -451,12 +473,21 @@ void bsp_togle_charger_swire_pin(void) {
 /* -------------------------------------------------------------------------- */
 
 void bsp_register_charger_status_cb(void (*cb)(void)) {
-    if(cb == NULL) {
-        bsp_charger_flag_cb = NULL;
 
-    } else {
-        bsp_charger_flag_cb = cb;
-    }
+    bsp_charger_flag_cb = cb;
+}
+
+/* -------------------------------------------------------------------------- */
+
+void bsp_timer0_set_period(uint32_t us, void (*cb)(void)){
+
+    bsp_timer1_cb = cb;
+}
+
+/* -------------------------------------------------------------------------- */
+
+void bsp_timer0_disable(void) {
+    bsp_timer1_cb = NULL;
 }
 
 /* end: bsp.c ----- */
