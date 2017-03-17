@@ -19,6 +19,7 @@ static TIM_HandleTypeDef htim2 = {0};
 void (*bsp_charger_flag_cb)(void) = NULL;
 void (*bsp_timer1_cb)(void) = NULL;
 
+#define ADC_CHANNEL_COUNT       (2U)
 /* ----- Local functions ---------------------------------------------------- */
 
 
@@ -61,9 +62,13 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc) {
         /* Peripheral clock enable */
         __HAL_RCC_ADC1_CLK_ENABLE();
 
-        GPIO_InitStruct.Pin = ADC_VBAT_PIN | ADC_VIN_PIN;
+        GPIO_InitStruct.Pin = ADC_VBAT_PIN;
         GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-        HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+        HAL_GPIO_Init(ADC_VBAT_PORT, &GPIO_InitStruct);
+
+        GPIO_InitStruct.Pin = ADC_VIN_PIN;
+        GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+        HAL_GPIO_Init(ADC_VIN_PORT, &GPIO_InitStruct);
     }
 }
 
@@ -75,7 +80,8 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc) {
         /* Peripheral clock disable */
         __HAL_RCC_ADC1_CLK_DISABLE();
 
-        HAL_GPIO_DeInit(GPIOB, ADC_VBAT_PIN | ADC_VIN_PIN);
+        HAL_GPIO_DeInit(ADC_VBAT_PORT, ADC_VBAT_PIN);
+        HAL_GPIO_DeInit(ADC_VIN_PORT, ADC_VIN_PIN);
     }
 }
 
@@ -357,27 +363,27 @@ static void _adc_init(void) {
 
     ADC_ChannelConfTypeDef sConfig;
 
-    /**Common config
-    */
+    /**Common config */
     hadc1.Instance = ADC1;
-    hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+    hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
     hadc1.Init.ContinuousConvMode = DISABLE;
-    hadc1.Init.DiscontinuousConvMode = DISABLE;
+    hadc1.Init.DiscontinuousConvMode = ENABLE;
+    hadc1.Init.NbrOfDiscConversion = 1;
     hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
     hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-    hadc1.Init.NbrOfConversion = 1;
-    if (HAL_ADC_Init(&hadc1) != HAL_OK) {
-        //    Error_Handler();
-    }
+    hadc1.Init.NbrOfConversion = ADC_CHANNEL_COUNT;
 
-    /**Configure Regular Channel
-    */
+    HAL_ADC_Init(&hadc1);
+
+    /**Configure Regular Channel */
     sConfig.Channel = ADC_CHANNEL_8;
-    sConfig.Rank = 1;
-    sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-    if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
-        //    Error_Handler();
-    }
+    sConfig.Rank = ADC_REGULAR_RANK_1;
+    sConfig.SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
+    HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+
+    sConfig.Channel = ADC_CHANNEL_9;
+    sConfig.Rank = ADC_REGULAR_RANK_2;
+    HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
 }
 
@@ -390,11 +396,9 @@ void bsp_init(void) {
     _clock_init();
 
     _gpio_init();
-
     _uart_init();
     _spi_init();
     _adc_init();
-
     _timer_init();
 }
 
@@ -517,6 +521,29 @@ void bsp_charger_timer_disable(void) {
 
     bsp_timer1_cb = NULL;
 }
+
+/* -------------------------------------------------------------------------- */
+
+uint32_t bsp_get_voltage(bsp_voltage_source_t source) {
+
+    const uint32_t ADC_TIMEOUT = 5000U;
+    uint32_t volts[ADC_CHANNEL_COUNT];
+
+    HAL_ADC_Start(&hadc1);
+
+    for(uint32_t i = 0; i < ADC_CHANNEL_COUNT; i++) {
+        HAL_ADC_PollForConversion(&hadc1, ADC_TIMEOUT);
+        volts[i] = HAL_ADC_GetValue(&hadc1);
+    }
+
+    HAL_ADC_Stop(&hadc1);
+
+    float k = 3300.f / 4096.f;
+
+    return (uint32_t)(volts[source] / k);
+}
+
+/* -------------------------------------------------------------------------- */
 
 /* end: bsp.c ----- */
 

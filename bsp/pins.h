@@ -91,9 +91,9 @@
 #define CS_TS_GPIO_PORT             GPIOA
 
 #define ADC_VBAT_PIN                GPIO_PIN_0
-#define ADC_VBAT_GPIO_PORT          GPIOB
+#define ADC_VBAT_PORT               GPIOB
 #define ADC_VIN_PIN                 GPIO_PIN_1
-#define ADC_VIN_GPIO_PORT           GPIOB
+#define ADC_VIN_PORT                GPIOB
 
 
 #define LCD_RS_PIN                  GPIO_PIN_8
@@ -108,7 +108,7 @@
 #define CHARGER_SW_SEL_PIN          GPIO_PIN_11
 #define CHARGER_SW_SEL_PORT         GPIOA
 
-#define CHARGER_EN_PIN              GPIO_PIN_15
+#define CHARGER_EN_PIN              GPIO_PIN_13
 #define CHARGER_EN_PORT             GPIOA
 
 #define LCD_WR_PIN                  GPIO_PIN_10

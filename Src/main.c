@@ -58,6 +58,8 @@ int main(void)
       bsp_delay_ms(1000);
       charger_send_swp_message(SWPC_BATMS_OFF);
 
+      INFO("Vbat = %d, Vin = %d", bsp_get_voltage(VOLTAGE_SOURCE_VBAT), bsp_get_voltage(VOLTAGE_SOURCE_VIN));
+
       switch(charger_get_status()) {
       case CHARGER_STATUS_NOT_VALID_INPUT:
           INFO("CHARGER_STATUS_NOT_VALID_INPUT \r\n");

@@ -34,6 +34,11 @@ typedef enum bsp_relay_swith_e {
 }
 bsp_relay_swith_t;
 
+typedef enum {
+    VOLTAGE_SOURCE_VBAT = 0,
+    VOLTAGE_SOURCE_VIN,
+}bsp_voltage_source_t;
+
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/
@@ -52,7 +57,7 @@ void bsp_charger_timer_disable(void);
 void bsp_register_charger_status_cb(void (*cb)(void));
 void bsp_charger_en_set_low(void);
 void bsp_charger_en_set_high(void);
-
+uint32_t bsp_get_voltage(bsp_voltage_source_t source);
 #ifdef __cplusplus
  }
 #endif /* __cplusplus */
