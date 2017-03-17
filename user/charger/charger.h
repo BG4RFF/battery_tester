@@ -14,13 +14,20 @@ extern "C" {
 
 /* ===== TYPES ============================================================== */
 
-typedef enum
-{
+typedef enum {
+
     STEP_START_BIT,
     STEP_PULSE,
     STEP_STOP_BIT,
-
 }swire_step_t;
+
+typedef enum {
+
+    CHARGER_ENABLE,
+    CHARGER_DISABLE
+}charger_state_t;
+
+
 
 /* -------------------------------------------------------------------------- */
 
@@ -106,6 +113,7 @@ void charger_irq_handler(void);
 void init_charger_int(void);
 void charger_tim_irq_handler(void);
 void charger_init(void);
+void charger_enable(charger_state_t state);
 /* ----- cpp protection ----------------------------------------------------- */
 #ifdef __cplusplus
 }

@@ -40,6 +40,7 @@
 
 /* External variables --------------------------------------------------------*/
 extern void (*bsp_charger_flag_cb)(void);
+extern void (*bsp_timer1_cb)(void);
 /******************************************************************************/
 /*            Cortex-M3 Processor Interruption and Exception Handlers         */
 /******************************************************************************/
@@ -188,6 +189,18 @@ void EXTI9_5_IRQHandler(void)
             bsp_charger_flag_cb();
         }
         __HAL_GPIO_EXTI_CLEAR_IT(CHARGER_STATUS_PIN);
+    }
+}
+
+void TIM2_IRQHandler(void) {
+
+    if(TIM2->DIER & TIM_IT_UPDATE) {
+
+        if(bsp_timer1_cb != NULL) {
+            bsp_timer1_cb();
+        }
+
+        TIM2->SR = ~TIM_FLAG_UPDATE;
     }
 }
 

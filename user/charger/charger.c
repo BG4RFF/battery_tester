@@ -50,7 +50,7 @@ void charger_send_swp_message(sw_codes_t message) {
     _swp_code_pulse_count = message;
     _swpi_step = STEP_START_BIT;
 
-    bsp_timer0_set_period(START_BIT_TIMING, _timer_handler);
+    bsp_charger_timer_set_period(START_BIT_TIMING, _timer_handler);
     bsp_toggle_charger_swire_pin();
 
     bsp_enable_irq();
@@ -98,7 +98,21 @@ charger_status_t charger_get_status(void) {
 
 void charger_init(void) {
 
+    charger_enable(false);
+    charger_enable(true);
+
     bsp_register_charger_status_cb(_status_pin_toggle_handler);
+}
+
+/* -------------------------------------------------------------------------- */
+
+void charger_enable(charger_state_t state) {
+
+    if(state == CHARGER_ENABLE) {
+        bsp_charger_en_set_high();
+    } else {
+        bsp_charger_en_set_low();
+    }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -108,7 +122,7 @@ void charger_init(void) {
 static void _on_message_sent(void) {
 
     _swpi_step = STEP_STOP_BIT;
-    bsp_timer0_disable();
+    bsp_charger_timer_disable();
 }
 
 /* -------------------------------------------------------------------------- */
@@ -122,7 +136,7 @@ static void _timer_handler(void) {
             } else {
                 if (_swpi_step == STEP_START_BIT) {
                     _swpi_step = STEP_PULSE;
-                    bsp_timer0_set_period(PULSE_TIMING, _timer_handler);
+                    bsp_charger_timer_set_period(PULSE_TIMING, _timer_handler);
                 } else {
                     _swp_code_pulse_count--;
                 }
@@ -130,7 +144,7 @@ static void _timer_handler(void) {
         } else {
 
             if (_swp_code_pulse_count == 0U) {
-                bsp_timer0_set_period(STOP_BIT_TIMING, _timer_handler);
+                bsp_charger_timer_set_period(STOP_BIT_TIMING, _timer_handler);
             }
         }
         bsp_toggle_charger_swire_pin();

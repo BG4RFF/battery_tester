@@ -47,9 +47,11 @@ void bsp_disable_irq(void);
 bool bsp_is_charger_flag_high(void);
 bool bsp_is_charger_swire_pin_high(void);
 void bsp_toggle_charger_swire_pin(void);
-void bsp_timer0_set_period(uint32_t us, void (*cb)(void));
-void bsp_timer0_disable(void);
+void bsp_charger_timer_set_period(uint32_t us, void (*cb)(void));
+void bsp_charger_timer_disable(void);
 void bsp_register_charger_status_cb(void (*cb)(void));
+void bsp_charger_en_set_low(void);
+void bsp_charger_en_set_high(void);
 
 #ifdef __cplusplus
  }

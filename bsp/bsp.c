@@ -14,7 +14,7 @@
 static ADC_HandleTypeDef hadc1 = {0};
 static SPI_HandleTypeDef hspi1 = {0};
 static UART_HandleTypeDef huart1 = {0};
-static TIM_HandleTypeDef htim1 = {0};
+static TIM_HandleTypeDef htim2 = {0};
 
 void (*bsp_charger_flag_cb)(void) = NULL;
 void (*bsp_timer1_cb)(void) = NULL;
@@ -155,41 +155,40 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart) {
     }
 }
 
+/*----------------------------------------------------------------------------*/
+
+void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base) {
+
+    if(htim_base->Instance==TIM2) {
+        /* Peripheral clock enable */
+        __TIM2_CLK_ENABLE();
+    }
+}
+
+/*----------------------------------------------------------------------------*/
+
+void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base) {
+
+    if(htim_base->Instance==TIM2) {
+        /* Peripheral clock disable */
+        __TIM2_CLK_DISABLE();
+    }
+}
 /* -------------------------------------------------------------------------- */
 
 static void _timer_init(void) {
 
+    htim2.Instance = TIM2;
+    htim2.Init.Period            = 100;
+    htim2.Init.Prescaler         = 72;
+    htim2.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
+    htim2.Init.CounterMode       = TIM_COUNTERMODE_UP;
+    htim2.Init.RepetitionCounter = 0;
 
-    /* Set TIMx instance */
-    htim1.Instance = TIM1;
+    HAL_TIM_Base_Init(&htim2);
 
-    /* Initialize TIMx peripheral as follows:
-    + Period = 10000 - 1
-    + Prescaler = (SystemCoreClock/10000) - 1
-    + ClockDivision = 0
-    + Counter direction = Up
-    */
-    htim1.Init.Period            = 10000 - 1;
-    htim1.Init.Prescaler         = 0;
-    htim1.Init.ClockDivision     = 0;
-    htim1.Init.CounterMode       = TIM_COUNTERMODE_UP;
-    htim1.Init.RepetitionCounter = 0;
-
-    if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
-    {
-        /* Initialization Error */
-        //Error_Handler();
-    }
-
-    /*##-2- Start the TIM Base generation in interrupt mode ####################*/
-    /* Start Channel1 */
-    if (HAL_TIM_Base_Start_IT(&htim1) != HAL_OK)
-    {
-        /* Starting Error */
-        //Error_Handler();
-    }
-
-
+    NVIC_SetPriority(TIM2_IRQn, 6);
+    NVIC_EnableIRQ(TIM2_IRQn);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -246,6 +245,10 @@ static void _gpio_init(void) {
     GPIO_InitStruct.Pin = CHARGER_SW_SEL_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     HAL_GPIO_Init(CHARGER_SW_SEL_PORT, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = CHARGER_EN_PIN;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    HAL_GPIO_Init(CHARGER_EN_PORT, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = CHARGER_STATUS_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
@@ -417,6 +420,7 @@ void bsp_debug_write(const uint8_t *data, uint32_t size) {
 
 
 void bsp_delay_ms(uint32_t ms) {
+
     HAL_Delay(ms);
 }
 
@@ -424,6 +428,7 @@ void bsp_delay_ms(uint32_t ms) {
 
 
 uint32_t bsp_get_tick_ms(void) {
+
     return HAL_GetTick();
 }
 
@@ -431,6 +436,7 @@ uint32_t bsp_get_tick_ms(void) {
 
 
 void bsp_disable_irq(void) {
+
     __disable_irq();
 }
 
@@ -438,6 +444,7 @@ void bsp_disable_irq(void) {
 
 
 void bsp_enable_irq(void) {
+
     __enable_irq();
 }
 
@@ -465,6 +472,20 @@ bool bsp_is_charger_swire_pin_high(void) {
 
 /* -------------------------------------------------------------------------- */
 
+void bsp_charger_en_set_high(void) {
+
+  HAL_GPIO_WritePin(CHARGER_EN_PORT, CHARGER_EN_PIN, GPIO_PIN_SET);
+}
+
+/* -------------------------------------------------------------------------- */
+
+void bsp_charger_en_set_low(void) {
+
+  HAL_GPIO_WritePin(CHARGER_EN_PORT, CHARGER_EN_PIN, GPIO_PIN_RESET);
+}
+
+/* -------------------------------------------------------------------------- */
+
 void bsp_toggle_charger_swire_pin(void) {
 
   HAL_GPIO_TogglePin(CHARGER_SW_SEL_PORT, CHARGER_SW_SEL_PIN);
@@ -479,14 +500,21 @@ void bsp_register_charger_status_cb(void (*cb)(void)) {
 
 /* -------------------------------------------------------------------------- */
 
-void bsp_timer0_set_period(uint32_t us, void (*cb)(void)){
+void bsp_charger_timer_set_period(uint32_t us, void (*cb)(void)) {
 
     bsp_timer1_cb = cb;
+
+    __HAL_TIM_SET_AUTORELOAD(&htim2, us);
+    HAL_TIM_Base_Start_IT(&htim2);
+
 }
 
 /* -------------------------------------------------------------------------- */
 
-void bsp_timer0_disable(void) {
+void bsp_charger_timer_disable(void) {
+
+    HAL_TIM_Base_Stop_IT(&htim2);
+
     bsp_timer1_cb = NULL;
 }
 

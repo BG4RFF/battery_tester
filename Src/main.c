@@ -49,11 +49,14 @@ int main(void)
     bsp_switch_relay(RELAY_CHARGE);
     charger_init();
 
-    charger_send_swp_message(SWPC_BATMS_ON);
   /* Infinite loop */
   while (1)
   {
+      /* test demo*/
       bsp_delay_ms(1000);
+      charger_send_swp_message(SWPC_BATMS_ON);
+      bsp_delay_ms(1000);
+      charger_send_swp_message(SWPC_BATMS_OFF);
 
       switch(charger_get_status()) {
       case CHARGER_STATUS_NOT_VALID_INPUT:
