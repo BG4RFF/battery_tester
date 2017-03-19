@@ -80,7 +80,7 @@ charger_status_t charger_get_status(void) {
 
     } else {
 
-        INFO("Freaq = %d\r\n", last_chr_flg_frequency);
+
         for (charger_status_t status = CHARGER_STATUS_END_OF_CHARGING;  status < CHARGER_STATUS_count; ++status)
         {
             if (last_chr_flg_frequency == _charger_status_freq[status]) {
@@ -98,8 +98,8 @@ charger_status_t charger_get_status(void) {
 
 void charger_init(void) {
 
-    charger_enable(false);
-    charger_enable(true);
+    charger_enable(CHARGER_DISABLE);
+    charger_enable(CHARGER_ENABLE);
 
     bsp_register_charger_status_cb(_status_pin_toggle_handler);
 }

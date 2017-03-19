@@ -36,6 +36,8 @@
 #include "stm32f1xx_it.h"
 #include "pins.h"
 
+extern DMA_HandleTypeDef hdma_adc1;
+
 
 
 /* External variables --------------------------------------------------------*/
@@ -202,6 +204,12 @@ void TIM2_IRQHandler(void) {
 
         TIM2->SR = ~TIM_FLAG_UPDATE;
     }
+}
+
+
+void DMA1_Channel1_IRQHandler(void) {
+
+    HAL_DMA_IRQHandler(&hdma_adc1);
 }
 
 /******************************************************************************/

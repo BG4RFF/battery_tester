@@ -15,11 +15,17 @@ static ADC_HandleTypeDef hadc1 = {0};
 static SPI_HandleTypeDef hspi1 = {0};
 static UART_HandleTypeDef huart1 = {0};
 static TIM_HandleTypeDef htim2 = {0};
+DMA_HandleTypeDef hdma_adc1;
 
 void (*bsp_charger_flag_cb)(void) = NULL;
 void (*bsp_timer1_cb)(void) = NULL;
+static bool _adc_complete = false;
 
 #define ADC_CHANNEL_COUNT       (2U)
+
+const uint32_t ADC_TIMEOUT_MS = 100U;
+uint16_t volts[ADC_CHANNEL_COUNT];
+
 /* ----- Local functions ---------------------------------------------------- */
 
 
@@ -61,6 +67,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc) {
     if(hadc->Instance==ADC1) {
         /* Peripheral clock enable */
         __HAL_RCC_ADC1_CLK_ENABLE();
+        __HAL_RCC_DMA1_CLK_ENABLE();
 
         GPIO_InitStruct.Pin = ADC_VBAT_PIN;
         GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
@@ -69,6 +76,45 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc) {
         GPIO_InitStruct.Pin = ADC_VIN_PIN;
         GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
         HAL_GPIO_Init(ADC_VIN_PORT, &GPIO_InitStruct);
+
+
+        RCC_PeriphCLKInitTypeDef  PeriphClkInit;
+
+        /* Configure ADCx clock prescaler */
+        /* Caution: On STM32F1, ADC clock frequency max is 14MHz (refer to device   */
+        /*          datasheet).                                                     */
+        /*          Therefore, ADC clock prescaler must be configured in function   */
+        /*          of ADC clock source frequency to remain below this maximum      */
+        /*          frequency.                                                      */
+        PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
+        PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV8;
+        HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit);
+
+
+
+        /* Peripheral DMA init*/
+
+        hdma_adc1.Instance = DMA1_Channel1;
+        hdma_adc1.Init.Direction = DMA_PERIPH_TO_MEMORY;
+        hdma_adc1.Init.PeriphInc = DMA_PINC_DISABLE;
+        hdma_adc1.Init.MemInc = DMA_MINC_ENABLE;
+        hdma_adc1.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+        hdma_adc1.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+        hdma_adc1.Init.Mode = DMA_CIRCULAR;
+        hdma_adc1.Init.Priority = DMA_PRIORITY_VERY_HIGH;
+
+		HAL_DMA_DeInit(&hdma_adc1);
+        HAL_DMA_Init(&hdma_adc1);
+
+        __HAL_LINKDMA(hadc,DMA_Handle,hdma_adc1);
+
+        /* System interrupt init*/
+        HAL_NVIC_SetPriority(ADC1_2_IRQn, 5, 0);
+        HAL_NVIC_EnableIRQ(ADC1_2_IRQn);
+
+        /* DMA interrupt init */
+        HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 5, 0);
+        HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
     }
 }
 
@@ -368,23 +414,30 @@ static void _adc_init(void) {
     hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
     hadc1.Init.ContinuousConvMode = DISABLE;
     hadc1.Init.DiscontinuousConvMode = ENABLE;
-    hadc1.Init.NbrOfDiscConversion = 1;
     hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
     hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
     hadc1.Init.NbrOfConversion = ADC_CHANNEL_COUNT;
+    hadc1.Init.NbrOfDiscConversion = 1;
 
     HAL_ADC_Init(&hadc1);
 
     /**Configure Regular Channel */
+
+    sConfig.SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
+
     sConfig.Channel = ADC_CHANNEL_8;
     sConfig.Rank = ADC_REGULAR_RANK_1;
-    sConfig.SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
     HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
     sConfig.Channel = ADC_CHANNEL_9;
     sConfig.Rank = ADC_REGULAR_RANK_2;
     HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
+
+	HAL_ADCEx_Calibration_Start(&hadc1);
+
+
+    HAL_ADC_Start_DMA(&hadc1, (uint32_t*)volts, ADC_CHANNEL_COUNT);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -478,21 +531,21 @@ bool bsp_is_charger_swire_pin_high(void) {
 
 void bsp_charger_en_set_high(void) {
 
-  HAL_GPIO_WritePin(CHARGER_EN_PORT, CHARGER_EN_PIN, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(CHARGER_EN_PORT, CHARGER_EN_PIN, GPIO_PIN_SET);
 }
 
 /* -------------------------------------------------------------------------- */
 
 void bsp_charger_en_set_low(void) {
 
-  HAL_GPIO_WritePin(CHARGER_EN_PORT, CHARGER_EN_PIN, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(CHARGER_EN_PORT, CHARGER_EN_PIN, GPIO_PIN_RESET);
 }
 
 /* -------------------------------------------------------------------------- */
 
 void bsp_toggle_charger_swire_pin(void) {
 
-  HAL_GPIO_TogglePin(CHARGER_SW_SEL_PORT, CHARGER_SW_SEL_PIN);
+    HAL_GPIO_TogglePin(CHARGER_SW_SEL_PORT, CHARGER_SW_SEL_PIN);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -524,23 +577,31 @@ void bsp_charger_timer_disable(void) {
 
 /* -------------------------------------------------------------------------- */
 
+void HAL_ADC_ConvCpltCallback( ADC_HandleTypeDef * hadc) {
+
+	_adc_complete = true;
+}
+
+/* -------------------------------------------------------------------------- */
+
+
 uint32_t bsp_get_voltage(bsp_voltage_source_t source) {
 
-    const uint32_t ADC_TIMEOUT = 5000U;
-    uint32_t volts[ADC_CHANNEL_COUNT];
 
+    _adc_complete = false;
     HAL_ADC_Start(&hadc1);
+    HAL_ADC_PollForConversion(&hadc1, ADC_TIMEOUT_MS);
 
-    for(uint32_t i = 0; i < ADC_CHANNEL_COUNT; i++) {
-        HAL_ADC_PollForConversion(&hadc1, ADC_TIMEOUT);
-        volts[i] = HAL_ADC_GetValue(&hadc1);
+    uint32_t time = bsp_get_tick_ms();
+    while(_adc_complete == false) {
+        if((bsp_get_tick_ms() - time) > ADC_TIMEOUT_MS) {
+            break;
+        }
     }
-
-    HAL_ADC_Stop(&hadc1);
 
     float k = 3300.f / 4096.f;
 
-    return (uint32_t)(volts[source] / k);
+    return (uint32_t)((float)volts[source] * k * 2.f);
 }
 
 /* -------------------------------------------------------------------------- */

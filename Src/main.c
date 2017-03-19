@@ -46,19 +46,24 @@ int main(void)
 
     bsp_init();
 
+    INFO("\r\n-=Battery tester=-\r\n");
+
     bsp_switch_relay(RELAY_CHARGE);
     charger_init();
 
+    charger_enable(CHARGER_DISABLE);
+    bsp_delay_ms(1000);
+    charger_enable(CHARGER_DISABLE);
+
   /* Infinite loop */
-  while (1)
-  {
+  while (1) {
       /* test demo*/
       bsp_delay_ms(1000);
       charger_send_swp_message(SWPC_BATMS_ON);
       bsp_delay_ms(1000);
       charger_send_swp_message(SWPC_BATMS_OFF);
 
-      INFO("Vbat = %d, Vin = %d", bsp_get_voltage(VOLTAGE_SOURCE_VBAT), bsp_get_voltage(VOLTAGE_SOURCE_VIN));
+      INFO("Vbat = %d, Vin = %d ", bsp_get_voltage(VOLTAGE_SOURCE_VBAT), bsp_get_voltage(VOLTAGE_SOURCE_VIN));
 
       switch(charger_get_status()) {
       case CHARGER_STATUS_NOT_VALID_INPUT:
@@ -68,10 +73,10 @@ int main(void)
           INFO("CHARGER_STATUS_VALID_INPUT \r\n");
           break;
       case CHARGER_STATUS_END_OF_CHARGING:
-          INFO("CHARGER_STATUS_END_OF_CHARGING \r\n");
+          INFO("charge 100% \r\n");
           break;
       case CHARGER_STATUS_CHARGING_PHASE:
-          INFO("CHARGER_STATUS_CHARGING_PHASE \r\n");
+          INFO("Charging ...\r\n");
           break;
       case CHARGER_STATUS_OVER_CHARGE_FAULT:
           INFO("CHARGER_STATUS_OVER_CHARGE_FAULT \r\n");
