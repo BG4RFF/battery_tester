@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "logger/logger.h"
 
-uint16_t DeviceIdCode;
+static uint16_t DeviceIdCode;
 
 #define LCD_WriteReg            bsp_lcd_write_reg
 #define LCD_ReadReg             bsp_lcd_read_reg
@@ -18,28 +18,10 @@ uint16_t DeviceIdCode;
 void ili9320_Initializtion(void) {
 	uint16_t i;
 
-	Delay(5); /* delay 50 ms */
 	LCD_WriteReg(0x0000, 0x0001);
 	Delay(5); /* delay 50 ms *///start internal osc
-	//LCD_DB_AS_InPut();
-	Delay(1); /* delay 50 ms *///start internal osc
+
 	DeviceIdCode = LCD_ReadReg(0x0000);
-	//  INFO("\n\r ###### www.armjishu.com DeviceIdCode = 0x%x ###### ", DeviceIdCode);
-	//  INFO("\n\r ###### DeviceIdCode = LCD_ReadReg(0x0000) = 0x%x ###### ", LCD_ReadReg(0x0000));
-	//  INFO("\n\r ###### DeviceIdCode = LCD_ReadSta(0x0000) = 0x%x ###### ", LCD_ReadSta());
-
-	//LCD_DB_AS_OutPut();
-	Delay(1); /* delay 50 ms *///start internal osc
-
-	if (DeviceIdCode == 0x8989) {
-		INFO("\n\r This LCD is SSD1289 ");
-	}
-
-	//DeviceIdCode=0x8989;
-
-	if (DeviceIdCode == 0x9325) {
-		INFO("\n\r This LCD is ili9325 ");
-	}
 
 	if (DeviceIdCode == 0x9325 || DeviceIdCode == 0x9328) {
 		LCD_WriteReg(0x00e3, 0x3008);
@@ -156,7 +138,7 @@ void ili9320_Initializtion(void) {
 			;
 
 		LCD_WriteReg(0x10, (1 << 12) | (0 << 8) | (1 << 7) | (1 << 6)
-				| (0 << 4)); //Power Control 1.(0x16b0)
+                     | (0 << 4)); //Power Control 1.(0x16b0)
 		LCD_WriteReg(0x11, 0x0007); //Power Control 2.(0x0001)
 		LCD_WriteReg(0x12, (1 << 8) | (1 << 4) | (0 << 0)); //Power Control 3.(0x0138)
 		LCD_WriteReg(0x13, 0x0b00); //Power Control 4.
@@ -409,23 +391,12 @@ void ili9320_Initializtion(void) {
 		LCD_WriteReg(0x004e, 0); //列(X)首址0
 		LCD_WriteReg(0x004f, 0); //行(Y)首址0
 	} else {
-		INFO("\n\r ###### Err: Unknow DeviceIdCode 0x%x ###### ",
-				DeviceIdCode);
+		INFO("\n\r ###### Err: Unknow DeviceIdCode 0x%x ###### ", DeviceIdCode);
 	}
 
 	ili9320_Clear(Black);
 }
 
-/****************************************************************************
- * 名    称：void ili9320_SetCursor(uint16_t x,uint16_t y)
- * 功    能：设置屏幕座标
- * 入口参数：x      行座标
- *           y      列座标
- * 出口参数：无
- * 说    明：
- * 调用方法：ili9320_SetCursor(10,10);
- ****************************************************************************/
-//inline void ili9320_SetCursor(uint16_t x,uint16_t y)
 void ili9320_SetCursor(uint16_t x, uint16_t y) {
 	if (DeviceIdCode == 0x8989) {
 		LCD_WriteReg(0x004e, y); //行
@@ -439,30 +410,18 @@ void ili9320_SetCursor(uint16_t x, uint16_t y) {
 		LCD_WriteReg(0x004f, y); // 列
 	}
 	/*
-	 else if((DeviceIdCode==0x9325))
-	 {
-	 LCD_WriteReg(0x0020,x); // 行
-	 LCD_WriteReg(0x0021,y); // 列
-	 }
-	 */
+    else if((DeviceIdCode==0x9325))
+    {
+    LCD_WriteReg(0x0020,x); // 行
+    LCD_WriteReg(0x0021,y); // 列
+}
+    */
 	else {
 		LCD_WriteReg(0x0020, y); // 行
 		LCD_WriteReg(0x0021, 0x13f - x); // 列
 	}
 }
 
-/****************************************************************************
- * 名    称：void ili9320_SetWindows(uint16_t StartX,uint16_t StartY,uint16_t EndX,uint16_t EndY)
- * 功    能：设置窗口区域
- * 入口参数：StartX     行起始座标
- *           StartY     列起始座标
- *           EndX       行结束座标
- *           EndY       列结束座标
- * 出口参数：无
- * 说    明：
- * 调用方法：ili9320_SetWindows(0,0,100,100)；
- ****************************************************************************/
-//inline void ili9320_SetWindows(uint16_t StartX,uint16_t StartY,uint16_t EndX,uint16_t EndY)
 void ili9320_SetWindows(uint16_t StartX, uint16_t StartY, uint16_t EndX, uint16_t EndY) {
 	ili9320_SetCursor(StartX, StartY);
 	LCD_WriteReg(0x0050, StartX);
@@ -471,14 +430,6 @@ void ili9320_SetWindows(uint16_t StartX, uint16_t StartY, uint16_t EndX, uint16_
 	LCD_WriteReg(0x0053, EndY);
 }
 
-/****************************************************************************
- * 名    称：void ili9320_Clear(uint16_t dat)
- * 功    能：将屏幕填充成指定的颜色，如清屏，则填充 0xffff
- * 入口参数：dat      填充值
- * 出口参数：无
- * 说    明：
- * 调用方法：ili9320_Clear(0xffff);
- ****************************************************************************/
 void ili9320_Clear(uint16_t Color) {
 	uint32_t index = 0;
 	ili9320_SetCursor(0, 0);
@@ -489,44 +440,20 @@ void ili9320_Clear(uint16_t Color) {
 	}
 }
 
-/****************************************************************************
- * 名    称：void ili9320_SetPoint(uint16_t x,uint16_t y,uint16_t point)
- * 功    能：在指定座标画点
- * 入口参数：x      行座标
- *           y      列座标
- *           point  点的颜色
- * 出口参数：无
- * 说    明：
- * 调用方法：ili9320_SetPoint(10,10,0x0fe0);
- ****************************************************************************/
 void ili9320_SetPoint(uint16_t x, uint16_t y, uint16_t point) {
-	//if ( (x>320)||(y>240) ) return;
+
 	ili9320_SetCursor(x, y);
 
 	LCD_WriteRAM_Prepare();
 	LCD_WriteRAM(point);
 }
 
-/****************************************************************************
- * 名    称：void ili9320_DrawPicture(uint16_t StartX,uint16_t StartY,uint16_t EndX,uint16_t EndY,uint16_t *pic)
- * 功    能：在指定座标范围显示一副图片
- * 入口参数：StartX     行起始座标
- *           StartY     列起始座标
- *           EndX       行结束座标
- *           EndY       列结束座标
- pic        图片头指针
- * 出口参数：无
- * 说    明：图片取模格式为水平扫描，16位颜色模式
- * 调用方法：ili9320_DrawPicture(0,0,100,100,(uint16_t*)demo);
- * 作    者： www.armjishu.com
- ****************************************************************************/
 void ili9320_DrawPicture(uint16_t StartX, uint16_t StartY, uint16_t EndX, uint16_t EndY, uint16_t *pic) {
+
 	uint32_t i, total;
 	uint16_t data1, data2, data3;
 	uint16_t *picturepointer = pic;
 	uint16_t x, y;
-
-	//  INFO("ili9320_DrawPicture StartX %d StartY %d EndX %d EndY %d \n\r", StartX, StartY, EndX, EndY);
 
 	x = StartX;
 	y = StartY;
@@ -537,7 +464,7 @@ void ili9320_DrawPicture(uint16_t StartX, uint16_t StartY, uint16_t EndX, uint16
 		data1 = *picturepointer++;
 		data2 = *picturepointer++;
 		data3 = ((data1 >> 3) & 0x001f) | ((data1 >> 5) & 0x07E0) | ((data2
-				<< 8) & 0xF800);
+                                                                      << 8) & 0xF800);
 		ili9320_SetPoint(x, y, data3);
 		y++;
 		if (y > EndY) {
@@ -548,7 +475,7 @@ void ili9320_DrawPicture(uint16_t StartX, uint16_t StartY, uint16_t EndX, uint16
 		data1 = data2;
 		data2 = *picturepointer++;
 		data3 = ((data1 >> 11) & 0x001f) | ((data2 << 3) & 0x07E0) | ((data2)
-				& 0xF800);
+                                                                      & 0xF800);
 		ili9320_SetPoint(x, y, data3);
 		y++;
 		if (y > EndY) {
@@ -556,168 +483,8 @@ void ili9320_DrawPicture(uint16_t StartX, uint16_t StartY, uint16_t EndX, uint16
 			y = StartY;
 		}
 	}
-
 }
 
-/****************************************************************************
- * 名    称：void ili9320_DrawPicture(uint16_t StartX,uint16_t StartY,uint16_t EndX,uint16_t EndY,uint16_t *pic)
- * 功    能：在指定座标范围显示一副图片
- * 入口参数：StartX     行起始座标
- *           StartY     列起始座标
- *           EndX       行结束座标
- *           EndY       列结束座标
- pic        图片头指针
- * 出口参数：无
- * 说    明：图片取模格式为水平扫描，16位颜色模式
- * 调用方法：ili9320_DrawPicture(0,0,100,100,(uint16_t*)demo);
- * 作    者： www.armjishu.com
- ****************************************************************************/
-#if 0
-void ili9320_DrawPicture(uint16_t StartX,uint16_t StartY,uint16_t EndX,uint16_t EndY,uint16_t *pic)
-{
-	u32 i, total;
-	uint16_t data1,data2,data3;
-	uint16_t *picturepointer = pic;
-	//ili9320_SetWindows(StartX,StartY,EndX,EndY);
-
-	LCD_WriteReg(0x0003,(1<<12)|(0<<5)|(1<<4) );
-
-	ili9320_SetCursor(StartX,StartY);
-
-	LCD_WriteRAM_Prepare();
-	total = (EndX + 1)*(EndY + 1 ) / 2;
-	for (i=0;i<total;i++)
-	{
-		data1 = *picturepointer++;
-		data2 = *picturepointer++;
-		data3 = ((data1 >>3)& 0x001f) |((data1>>5) & 0x07E0) | ((data2<<8) & 0xF800);
-		LCD_WriteRAM(data3);
-		data1 = data2;
-		data2 = *picturepointer++;
-		data3 = ((data1 >>11)& 0x001f) |((data2<<3) & 0x07E0) | ((data2) & 0xF800);
-		LCD_WriteRAM(data3);
-	}
-
-	LCD_WriteReg(0x0003,(1<<12)|(1<<5)|(1<<4) );
-}
-#endif
-
-/****************************************************************************
- * 名    称：void ili9320_PutChar(uint16_t x,uint16_t y,uint8_t c,uint16_t charColor,uint16_t bkColor)
- * 功    能：在指定座标显示一个8x16点阵的ascii字符
- * 入口参数：x          行座标
- *           y          列座标
- *           charColor  字符的颜色
- *           bkColor    字符背景颜色
- * 出口参数：无
- * 说    明：显示范围限定为可显示的ascii码
- * 调用方法：ili9320_PutChar(10,10,'a',0x0000,0xffff);
- ****************************************************************************/
-//void ili9320_PutChar(uint16_t x, uint16_t y, uint8_t c, uint16_t charColor, uint16_t bkColor) // Lihao
-//{
-//	uint16_t i = 0;
-//	uint16_t j = 0;
-//
-//	uint8_t tmp_char = 0;
-//
-//	if (HyalineBackColor == bkColor) {
-//		for (i = 0; i < 16; i++) {
-//			tmp_char = ascii_8x16[((c - 0x20) * 16) + i];
-//			for (j = 0; j < 8; j++) {
-//				if ((tmp_char >> 7 - j) & 0x01 == 0x01) {
-//					ili9320_SetPoint(x + j, y + i, charColor); // 字符颜色
-//				} else {
-//					// do nothing // 透明背景
-//				}
-//			}
-//		}
-//	} else {
-//		for (i = 0; i < 16; i++) {
-//			tmp_char = ascii_8x16[((c - 0x20) * 16) + i];
-//			for (j = 0; j < 8; j++) {
-//				if ((tmp_char >> 7 - j) & 0x01 == 0x01) {
-//					ili9320_SetPoint(x + j, y + i, charColor); // 字符颜色
-//				} else {
-//					ili9320_SetPoint(x + j, y + i, bkColor); // 背景颜色
-//				}
-//			}
-//		}
-//	}
-//}
-//
-////////////////
-//void ili9320_PutChar5x7(uint16_t x, uint16_t y, uint8_t c, uint16_t charColor, uint16_t bkColor) // Lihao
-//{
-//	uint16_t i = 0;
-//	uint16_t j = 0;
-//
-//	uint8_t tmp_char = 0;
-//
-//	for (i = 0; i < 5; i++) {
-//		tmp_char = ascii_5x7[c][i];
-//		for (j = 0; j < 7; j++) {
-//
-//			if ((tmp_char & 0x01) == 0x01) {
-//				ili9320_SetPoint(x + i, y + j, charColor); // 字符颜色
-//			} else {
-//				ili9320_SetPoint(x + i, y + j, bkColor); // 背景颜色
-//			}
-//			tmp_char >>= 1;
-//		}
-//	}
-//}
-//
-///////////////
-///****************************************************************************
-// * 名    称：void ili9320_PutChar(uint16_t x,uint16_t y,uint8_t c,uint16_t charColor,uint16_t bkColor)
-// * 功    能：在指定座标显示一个8x16点阵的ascii字符
-// * 入口参数：x          行座标
-// *           y          列座标
-// *           charColor  字符的颜色
-// *           bkColor    字符背景颜色
-// * 出口参数：无
-// * 说    明：显示范围限定为可显示的ascii码
-// * 调用方法：ili9320_PutChar(10,10,'a',0x0000,0xffff);
-// ****************************************************************************/
-//void ili9320_PutChar_16x24(uint16_t x, uint16_t y, uint8_t c, uint16_t charColor, uint16_t bkColor) {
-//
-//	uint16_t i = 0;
-//	uint16_t j = 0;
-//
-//	uint16_t tmp_char = 0;
-//
-//	if (HyalineBackColor == bkColor) {
-//		for (i = 0; i < 24; i++) {
-//			tmp_char = ASCII_Table_16x24[((c - 0x20) * 24) + i];
-//			for (j = 0; j < 16; j++) {
-//				if ((tmp_char >> j) & 0x01 == 0x01) {
-//					ili9320_SetPoint(x + j, y + i, charColor); // 字符颜色
-//				} else {
-//					// do nothing // 透明背景
-//				}
-//			}
-//		}
-//	} else {
-//		for (i = 0; i < 24; i++) {
-//			tmp_char = ASCII_Table_16x24[((c - 0x20) * 24) + i];
-//			for (j = 0; j < 16; j++) {
-//				if ((tmp_char >> j) & 0x01 == 0x01) {
-//					ili9320_SetPoint(x + j, y + i, charColor); // 字符颜色
-//				} else {
-//					ili9320_SetPoint(x + j, y + i, bkColor); // 背景颜色
-//				}
-//			}
-//		}
-//	}
-//}
-/****************************************************************************
- * 名    称：uint16_t ili9320_BGR2RGB(uint16_t c)
- * 功    能：RRRRRGGGGGGBBBBB 改为 BBBBBGGGGGGRRRRR 格式
- * 入口参数：c      BRG 颜色值
- * 出口参数：RGB 颜色值
- * 说    明：内部函数调用
- * 调用方法：
- ****************************************************************************/
 uint16_t ili9320_BGR2RGB(uint16_t c) {
 	uint16_t r, g, b, rgb;
 

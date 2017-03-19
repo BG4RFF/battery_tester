@@ -19,12 +19,9 @@ int main(void)
     ili9320_Initializtion();
     ili9320_Clear(Blue);
 
-
-
     INFO("\r\n-=Battery tester=-\r\n");
 
     bsp_switch_relay(RELAY_CHARGE);
-    ili9320_Initializtion();
 
     charger_enable(CHARGER_DISABLE);
     bsp_delay_ms(1000);

@@ -1,16 +1,7 @@
- /******************************************************************************
-  * @file    ili9320.h
-  * @author  www.armjishu.com
-  * @Update  www.armjishu.com
-  * @version V1.0
-  * @date    03/16/2010
-  * @brief   TFT Driver program
-  ******************************************************************************/
+#ifndef _ILI9320_H_
+#define _ILI9320_H_
+
 #include "bsp.h"
-
-#define ID_AM  110
-
-////////////////////////////////////////////////////////////////////////////////////////
 
 /* LCD Registers */
 #define R0             0x00
@@ -134,31 +125,12 @@
 #define Cyan           0x7FFF
 #define Yellow         0xFFE0
 
-#define HyalineBackColor 0x0001  // Lihao
-
-#define Line0          0
-#define Line1          24
-#define Line2          48
-#define Line3          72
-#define Line4          96
-#define Line5          120
-#define Line6          144
-#define Line7          168
-#define Line8          192
-#define Line9          216
-
-#define Horizontal     0x00
-#define Vertical       0x01
-
-void LCD_DB_AS_InPut(void);
-void LCD_DB_AS_OutPut(void);
-
 void ili9320_Initializtion(void);
 void ili9320_SetCursor(uint16_t x,uint16_t y);
 void ili9320_SetWindows(uint16_t StartX,uint16_t StartY,uint16_t EndX,uint16_t EndY);
 void ili9320_DrawPicture(uint16_t StartX,uint16_t StartY,uint16_t EndX,uint16_t EndY,uint16_t *pic);
 void ili9320_SetPoint(uint16_t x,uint16_t y,uint16_t point);
 void ili9320_Clear(uint16_t dat);
-void ili9320_Delay(uint32_t nCount);
-uint16_t ili9320_GetCode(void);;
+uint16_t ili9320_BGR2RGB(uint16_t c);
 
+#endif //_ILI9320_H_
