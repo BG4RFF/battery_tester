@@ -72,6 +72,10 @@ void bsp_lcd_write_prepare(void);
 void bsp_lcd_write_command(uint16_t data);
 uint16_t bsp_lcd_read_reg(uint32_t reg);
 void bsp_lcd_backlight_enable(bsp_backlight_control_t control);
+void bsp_cs_touch_set_low(void);
+void bsp_cs_touch_set_high(void);
+void bsp_touch_wr_rd(uint8_t *wr_data, uint8_t *rd_data, uint32_t size);
+
 #ifdef __cplusplus
  }
 #endif /* __cplusplus */

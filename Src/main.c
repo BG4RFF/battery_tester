@@ -17,7 +17,26 @@ int main(void)
 
     bsp_lcd_backlight_enable(LCD_BACKLIGHT_ENABLE);
     ili9320_Initializtion();
-    ili9320_Clear(Blue);
+    ili9320_Clear(Black);
+
+    uint32_t x, y;
+
+    while(1){
+
+        //bsp_delay_ms(100);
+
+        Touch_GetPos(&x, &y);
+        float fx = 320-(float)x / 4096.f*2 * 320;
+        float fy = (float)y / 4096.f*2 * 240;
+
+        //INFO("%d %d\r\n", x, y);
+
+        ili9320_SetPoint((uint32_t)fx, (uint32_t)fy + 1, Green);
+        ili9320_SetPoint((uint32_t)fx, (uint32_t)fy - 1, Green);
+        ili9320_SetPoint((uint32_t)fx + 1, (uint32_t)fy, Green);
+        ili9320_SetPoint((uint32_t)fx - 1, (uint32_t)fy, Green);
+        ili9320_SetPoint((uint32_t)fx, (uint32_t)fy, Green);
+    }
 
     INFO("\r\n-=Battery tester=-\r\n");
 

@@ -78,7 +78,7 @@
 #define LCD_RS_PORT            GPIOC
 
 #define CS_LCD_PIN                  GPIO_PIN_9
-#define CS_LCD_PORT            GPIOC
+#define CS_LCD_PORT                 GPIOC
 
 #define LCD_WR_PIN                  GPIO_PIN_10
 #define LCD_WR_PORT            GPIOC
@@ -103,7 +103,7 @@
 #define LED3_PORT              GPIOB
 
 #define CS_TS_PIN                   GPIO_PIN_4
-#define CS_TS_PORT             GPIOA
+#define CS_TS_PORT                  GPIOA
 
 #define ADC_VBAT_PIN                GPIO_PIN_0
 #define ADC_VBAT_PORT               GPIOB

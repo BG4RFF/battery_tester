@@ -293,11 +293,11 @@ static void _gpio_init(void) {
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 
-    GPIO_InitStruct.Pin = LED1_PIN|LED2_PIN|CS_TS_PIN;
+    GPIO_InitStruct.Pin = LED1_PIN|LED2_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = LED3_PIN|CS_F_PIN|CS_SD_PIN;
+    GPIO_InitStruct.Pin = LED3_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
@@ -335,12 +335,25 @@ static void _gpio_init(void) {
     GPIO_InitStruct.Pin = LCD_WR_PIN;
     HAL_GPIO_Init(LCD_WR_PORT, &GPIO_InitStruct);
 
+
+    HAL_GPIO_WritePin(CS_LCD_PORT, CS_LCD_PIN, GPIO_PIN_SET);
     GPIO_InitStruct.Pin = CS_LCD_PIN;
     HAL_GPIO_Init(CS_LCD_PORT, &GPIO_InitStruct);
 
+    HAL_GPIO_WritePin(CS_TS_PORT, CS_TS_PIN, GPIO_PIN_SET);
+    GPIO_InitStruct.Pin = CS_TS_PIN;
+    HAL_GPIO_Init(CS_TS_PORT, &GPIO_InitStruct);
+
+    HAL_GPIO_WritePin(CS_F_PORT, CS_F_PIN, GPIO_PIN_SET);
+    GPIO_InitStruct.Pin = CS_F_PIN;
+    HAL_GPIO_Init(CS_F_PORT, &GPIO_InitStruct);
+
+    HAL_GPIO_WritePin(CS_SD_PORT, CS_SD_PIN, GPIO_PIN_SET);
+    GPIO_InitStruct.Pin = CS_SD_PIN;
+    HAL_GPIO_Init(CS_SD_PORT, &GPIO_InitStruct);
+
+
     _lcd_bus_init(true);
-
-
 
     GPIO_InitStruct.Pin = CHARGER_STATUS_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
@@ -414,7 +427,7 @@ static void _spi_init(void) {
     hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
     hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
     hspi1.Init.NSS = SPI_NSS_SOFT;
-    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
+    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
     hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
     hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
     hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -624,7 +637,6 @@ void HAL_ADC_ConvCpltCallback( ADC_HandleTypeDef * hadc) {
 
 /* -------------------------------------------------------------------------- */
 
-
 uint32_t bsp_get_voltage(bsp_voltage_source_t source) {
 
 
@@ -667,6 +679,8 @@ void bsp_lcd_write_reg(uint32_t reg, uint16_t data) {
 	LCD_WR_PORT->BSRR = LCD_WR_PIN;
 	CS_LCD_PORT->BSRR = CS_LCD_PIN;
 }
+
+/* -------------------------------------------------------------------------- */
 
 uint16_t bsp_lcd_read_reg(uint32_t reg) {
 
@@ -720,6 +734,7 @@ uint16_t LCD_ReadSta(void) {
 
 	return data;
 }
+
 /* -------------------------------------------------------------------------- */
 
 void bsp_lcd_write_command(uint16_t data) {
@@ -734,6 +749,8 @@ void bsp_lcd_write_command(uint16_t data) {
 	LCD_WR_PORT->BSRR = LCD_WR_PIN;
 	CS_LCD_PORT->BSRR = CS_LCD_PIN;
 }
+
+/* -------------------------------------------------------------------------- */
 
 void bsp_lcd_write_prepare(void){
 
@@ -766,6 +783,8 @@ void bsp_lcd_write_ram(uint16_t data) {
 	CS_LCD_PORT->BSRR = CS_LCD_PIN;
 }
 
+/* -------------------------------------------------------------------------- */
+
 void bsp_lcd_backlight_enable(bsp_backlight_control_t control) {
 
     if(control == LCD_BACKLIGHT_DISABLE) {
@@ -774,4 +793,25 @@ void bsp_lcd_backlight_enable(bsp_backlight_control_t control) {
         LCD_BL_EN_PORT->BSRR = LCD_BL_EN_PIN;
     }
 }
+
+/* -------------------------------------------------------------------------- */
+
+void bsp_cs_touch_set_low(void) {
+
+    CS_TS_PORT->BRR = CS_TS_PIN;
+}
+
+/* -------------------------------------------------------------------------- */
+
+void bsp_cs_touch_set_high(void) {
+
+    CS_TS_PORT->BSRR = CS_TS_PIN;
+}
+
+/* -------------------------------------------------------------------------- */
+
+void bsp_touch_wr_rd(uint8_t *wr_data, uint8_t *rd_data, uint32_t size) {
+    HAL_SPI_TransmitReceive(&hspi1, wr_data, rd_data, size, 1000);
+}
+
 /* end: bsp.c ----- */
