@@ -71,7 +71,7 @@ typedef enum sw_program_codes_e {
 
     /* Default */
     SWPC_AUTO_RECHARGE_OFF,
-    SWPC_AURO_RECHARGE_ON,
+    SWPC_AUTO_RECHARGE_ON,
 
     /* Default */
     SWPC_WATCHDOG_OFF,

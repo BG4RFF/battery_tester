@@ -244,6 +244,26 @@ static void _timer_init(void) {
 }
 
 /* -------------------------------------------------------------------------- */
+static void _lcd_bus_init(bool is_output) {
+
+    GPIO_InitTypeDef GPIO_InitStruct;
+
+    if(is_output) {
+        GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    } else {
+        GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    }
+
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+
+    GPIO_InitStruct.Pin = DB08_PIN|DB09_PIN|DB10_PIN|DB11_PIN|DB12_PIN|DB13_PIN|DB14_PIN|DB15_PIN;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = DB00_PIN|DB01_PIN|DB02_PIN|DB03_PIN|DB04_PIN|DB05_PIN|DB06_PIN|DB07_PIN;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+}
 
 static void _gpio_init(void) {
 
@@ -255,52 +275,72 @@ static void _gpio_init(void) {
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
 
-    HAL_GPIO_WritePin(GPIOC, DB00_PIN|DB01_PIN|DB02_PIN|DB03_PIN|DB04_PIN|DB05_PIN|DB06_PIN|DB07_PIN|LCD_RS_PIN|CS_LCD_PIN|LCD_WR_PIN|LCD_RD_PIN|LCD_BL_EN_PIN, GPIO_PIN_RESET);
+    GPIOA->BRR = 0xFFFF;
+    GPIOB->BRR = 0xFFFF;
+    GPIOC->BRR = 0xFFFF;
+    GPIOD->BRR = 0xFFFF;
 
-    HAL_GPIO_WritePin(GPIOA, LED1_PIN|LED2_PIN|CS_TS_PIN|CHARGER_SW_SEL_PIN, GPIO_PIN_RESET);
-
-    HAL_GPIO_WritePin(GPIOB, LED3_PIN|DB10_PIN|DB11_PIN|DB12_PIN|DB13_PIN|DB14_PIN|DB15_PIN|RELAY_CONTROL_PIN|CS_F_PIN|CS_SD_PIN|DB08_PIN|DB09_PIN, GPIO_PIN_RESET);
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 
     GPIO_InitStruct.Pin = INT_TS_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(INT_TS_GPIO_PORT, &GPIO_InitStruct);
-
-    GPIO_InitStruct.Pin = DB00_PIN|DB01_PIN|DB02_PIN|DB03_PIN|DB04_PIN|DB05_PIN|DB06_PIN|DB07_PIN|LCD_RS_PIN|CS_LCD_PIN|LCD_WR_PIN|LCD_RD_PIN|LCD_BL_EN_PIN;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+    HAL_GPIO_Init(INT_TS_PORT, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = BUTTON_1_PIN|BUTTON_2_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+
     GPIO_InitStruct.Pin = LED1_PIN|LED2_PIN|CS_TS_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = LED3_PIN|DB10_PIN|DB11_PIN|DB12_PIN|DB13_PIN|DB14_PIN|DB15_PIN|CS_F_PIN|CS_SD_PIN|DB08_PIN|DB09_PIN;
+    GPIO_InitStruct.Pin = LED3_PIN|CS_F_PIN|CS_SD_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-    HAL_GPIO_WritePin(RELAY_CONTROL_GPIO_PORT, RELAY_CONTROL_PIN, GPIO_PIN_RESET);
+    ///////////////////////
+
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+
+    /* conf OD pins */
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+
+    HAL_GPIO_WritePin(RELAY_CONTROL_PORT, RELAY_CONTROL_PIN, GPIO_PIN_SET);
 
     GPIO_InitStruct.Pin = RELAY_CONTROL_PIN;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(RELAY_CONTROL_GPIO_PORT, &GPIO_InitStruct);
+    HAL_GPIO_Init(RELAY_CONTROL_PORT, &GPIO_InitStruct);
+
+
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 
     GPIO_InitStruct.Pin = CHARGER_SW_SEL_PIN;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     HAL_GPIO_Init(CHARGER_SW_SEL_PORT, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = CHARGER_EN_PIN;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     HAL_GPIO_Init(CHARGER_EN_PORT, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = LCD_BL_EN_PIN;
+    HAL_GPIO_Init(LCD_BL_EN_PORT, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = LCD_RS_PIN;
+    HAL_GPIO_Init(LCD_RS_PORT, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = LCD_RD_PIN;
+    HAL_GPIO_Init(LCD_RD_PORT, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = LCD_WR_PIN;
+    HAL_GPIO_Init(LCD_WR_PORT, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = CS_LCD_PIN;
+    HAL_GPIO_Init(CS_LCD_PORT, &GPIO_InitStruct);
+
+    _lcd_bus_init(true);
+
+
 
     GPIO_InitStruct.Pin = CHARGER_STATUS_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
@@ -460,9 +500,9 @@ void bsp_init(void) {
 void bsp_switch_relay(const bsp_relay_swith_t select) {
 
     if(select == RELAY_CHARGE) {
-        HAL_GPIO_WritePin(RELAY_CONTROL_GPIO_PORT, RELAY_CONTROL_PIN, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(RELAY_CONTROL_PORT, RELAY_CONTROL_PIN, GPIO_PIN_SET);
     } else {
-        HAL_GPIO_WritePin(RELAY_CONTROL_GPIO_PORT, RELAY_CONTROL_PIN, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(RELAY_CONTROL_PORT, RELAY_CONTROL_PIN, GPIO_PIN_RESET);
     }
 }
 
@@ -606,5 +646,132 @@ uint32_t bsp_get_voltage(bsp_voltage_source_t source) {
 
 /* -------------------------------------------------------------------------- */
 
-/* end: bsp.c ----- */
+void bsp_lcd_write_reg(uint32_t reg, uint16_t data) {
 
+    CS_LCD_PORT->BRR = CS_LCD_PIN;
+    LCD_RS_PORT->BRR = LCD_RS_PIN;
+	LCD_WR_PORT->BRR = LCD_WR_PIN;
+
+    GPIOC->ODR = ((GPIOC->ODR&0xFF00)|(reg&0x00FF));
+    GPIOB->ODR = ((GPIOB->ODR&0x00FF)|(reg&0xFF00));
+
+	LCD_WR_PORT->BSRR = LCD_WR_PIN;
+
+    /* Write 16-bit Reg */
+	LCD_RS_PORT->BSRR = LCD_RS_PIN;
+	LCD_WR_PORT->BRR = LCD_WR_PIN;
+
+    GPIOC->ODR = ((GPIOC->ODR&0xFF00)|(data&0x00FF));
+    GPIOB->ODR = ((GPIOB->ODR&0x00FF)|(data&0xFF00));
+
+	LCD_WR_PORT->BSRR = LCD_WR_PIN;
+	CS_LCD_PORT->BSRR = CS_LCD_PIN;
+}
+
+uint16_t bsp_lcd_read_reg(uint32_t reg) {
+
+    uint16_t data = 0;
+
+	/* Write 16-bit Index (then Read Reg) */
+	CS_LCD_PORT->BRR = CS_LCD_PIN;
+	LCD_RS_PORT->BRR = LCD_RS_PIN;
+	LCD_WR_PORT->BRR = LCD_WR_PIN;
+
+    GPIOC->ODR = ((GPIOC->ODR&0xFF00)|(reg&0x00FF));
+    GPIOB->ODR = ((GPIOB->ODR&0x00FF)|(reg&0xFF00));
+
+	LCD_WR_PORT->BSRR = LCD_WR_PIN;
+
+    _lcd_bus_init(false);
+
+	/* Read 16-bit Reg */
+	LCD_RS_PORT->BSRR = LCD_RS_PIN;
+	LCD_RD_PORT->BRR = LCD_RD_PIN;
+	LCD_RD_PORT->BSRR = LCD_RD_PIN;
+
+
+	data = GPIOB->IDR & 0xFF00;
+    data |= GPIOC->IDR & 0x00FF;
+
+    _lcd_bus_init(true);
+
+	CS_LCD_PORT->BSRR = CS_LCD_PIN;
+
+	return data;
+}
+
+/* -------------------------------------------------------------------------- */
+
+uint16_t LCD_ReadSta(void) {
+
+    uint16_t data;
+
+    _lcd_bus_init(false);
+	/* Write 16-bit Index, then Write Reg */
+	LCD_RS_PORT->BSRR = LCD_RS_PIN;
+    LCD_RD_PORT->BRR = LCD_RD_PIN;
+	LCD_RD_PORT->BSRR = LCD_RD_PIN;
+	data = (GPIOB->IDR&0xFF00);
+    data |= (GPIOC->IDR&0x00FF);
+
+    CS_LCD_PORT->BSRR = CS_LCD_PIN;
+
+    _lcd_bus_init(true);
+
+	return data;
+}
+/* -------------------------------------------------------------------------- */
+
+void bsp_lcd_write_command(uint16_t data) {
+
+    CS_LCD_PORT->BRR = CS_LCD_PIN;
+	LCD_RS_PORT->BRR = LCD_RS_PIN;
+	LCD_WR_PORT->BRR = LCD_WR_PIN;
+
+    GPIOC->ODR = (GPIOC->ODR&0xFF00)|(data&0x00FF);
+    GPIOB->ODR = (GPIOB->ODR&0x00FF)|(data&0xFF00);
+
+	LCD_WR_PORT->BSRR = LCD_WR_PIN;
+	CS_LCD_PORT->BSRR = CS_LCD_PIN;
+}
+
+void bsp_lcd_write_prepare(void){
+
+    /* Write 16-bit Index, then Write Reg */
+	CS_LCD_PORT->BRR = CS_LCD_PIN;
+	LCD_RS_PORT->BRR = LCD_RS_PIN;
+	LCD_WR_PORT->BRR = LCD_WR_PIN;
+
+    const uint32_t reg = 34;
+    GPIOC->ODR = (GPIOC->ODR&0xFF00)|(reg&0x00FF);
+    GPIOB->ODR = (GPIOB->ODR&0x00FF)|(reg&0xFF00);
+
+	LCD_WR_PORT->BSRR = LCD_WR_PIN;
+	CS_LCD_PORT->BSRR = CS_LCD_PIN;
+
+}
+
+/* -------------------------------------------------------------------------- */
+
+void bsp_lcd_write_ram(uint16_t data) {
+
+	CS_LCD_PORT->BRR = CS_LCD_PIN;
+	LCD_RS_PORT->BSRR = LCD_RS_PIN;
+	LCD_WR_PORT->BRR = LCD_WR_PIN;
+
+    GPIOC->ODR = (GPIOC->ODR&0xFF00)|(data&0x00FF);
+    GPIOB->ODR = (GPIOB->ODR&0x00FF)|(data&0xFF00);
+
+	LCD_WR_PORT->BSRR = LCD_WR_PIN;
+	CS_LCD_PORT->BSRR = CS_LCD_PIN;
+}
+
+void bsp_lcd_backlight_enable(bsp_backlight_control_t control) {
+
+    if(control == LCD_BACKLIGHT_DISABLE) {
+        LCD_BL_EN_PORT->BRR = LCD_BL_EN_PIN;
+    } else {
+        LCD_BL_EN_PORT->BSRR = LCD_BL_EN_PIN;
+    }
+}
+/* end: bsp.c ----- */

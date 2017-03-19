@@ -1023,6 +1023,18 @@
   <group>
     <name>Drivers</name>
     <group>
+      <name>lcd</name>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\lcd_driver\ili9320.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\lcd_driver\ili9320.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\lcd_driver\ili9320_font.h</name>
+      </file>
+    </group>
+    <group>
       <name>STM32F1xx_HAL_Driver</name>
       <file>
         <name>$PROJ_DIR$\..\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal.c</name>

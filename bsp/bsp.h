@@ -39,6 +39,13 @@ typedef enum {
     VOLTAGE_SOURCE_VIN,
 }bsp_voltage_source_t;
 
+
+
+typedef enum {
+    LCD_BACKLIGHT_DISABLE = 0,
+    LCD_BACKLIGHT_ENABLE,
+}bsp_backlight_control_t;
+
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/
@@ -58,6 +65,13 @@ void bsp_register_charger_status_cb(void (*cb)(void));
 void bsp_charger_en_set_low(void);
 void bsp_charger_en_set_high(void);
 uint32_t bsp_get_voltage(bsp_voltage_source_t source);
+void bsp_lcd_write_reg(uint32_t reg, uint16_t data);
+uint16_t bsp_lcd_read_reg(uint32_t reg);
+void bsp_lcd_write_ram(uint16_t data);
+void bsp_lcd_write_prepare(void);
+void bsp_lcd_write_command(uint16_t data);
+uint16_t bsp_lcd_read_reg(uint32_t reg);
+void bsp_lcd_backlight_enable(bsp_backlight_control_t control);
 #ifdef __cplusplus
  }
 #endif /* __cplusplus */
