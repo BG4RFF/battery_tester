@@ -94,6 +94,7 @@ int main(void)
                 INFO("Discharge complete\r\n");
                 INFO("Time %d s, Capacity %d Ah\r\n",  duration, duration * 10 /60/60);
 
+                is_discharge = false;
                 charger_enable(CHARGER_ENABLE);
                 bsp_switch_relay(RELAY_DISCHARGE_OFF);
                 start_time = bsp_get_tick_ms();
@@ -112,6 +113,7 @@ int main(void)
 
                 INFO("Start discharge\r\n");
 
+                is_discharge = true;
                 charger_enable(CHARGER_DISABLE);
                 bsp_switch_relay(RELAY_DISCHARGE_ON);
                 start_time = bsp_get_tick_ms();
