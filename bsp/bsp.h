@@ -46,6 +46,13 @@ typedef enum {
     LCD_BACKLIGHT_ENABLE,
 }bsp_backlight_control_t;
 
+
+
+typedef enum {
+    LED_DISABLE = 0,
+    LED_ENABLE,
+}bsp_led_control_t;
+
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/
@@ -75,6 +82,11 @@ void bsp_lcd_backlight_enable(bsp_backlight_control_t control);
 void bsp_cs_touch_set_low(void);
 void bsp_cs_touch_set_high(void);
 void bsp_touch_wr_rd(uint8_t *wr_data, uint8_t *rd_data, uint32_t size);
+bool bsp_is_button1_pressed(void);
+bool bsp_is_button2_pressed(void);
+void bsp_led1_enable(bsp_led_control_t control);
+void bsp_led2_enable(bsp_led_control_t control);
+void bsp_led3_enable(bsp_led_control_t control);
 
 #ifdef __cplusplus
  }

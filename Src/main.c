@@ -2,7 +2,8 @@
 #include "bsp.h"
 #include "logger/logger.h"
 #include "charger/charger.h"
-#include "../drivers/lcd_driver/ili9320.h"
+#include "lcd_driver/ili9320.h"
+#include "touch_driver/touch_tsc2046.h"
 
 /* Private variables ---------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -21,7 +22,7 @@ int main(void)
 
     uint32_t x, y;
 
-    while(1){
+    while(!bsp_is_button1_pressed()){
 
         //bsp_delay_ms(100);
 
@@ -37,6 +38,16 @@ int main(void)
         ili9320_SetPoint((uint32_t)fx - 1, (uint32_t)fy, Green);
         ili9320_SetPoint((uint32_t)fx, (uint32_t)fy, Green);
     }
+
+    bsp_led1_enable(LED_DISABLE);
+    bsp_delay_ms(500);
+    bsp_led2_enable(LED_DISABLE);
+    bsp_delay_ms(500);
+    bsp_led3_enable(LED_DISABLE);
+    bsp_delay_ms(500);
+
+
+    ili9320_Clear(Blue);
 
     INFO("\r\n-=Battery tester=-\r\n");
 

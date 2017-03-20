@@ -39,68 +39,68 @@
 /* Private define ------------------------------------------------------------*/
 
 #define INT_TS_PIN                  GPIO_PIN_13
-#define INT_TS_PORT            GPIOC
+#define INT_TS_PORT                 GPIOC
 
 #define DB00_PIN                    GPIO_PIN_0
-#define DB00_PORT              GPIOC
+#define DB00_PORT                   GPIOC
 #define DB01_PIN                    GPIO_PIN_1
-#define DB01_PORT              GPIOC
+#define DB01_PORT                   GPIOC
 #define DB02_PIN                    GPIO_PIN_2
-#define DB02_PORT              GPIOC
+#define DB02_PORT                   GPIOC
 #define DB03_PIN                    GPIO_PIN_3
-#define DB03_PORT              GPIOC
+#define DB03_PORT                   GPIOC
 #define DB04_PIN                    GPIO_PIN_4
-#define DB04_PORT              GPIOC
+#define DB04_PORT                   GPIOC
 #define DB05_PIN                    GPIO_PIN_5
-#define DB05_PORT              GPIOC
+#define DB05_PORT                   GPIOC
 #define DB06_PIN                    GPIO_PIN_6
-#define DB06_PORT              GPIOC
+#define DB06_PORT                   GPIOC
 #define DB07_PIN                    GPIO_PIN_7
-#define DB07_PORT              GPIOC
+#define DB07_PORT                   GPIOC
 #define DB08_PIN                    GPIO_PIN_8
-#define DB08_PORT              GPIOB
+#define DB08_PORT                   GPIOB
 #define DB09_PIN                    GPIO_PIN_9
-#define DB09_PORT              GPIOB
+#define DB09_PORT                   GPIOB
 #define DB10_PIN                    GPIO_PIN_10
-#define DB10_PORT              GPIOB
+#define DB10_PORT                   GPIOB
 #define DB11_PIN                    GPIO_PIN_11
-#define DB11_PORT              GPIOB
+#define DB11_PORT                   GPIOB
 #define DB12_PIN                    GPIO_PIN_12
-#define DB12_PORT              GPIOB
+#define DB12_PORT                   GPIOB
 #define DB13_PIN                    GPIO_PIN_13
-#define DB13_PORT              GPIOB
+#define DB13_PORT                   GPIOB
 #define DB14_PIN                    GPIO_PIN_14
-#define DB14_PORT              GPIOB
+#define DB14_PORT                   GPIOB
 #define DB15_PIN                    GPIO_PIN_15
-#define DB15_PORT              GPIOB
+#define DB15_PORT                   GPIOB
 
 #define LCD_RS_PIN                  GPIO_PIN_8
-#define LCD_RS_PORT            GPIOC
+#define LCD_RS_PORT                 GPIOC
 
 #define CS_LCD_PIN                  GPIO_PIN_9
 #define CS_LCD_PORT                 GPIOC
 
 #define LCD_WR_PIN                  GPIO_PIN_10
-#define LCD_WR_PORT            GPIOC
+#define LCD_WR_PORT                 GPIOC
 
 #define LCD_RD_PIN                  GPIO_PIN_11
-#define LCD_RD_PORT            GPIOC
+#define LCD_RD_PORT                 GPIOC
 
 #define LCD_BL_EN_PIN               GPIO_PIN_12
 #define LCD_BL_EN_PORT              GPIOC
 
 
-#define BUTTON_1_PIN                GPIO_PIN_0
-#define BUTTON_1_PORT          GPIOA
-#define BUTTON_2_PIN                GPIO_PIN_1
-#define BUTTON_2_PORT          GPIOA
+#define BUTTON1_PIN                 GPIO_PIN_0
+#define BUTTON1_PORT                GPIOA
+#define BUTTON2_PIN                 GPIO_PIN_1
+#define BUTTON2_PORT                GPIOA
 
 #define LED1_PIN                    GPIO_PIN_2
-#define LED1_PORT              GPIOA
-#define LED2_PIN                    GPIO_PIN_3
-#define LED2_PORT              GPIOA
-#define LED3_PIN                    GPIO_PIN_2
-#define LED3_PORT              GPIOB
+#define LED1_PORT                   GPIOA
+#define LED2_PIN                    GPIO_PIN_2
+#define LED2_PORT                   GPIOB
+#define LED3_PIN                    GPIO_PIN_3
+#define LED3_PORT                   GPIOA
 
 #define CS_TS_PIN                   GPIO_PIN_4
 #define CS_TS_PORT                  GPIOA
@@ -120,13 +120,13 @@
 #define CHARGER_EN_PORT             GPIOA
 
 #define RELAY_CONTROL_PIN           GPIO_PIN_3
-#define RELAY_CONTROL_PORT     GPIOB
+#define RELAY_CONTROL_PORT          GPIOB
 
 #define CS_F_PIN                    GPIO_PIN_6
-#define CS_F_PORT              GPIOB
+#define CS_F_PORT                   GPIOB
 
 #define CS_SD_PIN                   GPIO_PIN_7
-#define CS_SD_PORT             GPIOB
+#define CS_SD_PORT                  GPIOB
 
 #define UART1_TX_PIN                GPIO_PIN_9
 #define UART1_TX_PORT               GPIOA

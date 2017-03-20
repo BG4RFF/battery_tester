@@ -1,6 +1,5 @@
 #include "bsp.h"
 #include "ili9320.h"
-#include "ili9320_font.h"
 #include <stdio.h>
 #include "logger/logger.h"
 

@@ -322,6 +322,7 @@
           <state>$PROJ_DIR$/../Drivers/CMSIS/Include</state>
           <state>$PROJ_DIR$\..\bsp</state>
           <state>$PROJ_DIR$\..\user</state>
+          <state>$PROJ_DIR$\..\Drivers</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>

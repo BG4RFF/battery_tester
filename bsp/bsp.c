@@ -280,28 +280,6 @@ static void _gpio_init(void) {
     GPIOC->BRR = 0xFFFF;
     GPIOD->BRR = 0xFFFF;
 
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-
-    GPIO_InitStruct.Pin = INT_TS_PIN;
-    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(INT_TS_PORT, &GPIO_InitStruct);
-
-    GPIO_InitStruct.Pin = BUTTON_1_PIN|BUTTON_2_PIN;
-    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-
-    GPIO_InitStruct.Pin = LED1_PIN|LED2_PIN;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-    GPIO_InitStruct.Pin = LED3_PIN;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-    ///////////////////////
 
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -314,7 +292,16 @@ static void _gpio_init(void) {
     GPIO_InitStruct.Pin = RELAY_CONTROL_PIN;
     HAL_GPIO_Init(RELAY_CONTROL_PORT, &GPIO_InitStruct);
 
+    GPIO_InitStruct.Pin = LED1_PIN;
+    HAL_GPIO_Init(LED1_PORT, &GPIO_InitStruct);
 
+    GPIO_InitStruct.Pin = LED2_PIN;
+    HAL_GPIO_Init(LED2_PORT, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = LED3_PIN;
+    HAL_GPIO_Init(LED3_PORT, &GPIO_InitStruct);
+
+    /* conf PP pins */
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 
     GPIO_InitStruct.Pin = CHARGER_SW_SEL_PIN;
@@ -355,9 +342,24 @@ static void _gpio_init(void) {
 
     _lcd_bus_init(true);
 
-    GPIO_InitStruct.Pin = CHARGER_STATUS_PIN;
-    GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+
+    /* conf INPUT pins */
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
+
+    GPIO_InitStruct.Pin = BUTTON1_PIN;
+    HAL_GPIO_Init(BUTTON1_PORT, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = BUTTON2_PIN;
+    HAL_GPIO_Init(BUTTON2_PORT, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = INT_TS_PIN;
+    HAL_GPIO_Init(INT_TS_PORT, &GPIO_InitStruct);
+
+    /* conf INPUT IT pins */
+    GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+
+    GPIO_InitStruct.Pin = CHARGER_STATUS_PIN;
     HAL_GPIO_Init(CHARGER_STATUS_PORT, &GPIO_InitStruct);
 
     __HAL_GPIO_EXTI_CLEAR_IT(CHARGER_STATUS_PIN);
@@ -812,6 +814,61 @@ void bsp_cs_touch_set_high(void) {
 
 void bsp_touch_wr_rd(uint8_t *wr_data, uint8_t *rd_data, uint32_t size) {
     HAL_SPI_TransmitReceive(&hspi1, wr_data, rd_data, size, 1000);
+}
+
+/* -------------------------------------------------------------------------- */
+
+bool bsp_is_button1_pressed(void) {
+
+    if(BUTTON1_PORT->IDR & BUTTON1_PIN) {
+        return false;
+    }
+
+    return true;
+}
+
+/* -------------------------------------------------------------------------- */
+
+bool bsp_is_button2_pressed(void) {
+
+    if(BUTTON2_PORT->IDR & BUTTON2_PIN) {
+        return false;
+    }
+
+    return true;
+}
+
+/* -------------------------------------------------------------------------- */
+
+void bsp_led1_enable(bsp_led_control_t control) {
+
+    if(control == LED_ENABLE) {
+        LED1_PORT->BRR = LED1_PIN;
+    } else {
+        LED1_PORT->BSRR = LED1_PIN;
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+
+void bsp_led2_enable(bsp_led_control_t control) {
+
+    if(control == LED_ENABLE) {
+        LED2_PORT->BRR = LED2_PIN;
+    } else {
+        LED2_PORT->BSRR = LED2_PIN;
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+
+void bsp_led3_enable(bsp_led_control_t control) {
+
+    if(control == LED_ENABLE) {
+        LED3_PORT->BRR = LED3_PIN;
+    } else {
+        LED3_PORT->BSRR = LED3_PIN;
+    }
 }
 
 /* end: bsp.c ----- */
