@@ -116,7 +116,7 @@
 #define CHARGER_SW_SEL_PIN          GPIO_PIN_11
 #define CHARGER_SW_SEL_PORT         GPIOA
 
-#define CHARGER_EN_PIN              GPIO_PIN_13
+#define CHARGER_EN_PIN              GPIO_PIN_15
 #define CHARGER_EN_PORT             GPIOA
 
 #define RELAY_CONTROL_PIN           GPIO_PIN_3

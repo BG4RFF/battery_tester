@@ -301,14 +301,14 @@ static void _gpio_init(void) {
     GPIO_InitStruct.Pin = LED3_PIN;
     HAL_GPIO_Init(LED3_PORT, &GPIO_InitStruct);
 
+    GPIO_InitStruct.Pin = CHARGER_EN_PIN;
+    HAL_GPIO_Init(CHARGER_EN_PORT, &GPIO_InitStruct);
+
     /* conf PP pins */
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 
     GPIO_InitStruct.Pin = CHARGER_SW_SEL_PIN;
     HAL_GPIO_Init(CHARGER_SW_SEL_PORT, &GPIO_InitStruct);
-
-    GPIO_InitStruct.Pin = CHARGER_EN_PIN;
-    HAL_GPIO_Init(CHARGER_EN_PORT, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = LCD_BL_EN_PIN;
     HAL_GPIO_Init(LCD_BL_EN_PORT, &GPIO_InitStruct);

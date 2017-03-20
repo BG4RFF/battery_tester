@@ -22,21 +22,22 @@ int main(void)
 
     uint32_t x, y;
 
-    while(!bsp_is_button1_pressed()){
+    if(bsp_is_button2_pressed()) {
 
-        //bsp_delay_ms(100);
+        while(!bsp_is_button1_pressed()) {
 
-        Touch_GetPos(&x, &y);
-        float fx = 320-(float)x / 4096.f*2 * 320;
-        float fy = (float)y / 4096.f*2 * 240;
+            Touch_GetPos(&x, &y);
+            float fx = 320-(float)x / 4096.f*2 * 320;
+            float fy = (float)y / 4096.f*2 * 240;
 
-        //INFO("%d %d\r\n", x, y);
+            //INFO("%d %d\r\n", x, y);
 
-        ili9320_SetPoint((uint32_t)fx, (uint32_t)fy + 1, Green);
-        ili9320_SetPoint((uint32_t)fx, (uint32_t)fy - 1, Green);
-        ili9320_SetPoint((uint32_t)fx + 1, (uint32_t)fy, Green);
-        ili9320_SetPoint((uint32_t)fx - 1, (uint32_t)fy, Green);
-        ili9320_SetPoint((uint32_t)fx, (uint32_t)fy, Green);
+            ili9320_SetPoint((uint32_t)fx, (uint32_t)fy + 1, Green);
+            ili9320_SetPoint((uint32_t)fx, (uint32_t)fy - 1, Green);
+            ili9320_SetPoint((uint32_t)fx + 1, (uint32_t)fy, Green);
+            ili9320_SetPoint((uint32_t)fx - 1, (uint32_t)fy, Green);
+            ili9320_SetPoint((uint32_t)fx, (uint32_t)fy, Green);
+        }
     }
 
     bsp_led1_enable(LED_DISABLE);
@@ -71,9 +72,6 @@ int main(void)
     while (1) {
         /* test demo*/
         bsp_delay_ms(1000);
-        //charger_send_swp_message(SWPC_BATMS_ON);
-        //bsp_delay_ms(1000);
-        //charger_send_swp_message(SWPC_BATMS_OFF);
 
         INFO("Vbat = %d, Vin = %d ", bsp_get_voltage(VOLTAGE_SOURCE_VBAT), bsp_get_voltage(VOLTAGE_SOURCE_VIN));
 
