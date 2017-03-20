@@ -27,8 +27,8 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 
 typedef enum bsp_relay_swith_e {
-    RELAY_CHARGE,
-    RELAY_DISCHARGE,
+    RELAY_DISCHARGE_OFF,
+    RELAY_DISCHARGE_ON,
 
     RELAY_COUNT
 }

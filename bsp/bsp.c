@@ -514,7 +514,7 @@ void bsp_init(void) {
 
 void bsp_switch_relay(const bsp_relay_swith_t select) {
 
-    if(select == RELAY_CHARGE) {
+    if(select == RELAY_DISCHARGE_OFF) {
         HAL_GPIO_WritePin(RELAY_CONTROL_PORT, RELAY_CONTROL_PIN, GPIO_PIN_SET);
     } else {
         HAL_GPIO_WritePin(RELAY_CONTROL_PORT, RELAY_CONTROL_PIN, GPIO_PIN_RESET);
