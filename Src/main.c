@@ -90,7 +90,7 @@ int main(void)
         if(is_discharge) {
             INFO("Discharge\r\n");
 
-            if(vin < 3000) {
+            if(vbat < 3000) {
                 INFO("Discharge complete\r\n");
                 INFO("Time %d s, Capacity %d Ah\r\n",  duration, duration * 10 /60/60);
 
