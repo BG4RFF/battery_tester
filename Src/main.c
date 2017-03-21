@@ -85,7 +85,8 @@ int main(void)
         const uint32_t vin = bsp_get_voltage(VOLTAGE_SOURCE_VIN);
         const uint32_t duration = (bsp_get_tick_ms() - start_time) / 1000;
 
-        INFO("%10d: Vbat = %d, Vin = %d ", duration, vbat, vin);
+        INFO("%d:%d:%d\t%d\tVbat\t%d\tVin\t%d\t", duration / 60 / 60 %24, duration / 60 %60, duration %60
+             , duration, vbat, vin);
 
         if(is_discharge) {
             INFO("Discharge\r\n");
@@ -109,7 +110,8 @@ int main(void)
                 INFO("CHARGER_STATUS_VALID_INPUT \r\n");
                 break;
             case CHARGER_STATUS_END_OF_CHARGING:
-                INFO("charge 100%, time %d\r\n", duration);
+                INFO("CHARGE COMPLETE\r\n");
+                INFO("Duration %d S\r\n", duration);
 
                 INFO("Start discharge\r\n");
 
@@ -119,7 +121,7 @@ int main(void)
                 start_time = bsp_get_tick_ms();
                 break;
             case CHARGER_STATUS_CHARGING_PHASE:
-                INFO("Charging ...\r\n");
+                INFO("CHARGING\r\n");
                 break;
             case CHARGER_STATUS_OVER_CHARGE_FAULT:
                 INFO("CHARGER_STATUS_OVER_CHARGE_FAULT \r\n");
