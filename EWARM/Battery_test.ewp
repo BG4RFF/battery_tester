@@ -1024,6 +1024,69 @@
   <group>
     <name>Drivers</name>
     <group>
+      <name>fs_fat</name>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_access.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_access.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_cache.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_cache.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_defs.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_filelib.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_filelib.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_format.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_format.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_list.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_misc.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_misc.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_opts.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_string.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_string.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_table.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_table.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_types.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_write.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_write.h</name>
+      </file>
+    </group>
+    <group>
       <name>lcd</name>
       <file>
         <name>$PROJ_DIR$\..\Drivers\lcd_driver\ili9320.c</name>
@@ -1033,6 +1096,15 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\Drivers\lcd_driver\ili9320_font.h</name>
+      </file>
+    </group>
+    <group>
+      <name>mmc_sd</name>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\mmc_sd\mmc_sd.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\mmc_sd\mmc_sd.h</name>
       </file>
     </group>
     <group>

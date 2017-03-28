@@ -429,7 +429,7 @@ static void _spi_init(void) {
     hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
     hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
     hspi1.Init.NSS = SPI_NSS_SOFT;
-    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
+    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
     hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
     hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
     hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -815,6 +815,11 @@ void bsp_cs_touch_set_high(void) {
 void bsp_touch_wr_rd(uint8_t *wr_data, uint8_t *rd_data, uint32_t size) {
     HAL_SPI_TransmitReceive(&hspi1, wr_data, rd_data, size, 1000);
 }
+/* -------------------------------------------------------------------------- */
+
+void bsp_sd_wr_rd(uint8_t *wr_data, uint8_t *rd_data, uint32_t size) {
+    HAL_SPI_TransmitReceive(&hspi1, wr_data, rd_data, size, 1000);
+}
 
 /* -------------------------------------------------------------------------- */
 
@@ -870,5 +875,22 @@ void bsp_led3_enable(bsp_led_control_t control) {
         LED3_PORT->BSRR = LED3_PIN;
     }
 }
+
+/* -------------------------------------------------------------------------- */
+
+void bsp_cs_sd_set_low(void) {
+
+    CS_SD_PORT->BRR = CS_SD_PIN;
+}
+
+/* -------------------------------------------------------------------------- */
+
+void bsp_cs_sd_set_high(void) {
+
+    CS_SD_PORT->BSRR = CS_SD_PIN;
+}
+
+/* -------------------------------------------------------------------------- */
+
 
 /* end: bsp.c ----- */

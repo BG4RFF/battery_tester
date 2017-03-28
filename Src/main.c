@@ -4,12 +4,30 @@
 #include "charger/charger.h"
 #include "lcd_driver/ili9320.h"
 #include "touch_driver/touch_tsc2046.h"
+#include "mmc_sd/mmc_sd.h"
+#include "fs_fat/fat_filelib.h"
 
 /* Private variables ---------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
+//(uint32 sector, uint8 *buffer, uint32 sector_count);
+static int _media_read(uint32 sector, uint8 *buffer, uint32 sector_count) {
+
+    for(uint32_t i = 0; i <sector_count; i++) {
+        SD_ReadSingleBlock(sector, &buffer[i*FAT_SECTOR_SIZE]);
+    }
+
+    return 1;
+}
+
+static int _media_write(uint32 sector, uint8 *buffer, uint32 sector_count) {
+    for(uint32_t i = 0; i <sector_count; i++) {
+        SD_WriteSingleBlock(sector, &buffer[i]);
+    }
+	return 1;
+}
 
 int main(void)
 {
@@ -38,6 +56,31 @@ int main(void)
             ili9320_SetPoint((uint32_t)fx - 1, (uint32_t)fy, Green);
             ili9320_SetPoint((uint32_t)fx, (uint32_t)fy, Green);
         }
+    }
+
+    if(bsp_is_button1_pressed()) {
+
+        while (SD_Init() != 0) {
+            INFO("SD Card Failed!\r\n");
+            INFO("Please Check!\r\n");
+            bsp_delay_ms(500);
+        }
+
+        bsp_delay_ms(50);
+        INFO("SD Card Detected!\r\n");
+        uint32_t sd_size = SD_GetCapacity();
+        INFO("SD Card Size: %d  b\r\n", sd_size);
+
+        fl_init();
+        // Attach media access functions to library
+        if (fl_attach_media(_media_read, _media_write) != FAT_INIT_OK) {
+            printf("ERROR: Media attach failed\r\n");
+            //return;
+        }
+
+
+		fl_listdirectory("/pict");
+
     }
 
     bsp_led1_enable(LED_DISABLE);
