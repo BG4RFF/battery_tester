@@ -69,18 +69,16 @@ int fatfs_total_path_levels(char *path)
 	// Count levels in path string
 	while (*path)
 	{
-		// Fast forward through actual subdir text to next slash
-		for (*path; *path;)
-		{
-			// If slash detected escape from for loop
-			if (*path == expectedchar) { path++; break; }
-			*path++;
-		}
-    
-		// Increase number of subdirs founds
-		levels++;
-	}
-	
+        // If slash detected
+        if (*path == expectedchar)
+        {
+            levels++;
+        }
+
+        *path++;
+    }
+
+
 	// Subtract the file itself
 	return levels-1;
 }
@@ -127,7 +125,7 @@ int fatfs_get_substring(char *path, int levelreq, char *output, int max_len)
 		if (*path == expectedchar) levels++;
 
 		// If correct level and the character is not a '\' or '/' then copy text to 'output'
-		if ( (levels == levelreq) && (*path != expectedchar) && (copypnt < (max_len-1))) 
+		if ( (levels == levelreq) && (*path != expectedchar) && (copypnt < (max_len-1)))
 			output[copypnt++] = *path;
 
 		// Increment through path string
@@ -138,13 +136,13 @@ int fatfs_get_substring(char *path, int levelreq, char *output, int max_len)
 	output[copypnt] = '\0';
 
 	// If a string was copied return 0 else return 1
-	if (output[0] != '\0') 
+	if (output[0] != '\0')
 		return 0;	// OK
 	else
 		return -1;	// Error
 }
 //-----------------------------------------------------------------------------
-// fatfs_split_path: Full path contains the passed in string. 
+// fatfs_split_path: Full path contains the passed in string.
 // Returned is the path string and file Name string
 // E.g. C:\folder\file.zip -> path = C:\folder  filename = file.zip
 // E.g. C:\file.zip -> path = [blank]  filename = file.zip
@@ -201,11 +199,11 @@ static int FileString_StrCmpNoCase(char *s1, char *s2, int n)
 		// If different
 		if (diff)
 			return diff;
-		
+
 		// If run out of strings
 		if ( (*s1 == 0) || (*s2 == 0) )
 			break;
-		
+
 		s1++;
 		s2++;
 	}
@@ -219,7 +217,7 @@ static int FileString_GetExtension(char *str)
 {
 	int dotPos = -1;
 	char *strSrc = str;
-	
+
 	// Find last '.' in string (if at all)
 	while (*strSrc)
 	{
@@ -239,7 +237,7 @@ static int FileString_TrimLength(char *str, int strLen)
 {
 	int length = strLen;
 	char *strSrc = str+strLen-1;
-	
+
 	// Find last non white space
 	while (strLen != 0)
 	{
@@ -269,7 +267,7 @@ int fatfs_compare_names(char* strA, char* strB)
 	ext1Pos = FileString_GetExtension(strA);
 	ext2Pos = FileString_GetExtension(strB);
 
-	// NOTE: Extension position can be different for matching 
+	// NOTE: Extension position can be different for matching
 	// filename if trailing space are present before it!
 	// Check that if one has an extension, so does the other
 	if ((ext1Pos==-1) && (ext2Pos!=-1))
@@ -287,11 +285,11 @@ int fatfs_compare_names(char* strA, char* strB)
 		// Verify that the file extension lengths match!
 		if (strlen(ext1) != strlen(ext2))
 			return 0;
-		
+
 		// If they dont match
-		if (FileString_StrCmpNoCase(ext1, ext2, (int)strlen(ext1))!=0) 
+		if (FileString_StrCmpNoCase(ext1, ext2, (int)strlen(ext1))!=0)
 			return 0;
-		
+
 		// Filelength is upto extensions
 		file1Len = ext1Pos;
 		file2Len = ext2Pos;
@@ -337,7 +335,7 @@ int fatfs_string_ends_with_slash(char *path)
 			path++;
 		}
 	}
-	
+
 	return 0;
 }
 //-----------------------------------------------------------------------------

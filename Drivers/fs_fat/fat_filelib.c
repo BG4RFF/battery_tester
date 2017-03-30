@@ -31,6 +31,7 @@
 //-----------------------------------------------------------------------------
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "fat_defs.h"
 #include "fat_access.h"
 #include "fat_table.h"
@@ -50,9 +51,6 @@ static struct fatfs		_fs;
 static struct fat_list	_open_file_list;
 static struct fat_list	_free_file_list;
 
-volatile short  x = 0, y = 0,color;
-FL_FILE *file;
-char pfile[20]="/pict/";
 //-----------------------------------------------------------------------------
 // Macros
 //-----------------------------------------------------------------------------
@@ -66,7 +64,7 @@ char pfile[20]="/pict/";
 //-----------------------------------------------------------------------------
 // Local Functions
 //-----------------------------------------------------------------------------
-static void				_fl_init();
+//static void				_fl_init();
 
 
 //-----------------------------------------------------------------------------
@@ -1222,7 +1220,6 @@ int fl_fwrite(const void * data, int size, int count, void *f )
 	uint32 offset;
 	uint32 length = (size*count);
 	uint8 *buffer = (uint8 *)data;
-	int dirtySector = 0;
 	uint32 bytesWritten = 0;
 	uint32 copyCount;
 
@@ -1445,11 +1442,11 @@ void fl_listdirectory(const char *path)
 		{
 			if (dirent.is_dir)
 			{
-//				FAT_PRINTF(("%d - %s <DIR> (0x%x)\r\n",++filenumber, dirent.filename, dirent.cluster));
+				FAT_PRINTF(("%d - %s <DIR> (0x%x)\r\n",++filenumber, dirent.filename, dirent.cluster));
 			}
 			else
 			{
-//				FAT_PRINTF(("%d - %s [%d bytes] (0x%x)\r\n",++filenumber, dirent.filename, dirent.size, dirent.cluster));
+				FAT_PRINTF(("%d - %s [%d bytes] (0x%x)\r\n",++filenumber, dirent.filename, dirent.size, dirent.cluster));
 			}
 		}
 

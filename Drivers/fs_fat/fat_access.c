@@ -49,7 +49,7 @@ int fatfs_init(struct fatfs *fs)
 	uint32 total_sectors;
 	uint32 data_sectors;
 	uint32 count_of_clusters;
-	uint32 partition_size = 0;
+	//uint32 partition_size = 0;
 	uint8 valid_partition = 0;
 
 	fs->currentsector.address = FAT32_INVALID_CLUSTER;
@@ -107,7 +107,7 @@ int fatfs_init(struct fatfs *fs)
 	{
 		// Read LBA Begin for the file system
 		fs->lba_begin = GET_32BIT_WORD(fs->currentsector.sector, PARTITION1_LBA_BEGIN_LOCATION);
-		partition_size = GET_32BIT_WORD(fs->currentsector.sector, PARTITION1_SIZE_LOCATION);
+		//partition_size = GET_32BIT_WORD(fs->currentsector.sector, PARTITION1_SIZE_LOCATION);
 	}
 	// Else possibly MBR less disk
 	else
@@ -717,8 +717,6 @@ int fatfs_list_directory_next(struct fatfs *fs, struct fs_dir_list_status *dirls
 {
 	uint8 i,item;
 	uint16 recordoffset;
-	uint8 LFNIndex=0;
-	uint32 x=0;
 	struct fat_dir_entry *directoryEntry;
 	char *long_filename = NULL;
 	char short_filename[13];
@@ -734,7 +732,6 @@ int fatfs_list_directory_next(struct fatfs *fs, struct fs_dir_list_status *dirls
 		// If data read OK
 		if (fatfs_sector_reader(fs, dirls->cluster, dirls->sector, 0))
 		{
-			LFNIndex=0;
 
 			// Maximum of 16 directory entries
 			for (item = dirls->offset; item < FAT_DIR_ENTRIES_PER_SECTOR; item++)
@@ -772,7 +769,7 @@ int fatfs_list_directory_next(struct fatfs *fs, struct fs_dir_list_status *dirls
 					// Next starting position
 					dirls->offset = item + 1;
 					result = 1;
-		 			return 1;
+		 			return result;
 				}
 				// Normal Entry, only 8.3 Text
 				else
@@ -821,7 +818,7 @@ int fatfs_list_directory_next(struct fatfs *fs, struct fs_dir_list_status *dirls
 					// Next starting position
 					dirls->offset = item + 1;
 					result = 1;
-					return 1;
+					return result;
 				}
 			}// end of for
 

@@ -8,11 +8,11 @@
 #include "fs_fat/fat_filelib.h"
 
 /* Private variables ---------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
+static FL_FILE *_flog = NULL;
+static char _log_file_name[32] = "/bat_test.txt";
 
 /* Private function prototypes -----------------------------------------------*/
-/* Private function prototypes -----------------------------------------------*/
-//(uint32 sector, uint8 *buffer, uint32 sector_count);
+
 static int _media_read(uint32 sector, uint8 *buffer, uint32 sector_count) {
 
     for(uint32_t i = 0; i <sector_count; i++) {
@@ -22,6 +22,8 @@ static int _media_read(uint32 sector, uint8 *buffer, uint32 sector_count) {
     return 1;
 }
 
+/* -------------------------------------------------------------------------- */
+
 static int _media_write(uint32 sector, uint8 *buffer, uint32 sector_count) {
     for(uint32_t i = 0; i <sector_count; i++) {
         SD_WriteSingleBlock(sector, &buffer[i]);
@@ -29,10 +31,31 @@ static int _media_write(uint32 sector, uint8 *buffer, uint32 sector_count) {
 	return 1;
 }
 
+/* -------------------------------------------------------------------------- */
+
+static void _debug_file_log(const uint8_t *data, uint32_t size) {
+
+    static uint32_t disable_recursive_from_fl = 0;
+
+    bsp_debug_write(data, size);
+
+    disable_recursive_from_fl++;
+
+    if(_flog  != NULL && disable_recursive_from_fl == 1) {
+        fl_fwrite(data, 1, size, _flog);
+    }
+
+    disable_recursive_from_fl--;
+}
+
+/* -------------------------------------------------------------------------- */
+
 int main(void)
 {
 
     bsp_init();
+
+    logger_init(bsp_debug_write);
 
     bsp_lcd_backlight_enable(LCD_BACKLIGHT_ENABLE);
     ili9320_Initializtion();
@@ -45,8 +68,8 @@ int main(void)
         while(!bsp_is_button1_pressed()) {
 
             Touch_GetPos(&x, &y);
-            float fx = 320-(float)x / 4096.f*2 * 320;
-            float fy = (float)y / 4096.f*2 * 240;
+            float fx = 320-(float)x / 4096.f * 2 * 320;
+            float fy = (float)y / 4096.f * 2 * 240;
 
             //INFO("%d %d\r\n", x, y);
 
@@ -58,15 +81,14 @@ int main(void)
         }
     }
 
-    if(bsp_is_button1_pressed()) {
+    uint32_t timeout = 10;
+    while (SD_Init() != 0 && timeout--) {
+        INFO("SD Card Failed!\r\n");
+        INFO("Please Check!\r\n");
+        bsp_delay_ms(500);
+    }
 
-        while (SD_Init() != 0) {
-            INFO("SD Card Failed!\r\n");
-            INFO("Please Check!\r\n");
-            bsp_delay_ms(500);
-        }
-
-        bsp_delay_ms(50);
+    if( timeout > 0 ) {
         INFO("SD Card Detected!\r\n");
         uint32_t sd_size = SD_GetCapacity();
         INFO("SD Card Size: %d  b\r\n", sd_size);
@@ -78,10 +100,17 @@ int main(void)
             //return;
         }
 
+        /* debug purposes */
+        fl_listdirectory("/");
 
-		fl_listdirectory("/pict");
+        _flog = fl_fopen(_log_file_name, "w");
 
+        if(_flog) {
+            logger_init(_debug_file_log);
+        }
     }
+
+
 
     bsp_led1_enable(LED_DISABLE);
     bsp_delay_ms(500);
@@ -188,6 +217,13 @@ int main(void)
         }
 
         if(bsp_is_button1_pressed()) {
+
+            /* debug purposes */
+            if(_flog) {
+                fl_fclose(_flog);
+                _flog = NULL;
+            }
+
             if(is_discharge) {
                 INFO("Discharge stoped\r\n");
                 INFO("Time %d s, Capacity %d Ah\r\n",  duration, duration * 10 /60/60);
