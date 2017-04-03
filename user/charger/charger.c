@@ -12,12 +12,12 @@
 
 const uint32_t PULSE_TIMING = 105U;
 const uint32_t START_BIT_TIMING = 355U;
-const uint32_t STOP_BIT_TIMING = 600U;
+const uint32_t STOP_BIT_TIMING = 800U;
 
 /* ===== LOCAL VARIABLES ==================================================== */
 
 /* Single wire programming interface step */
-static swire_step_t _swpi_step = STEP_START_BIT;
+static swire_step_t _swpi_step = STEP_STOP_BIT;
 
 static uint8_t _swp_code_pulse_count = 0U;
 static uint32_t _last_chr_flg_rising_time_ms = 0U;
@@ -44,6 +44,8 @@ static void _status_pin_toggle_handler(void);
 /* ===== GLOBAL FUNCTIONS =================================================== */
 
 void charger_send_swp_message(sw_codes_t message) {
+
+    while(_swpi_step != STEP_STOP_BIT);
 
     bsp_disable_irq();
 
@@ -102,6 +104,10 @@ void charger_init(void) {
     charger_enable(CHARGER_ENABLE);
 
     bsp_register_charger_status_cb(_status_pin_toggle_handler);
+
+
+    charger_send_swp_message(SWPC_AUTO_RECHARGE_ON);
+    charger_send_swp_message(SWPC_AUTO_RECHARGE_OFF);
 }
 
 /* -------------------------------------------------------------------------- */
