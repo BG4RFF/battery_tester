@@ -18,7 +18,7 @@
   * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
   ******************************************************************************
   */
-  
+
 /* Define to prevent recursive inclusion ---------------------------------------*/
 #ifndef __GRAPHIC_OBJECT_TYPES_H
 #define __GRAPHIC_OBJECT_TYPES_H
@@ -26,17 +26,16 @@
 #ifdef __cplusplus
  extern "C" {
 #endif
-   
+
 /* Includes ------------------------------------------------------------------*/
-#include "stm32HAL.h"
 #include "font.h"
 /** @addtogroup Embedded_GUI_Library
   * @{
   */
 
-/** @defgroup graphicObjectTypes 
+/** @defgroup graphicObjectTypes
   * @{
-  */ 
+  */
 
   /* Exported constants --------------------------------------------------------*/
 /** @defgroup graphicObjectTypes_Exported_Defines
@@ -69,52 +68,52 @@
   * @{
   */
 
-/** 
-  * @brief  GL_FunctionalState enumeration definition  
+/**
+  * @brief  GL_FunctionalState enumeration definition
   */
-typedef enum 
+typedef enum
 {
    GL_DISABLE = 0,
    GL_ENABLE = !GL_DISABLE
 } GL_FunctionalState;
 
-/** 
-  * @brief  GL_bool enumeration definition  
+/**
+  * @brief  GL_bool enumeration definition
   */
-typedef enum 
+typedef enum
 {
    GL_FALSE = 0,
    GL_TRUE = !GL_FALSE
 } GL_bool;
 
-/** 
-  * @brief  GL_ErrStatus enumeration definition  
+/**
+  * @brief  GL_ErrStatus enumeration definition
   */
 typedef enum {
-    GL_ERROR = 0, 
+    GL_ERROR = 0,
     GL_OK = !GL_ERROR
 }GL_ErrStatus;
 
-/** 
-  * @brief  GL_Direction enumeration definition  
+/**
+  * @brief  GL_Direction enumeration definition
   */
 typedef enum {
-    GL_HORIZONTAL = 0, 
+    GL_HORIZONTAL = 0,
     GL_LEFT_VERTICAL,
     GL_RIGHT_VERTICAL
 }GL_Direction;
 
-/** 
-  * @brief  GL_ButtonStatus enumeration definition  
+/**
+  * @brief  GL_ButtonStatus enumeration definition
   */
 typedef enum {
-    UNSELECTED = 0, 
-    SELECTED = 1, 
+    UNSELECTED = 0,
+    SELECTED = 1,
     GL_UNKNOWN = 2
 }GL_ButtonStatus;
 
-/** 
-  * @brief  GL_ObjType enumeration definition  
+/**
+  * @brief  GL_ObjType enumeration definition
   */
 typedef enum{
     GL_BUTTON = 1,
@@ -134,13 +133,13 @@ typedef enum{
 		GL_ICON_BTN_PUSH_PULL_TEXT,
 		GL_RECT,
 		GL_CUSTOM_BUTTON,
-	
+
 }GL_ObjType;
 
-/** 
-  * @brief  GL_Coordinate struct definition  
+/**
+  * @brief  GL_Coordinate struct definition
   */
-typedef struct   
+typedef struct
 { uint16_t MaxX;
   uint16_t MinX;
   uint16_t MaxY;
@@ -150,8 +149,8 @@ typedef struct
 /* Forward declaration for circular typedefs */
 typedef struct GL_PageControlsObj GL_PageControls_TypeDef;
 
-/** 
-  * @brief  GL_PageControlsObj struct definition  
+/**
+  * @brief  GL_PageControlsObj struct definition
   */
 struct GL_PageControlsObj
 {
@@ -165,14 +164,14 @@ struct GL_PageControlsObj
 /* Forward declaration for circular typedefs */
 typedef struct GL_LabelObj GL_Label_TypeDef;
 
-/** 
-  * @brief  GL_LabelObj struct definition  
+/**
+  * @brief  GL_LabelObj struct definition
   */
 struct GL_LabelObj
 {
     uint16_t          ID;
     uint8_t           label[MAX_LABEL_LENGTH];
-    __IO font_list_t  Font;
+    font_list_t  Font;
     GL_bool           Control_Visible;
     uint32_t          FontColour;
     uint32_t          BackgroundColour;
@@ -182,8 +181,8 @@ struct GL_LabelObj
 /* Forward declaration for circular typedefs */
 typedef struct GL_ButtonObj GL_Button_TypeDef;
 
-/** 
-  * @brief  GL_ButtonObj struct definition  
+/**
+  * @brief  GL_ButtonObj struct definition
   */
 struct GL_ButtonObj
 {
@@ -202,8 +201,8 @@ struct GL_ButtonObj
 /* Forward declaration for circular typedefs */
 typedef struct GL_CheckboxObj GL_Checkbox_TypeDef;
 
-/** 
-  * @brief  GL_CheckboxObj struct definition  
+/**
+  * @brief  GL_CheckboxObj struct definition
   */
 struct GL_CheckboxObj
 {
@@ -221,8 +220,8 @@ struct GL_CheckboxObj
 /* Forward declaration for circular typedefs */
 typedef struct GL_SwitchObj GL_Switch_TypeDef;
 
-/** 
-  * @brief  GL_SwitchObj struct definition  
+/**
+  * @brief  GL_SwitchObj struct definition
   */
 struct GL_SwitchObj
 {
@@ -243,8 +242,8 @@ typedef struct GL_RadioButtonOptionObj GL_RadioOption_TypeDef;
 /* Forward declaration for circular typedefs */
 typedef struct GL_RadioButtonGrp GL_RadioButtonGrp_TypeDef;
 
-/** 
-  * @brief  GL_RadioButtonGrp struct definition  
+/**
+  * @brief  GL_RadioButtonGrp struct definition
   */
 struct GL_RadioButtonGrp
 {
@@ -254,8 +253,8 @@ struct GL_RadioButtonGrp
   GL_PageControls_TypeDef* (*AddRadioOption)( GL_RadioButtonGrp_TypeDef* pThis, const uint8_t* label, void (*pEventHandler)(void) );
 };
 
-/** 
-  * @brief  GL_RadioButtonOptionObj struct definition  
+/**
+  * @brief  GL_RadioButtonOptionObj struct definition
   */
 struct GL_RadioButtonOptionObj
 {
@@ -275,8 +274,8 @@ typedef struct GL_ComboOptionObj GL_ComboOption_TypeDef;
 /* Forward declaration for circular typedefs */
 typedef struct GL_ComboBoxGrp    GL_ComboBoxGrp_TypeDef;
 
-/** 
-  * @brief  GL_ComboBoxGrp struct definition  
+/**
+  * @brief  GL_ComboBoxGrp struct definition
   */
 struct GL_ComboBoxGrp
 {
@@ -293,13 +292,13 @@ struct GL_ComboBoxGrp
   GL_ErrStatus              (*AddComboOption)( GL_ComboBoxGrp_TypeDef* pThis, const uint8_t* label, void (*pEventHandler)(void) );
 };
 
-/** 
-  * @brief  GL_ComboOptionObj struct definition  
+/**
+  * @brief  GL_ComboOptionObj struct definition
   */
 struct GL_ComboOptionObj
 {
-  __IO uint16_t             BackColor;
-  __IO uint16_t             TextColor;
+  uint16_t             BackColor;
+  uint16_t             TextColor;
   GL_ComboBoxGrp_TypeDef*   ComboBoxGrp;
   uint8_t                   label[MAX_COMBO_LABEL_LENGTH];
   GL_bool                   IsActive;
@@ -309,8 +308,8 @@ struct GL_ComboOptionObj
 /* Forward declaration for circular typedefs */
 typedef struct GL_IconObj GL_Icon_TypeDef;
 
-/** 
-  * @brief  GL_IconObj struct definition  
+/**
+  * @brief  GL_IconObj struct definition
   */
 struct GL_IconObj
 {
@@ -327,17 +326,17 @@ struct GL_IconObj
 /* Forward declaration for circular typedefs */
 typedef struct GL_CustomBtnObj GL_CustomBtn_TypeDef;
 
-/** 
-  * @brief  GL_IconObj struct definition  
+/**
+  * @brief  GL_IconObj struct definition
   */
 struct GL_CustomBtnObj
 {
     uint16_t            ID;
     uint32_t            Color;
     uint32_t            ColorPress;
-    const uint8_t*      ImagePressPTR;	
+    const uint8_t*      ImagePressPTR;
     const uint8_t*      pText;
-    __IO font_list_t    Font;
+    font_list_t    Font;
     uint32_t            FontColour;
     uint16_t            Width;
     uint16_t            Height;
@@ -349,14 +348,14 @@ struct GL_CustomBtnObj
 /* Forward declaration for circular typedefs */
 typedef struct GL_IconBtnObj GL_IconBtn_TypeDef;
 
-/** 
-  * @brief  GL_IconObj struct definition  
+/**
+  * @brief  GL_IconObj struct definition
   */
 struct GL_IconBtnObj
 {
   uint16_t             ID;
   const uint8_t*       ImagePTR;
-  const uint8_t*       ImagePressPTR;	
+  const uint8_t*       ImagePressPTR;
   uint16_t             ImageWidth;
   uint16_t              ImageHeight;
   GL_bool              isObjectTouched;
@@ -366,15 +365,15 @@ struct GL_IconBtnObj
 
 /* Forward declaration for circular typedefs */
 typedef struct GL_IconBtnPushPullTextObj GL_IconBtnPushPullText_TypeDef;
-/** 
-  * @brief  GL_IconObj struct definition  
+/**
+  * @brief  GL_IconObj struct definition
   */
 struct GL_IconBtnPushPullTextObj
 {
     uint16_t             ID;
     const uint8_t*       ImagePTR;
     const uint8_t*       ImagePressPTR;
-    const uint8_t*       pText;	
+    const uint8_t*       pText;
     uint16_t             PushPullState;
     uint16_t             ImageWidth;
     uint16_t              ImageHeight;
@@ -386,14 +385,14 @@ struct GL_IconBtnPushPullTextObj
 /* Forward declaration for circular typedefs */
 typedef struct GL_IconBtnTextObj GL_IconBtnText_TypeDef;
 
-/** 
-  * @brief  GL_IconObj struct definition  
+/**
+  * @brief  GL_IconObj struct definition
   */
 struct GL_IconBtnTextObj
 {
   uint16_t             ID;
   const uint8_t*       ImagePTR;
-  const uint8_t*       ImagePressPTR;	
+  const uint8_t*       ImagePressPTR;
 	const uint8_t*       pText;
 	font_list_t 						 Font;
 	uint32_t 						 FontColour;
@@ -407,8 +406,8 @@ struct GL_IconBtnTextObj
 /* Forward declaration for circular typedefs */
 typedef struct GL_SlidebarObj GL_Slidebar_TypeDef;
 
-/** 
-  * @brief  GL_SlidebarObj struct definition  
+/**
+  * @brief  GL_SlidebarObj struct definition
   */
 struct GL_SlidebarObj
 {
@@ -433,8 +432,8 @@ struct GL_SlidebarObj
 /* Forward declaration for circular typedefs */
 typedef struct GL_HistogramObj GL_Histogram_TypeDef;
 
-/** 
-  * @brief  GL_HistogramObj struct definition  
+/**
+  * @brief  GL_HistogramObj struct definition
   */
 struct GL_HistogramObj
 {
@@ -449,8 +448,8 @@ struct GL_HistogramObj
 /* Forward declaration for circular typedefs */
 typedef struct GL_GraphChartObj GL_GraphChart_TypeDef;
 
-/** 
-  * @brief  GL_GraphChartObj struct definition  
+/**
+  * @brief  GL_GraphChartObj struct definition
   */
 struct GL_GraphChartObj
 {
@@ -466,8 +465,8 @@ struct GL_GraphChartObj
 /* Forward declaration for circular typedefs */
 typedef struct GL_LineObj GL_Line_TypeDef;
 
-/** 
-  * @brief  GL_LineObj struct definition  
+/**
+  * @brief  GL_LineObj struct definition
   */
 struct GL_LineObj
 {
@@ -481,8 +480,8 @@ struct GL_LineObj
 /* Forward declaration for circular typedefs */
 typedef struct GL_RectObj GL_Rect_TypeDef;
 
-/** 
-  * @brief  GL_LineObj struct definition  
+/**
+  * @brief  GL_LineObj struct definition
   */
 struct GL_RectObj
 {
@@ -496,8 +495,8 @@ struct GL_RectObj
 /* Forward declaration for circular typedefs */
 typedef struct GL_ProgressBarObj GL_ProgressBar_TypeDef;
 
-/** 
-  * @brief  GL_ButtonObj struct definition  
+/**
+  * @brief  GL_ButtonObj struct definition
   */
 struct GL_ProgressBarObj
 {
@@ -509,10 +508,10 @@ struct GL_ProgressBarObj
   GL_Direction      Direction;
 };
 
-/** 
-  * @brief  GL_ObjDimensions type definition  
+/**
+  * @brief  GL_ObjDimensions type definition
   */
-typedef struct   
+typedef struct
 { uint16_t Height;
   uint16_t Length;
 }GL_ObjDimensions_TypeDef;
@@ -520,8 +519,8 @@ typedef struct
 /* Forward declaration for circular typedefs */
 typedef struct GL_PageObj GL_Page_TypeDef;
 
-/** 
-  * @brief  GL_PageObj struct definition  
+/**
+  * @brief  GL_PageObj struct definition
   */
 struct GL_PageObj
 {
@@ -530,7 +529,7 @@ struct GL_PageObj
   GL_bool                  Page_Visible;
   uint16_t                 ControlCount;
   GL_ErrStatus             (*ShowPage)(GL_Page_TypeDef* pThis, GL_bool bVal);
-  GL_PageControls_TypeDef* PageControls[MAX_CTRL_X_PAGE]; 
+  GL_PageControls_TypeDef* PageControls[MAX_CTRL_X_PAGE];
   GL_ErrStatus             (*SetPage)(GL_Page_TypeDef* pThis, GL_bool bVal);
   GL_bool                  (*GetObjStatus)(GL_Page_TypeDef* pThis, uint16_t ID);
   GL_Coordinate_TypeDef    (*GetObjCoordinates)(GL_Page_TypeDef* pThis, uint16_t ID);
@@ -540,9 +539,9 @@ struct GL_PageObj
 /**
   * @}
   */
-   
+
 /* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */ 
+/* Exported functions ------------------------------------------------------- */
 
 #ifdef __cplusplus
 }

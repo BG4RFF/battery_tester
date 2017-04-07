@@ -21,7 +21,7 @@
   * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
   ******************************************************************************
   */
-  
+
 /* Define to prevent recursive inclusion ---------------------------------------*/
 #ifndef __LCD_HAL_H
 #define __LCD_HAL_H
@@ -31,26 +31,26 @@
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32HAL.h"
+//#include "stm32HAL.h"
 #include "graphicObjectTypes.h"
-#include "platform.h"
-#include "lcd_driver/lcd_manager.h"	 
+#include "bsp.h"
+//#include "lcd_driver/lcd_manager.h"
 
 #include "font.h"
 /** @addtogroup Embedded_GUI_Library
   * @{
   */
 
-/** @addtogroup LcdHal 
+/** @addtogroup LcdHal
   * @{
-  */ 
+  */
 
 /** @defgroup LcdHal_Exported_Types
   * @{
   */
-   
-/** 
-  * @brief  LCD_Direction_TypeDef enumeration definition  
+
+/**
+  * @brief  LCD_Direction_TypeDef enumeration definition
   */
 typedef enum
 { _0_degree = 0,
@@ -59,8 +59,8 @@ typedef enum
   _270_degree
 }LCD_Direction_TypeDef;
 
-/** 
-  * @brief  GL_FlagStatus, GL_ITStatus enumeration definition  
+/**
+  * @brief  GL_FlagStatus, GL_ITStatus enumeration definition
   */
 typedef enum {GL_RESET = 0, GL_SET = !GL_RESET} GL_FlagStatus, GL_ITStatus;
 
@@ -73,11 +73,28 @@ typedef uint32_t color_t;
 /** @defgroup LcdHal_Imported_Variables
   * @{
   */
-extern __IO color_t          GL_TextColor;
-extern __IO color_t          GL_BackColor;
+//extern __IO color_t          GL_TextColor;
+//extern __IO color_t          GL_BackColor;
 /**
   * @}
   */
+#define BLACK				0x0000
+#define NAVY         0x000F
+#define DGREEN       0x03E0
+#define DCYAN        0x03EF
+#define MAROON       0x7800
+#define PURPLE       0x780F
+#define OLIVE        0x7BE0
+#define GREY         0xF7DE
+#define LGRAY        0xC618
+#define DGRAY        0x7BEF
+#define BLUE         0x001F
+#define GREEN        0x07E0
+#define CYAN         0x07FF
+#define RED          0xF800
+#define MAGENTA      0xF81F
+#define YELLOW       0xFFE0
+#define WHITE        0xFFFF
 
 /* LCD color */
 #define GL_White              WHITE
@@ -113,8 +130,8 @@ extern __IO color_t          GL_BackColor;
 //extern __IO uint8_t           GL_Font;
 //extern __IO uint8_t           GL_FontWidth;
 //extern __IO uint8_t           GL_FontHeight;
-extern __IO uint16_t 					LCD_Height;
-extern __IO uint16_t 					LCD_Width;
+//extern __IO uint16_t 					LCD_Height;
+//extern __IO uint16_t 					LCD_Width;
 /**
   * @}
   */
@@ -130,12 +147,12 @@ extern __IO uint16_t 					LCD_Width;
 /** @defgroup LcdHal_Exported_Functions
   * @{
   */
-#define COLOR_RGB565(R,G,B) ((color_t)((((R) / 8) << 11) + (((G) / 4) << 5) + ((B) / 8)))      
-#define COLOR_BGR565(R,G,B) ((color_t)((((B) / 8) << 11) + (((G) / 4) << 5) + ((R) / 8)))  
+#define COLOR_RGB565(R,G,B) ((color_t)((((R) / 8) << 11) + (((G) / 4) << 5) + ((B) / 8)))
+#define COLOR_BGR565(R,G,B) ((color_t)((((B) / 8) << 11) + (((G) / 4) << 5) + ((R) / 8)))
 
 color_t GL_GetTextColor(void);
-void GL_SetTextColor(__IO color_t TextColor);
-void GL_SetBackColor(__IO color_t BackColor);
+void GL_SetTextColor(color_t TextColor);
+void GL_SetBackColor(color_t BackColor);
 void GL_ClearWindow(color_t Color);
 void GL_ClearScreen(color_t Color);
 

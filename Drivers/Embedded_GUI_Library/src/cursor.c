@@ -21,18 +21,16 @@
 
 /* Includes -----------------------------------------------------------------------------------------------------*/
 #include <stdlib.h>
-#include "JoyHal.h"
-#include "LcdHal.h"
 #include "cursor.h"
 
 /** @addtogroup Embedded_GUI_Library
   * @{
   */
 
-/** @defgroup Cursor 
+/** @defgroup Cursor
   * @brief Cursor main functions
   * @{
-  */ 
+  */
 
 /* External variables --------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
@@ -59,8 +57,8 @@ static uint8_t CursorPointer[] =
 /**
   * @brief  touch or cursor coordinate
   */
-__IO uint32_t u32_TSXCoordinate;
-__IO uint32_t u32_TSYCoordinate;
+ uint32_t u32_TSXCoordinate;
+ uint32_t u32_TSYCoordinate;
 
 
 
@@ -361,14 +359,14 @@ void CursorDraw(uint16_t X, uint16_t Y, uint8_t DrawPhase)
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

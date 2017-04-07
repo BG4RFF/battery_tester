@@ -19,7 +19,6 @@ typedef struct {
   const unsigned char  * pData;
 } GUI_CHARINFO;
 
-
 typedef struct GUI_FONT_PROP {
   uint16_t First;                                              /* First character               */
   uint16_t Last;                                               /* Last character                */
@@ -49,27 +48,27 @@ typedef struct GUI_FONT GUI_FONT;
 typedef enum _font_list
 {
 	FONT_NONE = -1,
-#ifdef USE_FONT_ARIAL16	
+#ifdef USE_FONT_ARIAL16
 	FONT_ARIAL_16,
-#endif	
-#ifdef USE_FONT_ARIAL17	
+#endif
+#ifdef USE_FONT_ARIAL17
 	FONT_ARIAL_17,
-#endif	
+#endif
 #ifdef USE_FONT_ARIAL18
 	FONT_ARIAL_18,
-#endif	
+#endif
 #ifdef USE_FONT_ARIAL19
 	FONT_ARIAL_19,
-#endif	
-#ifdef USE_FONT_ARIAL22	
+#endif
+#ifdef USE_FONT_ARIAL22
 	FONT_ARIAL_22,
-#endif	
-#ifdef USE_FONT_ARIAL24	
+#endif
+#ifdef USE_FONT_ARIAL24
 	FONT_ARIAL_24,
-#endif	
-#ifdef USE_FONT_ARIAL32	
+#endif
+#ifdef USE_FONT_ARIAL32
 	FONT_ARIAL_32,
-#endif	
+#endif
 	FONT_COUNT
 }font_list_t;
 

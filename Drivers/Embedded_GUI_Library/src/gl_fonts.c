@@ -18,18 +18,18 @@
   * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
   ******************************************************************************
   */
-  
+
 /* Includes ------------------------------------------------------------------*/
 #include "gl_fonts.h"
 
 /** @addtogroup Embedded_GUI_Library
   * @{
   */
-   
+
 /** @addtogroup GL_FONTS
   * @brief      This file includes the Fonts driver of STM32-EVAL boards.
   * @{
-  */  
+  */
 
 /* External variables --------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
@@ -616,7 +616,7 @@ const uint16_t GL_ASCII16x24_Table [] =
 
 /**
   * @brief  ASCII font 12x12 table definition
-  */  
+  */
 const uint16_t GL_ASCII12x12_Table [] =
   {
     0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
@@ -719,7 +719,7 @@ const uint16_t GL_ASCII12x12_Table [] =
 
 /**
   * @brief  ASCII font 8x12 table definition
-  */  
+  */
 const uint16_t GL_ASCII8x12_Table [] =
   {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -925,7 +925,7 @@ const uint16_t GL_ASCII8x8_Table [] =
 
 
 /**
-  * @brief  ASCII font 8x12: each character is 8 column (8dots large) and 12 raw (12 dots high) 
+  * @brief  ASCII font 8x12: each character is 8 column (8dots large) and 12 raw (12 dots high)
   */
 const uint16_t GL_ASCII8x12_bold_Table[] =
   {

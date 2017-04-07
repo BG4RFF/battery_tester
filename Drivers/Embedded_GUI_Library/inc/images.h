@@ -26,17 +26,16 @@
 #ifdef __cplusplus
  extern "C" {
 #endif
-   
+
 /* Includes ------------------------------------------------------------------*/
-#include "stm32HAL.h"
-   
+#include <stdint.h>
 /** @addtogroup Embedded_GUI_Library
   * @{
   */
 
 /** @addtogroup Images
   * @{
-  */ 
+  */
 
 /* Exported constants --------------------------------------------------------*/
 /** @defgroup Images_Exported_Constants
@@ -72,7 +71,7 @@ extern const uint8_t SlidebarLeft[210];        /*!< Slidebar Left part bitmap ta
 extern const uint8_t SlidebarRight[210];       /*!< PSlidebar Right centre part bitmap table */
 extern const uint8_t SlidebarCentral[210];     /*!< Slidebar Central part bitmap table */
 extern const uint8_t SlidebarCursor[306];      /*!< Slidebar Cursor part bitmap table */
-  
+
 /**
   * @}
   */

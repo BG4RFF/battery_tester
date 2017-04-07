@@ -323,6 +323,8 @@
           <state>$PROJ_DIR$\..\bsp</state>
           <state>$PROJ_DIR$\..\user</state>
           <state>$PROJ_DIR$\..\Drivers</state>
+          <state>$PROJ_DIR$\..\Drivers\Embedded_GUI_Library\inc</state>
+          <state>$PROJ_DIR$\..\Drivers\Embedded_GUI_HAL\inc</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1023,6 +1025,36 @@
   </group>
   <group>
     <name>Drivers</name>
+    <group>
+      <name>Embedded_GUI_HAL</name>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\Embedded_GUI_HAL\src\LcdHal.c</name>
+      </file>
+    </group>
+    <group>
+      <name>Embedded_GUI_Library</name>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\Embedded_GUI_Library\src\cursor.c</name>
+        <excluded>
+          <configuration>Battery_test</configuration>
+        </excluded>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\Embedded_GUI_Library\src\gl_fonts.c</name>
+        <excluded>
+          <configuration>Battery_test</configuration>
+        </excluded>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\Embedded_GUI_Library\src\gl_testFonts.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\Embedded_GUI_Library\src\graphicObject.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\Embedded_GUI_Library\src\images.c</name>
+      </file>
+    </group>
     <group>
       <name>fs_fat</name>
       <file>

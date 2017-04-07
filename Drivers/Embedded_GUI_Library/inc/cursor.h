@@ -29,16 +29,16 @@
 
 /* Includes --------------------------------------------------------------------*/
 #include "graphicObject.h"
-   
+
 /** @addtogroup Embedded_GUI_Library
   * @{
   */
 
 /** @addtogroup Cursor
   * @{
-  */ 
+  */
 
-/* Exported types ------------------------------------------------------------*/   
+/* Exported types ------------------------------------------------------------*/
 /** @defgroup Cursor_Exported_Types
   * @{
   */
@@ -47,7 +47,7 @@ uint8_t *   CursorPointer;              /*!< Pointer to Cursor bitmap image */
 uint16_t    X;                          /*!< Cursor x position */
 uint16_t    Y;                          /*!< Cursor y position */
 uint8_t	    PressState;                 /*!< Cursor press state */
-uint16_t *  BehindCursor;               /*!< pointer to data buffer to save 
+uint16_t *  BehindCursor;               /*!< pointer to data buffer to save
                                              Cursor behind image */
 uint16_t    Color;                      /*!< Cursor color */
 }Cursor_TypeDef;
@@ -61,14 +61,14 @@ uint8_t	NumOfPix;
 /**
   * @}
   */
-    
-/* Exported constants --------------------------------------------------------*/   
+
+/* Exported constants --------------------------------------------------------*/
 /** @defgroup Cursor_Exported_Constants
   * @{
   */
-/** 
-  * @brief  Cursor states 
-  */  
+/**
+  * @brief  Cursor states
+  */
 #define CUR_DOWN 	        0x01
 #define CUR_UP		        0x02
 #define CUR_RIGHT	        0x03
@@ -76,14 +76,14 @@ uint8_t	NumOfPix;
 #define CUR_PRESS 	      0x10
 #define CUR_RELEASE	      0x20
 
-/** 
-  * @brief  Cursor Move steps 
-  */ 
+/**
+  * @brief  Cursor Move steps
+  */
 #define CUR_STEP	            0x04
 
-/** 
-  * @brief  Cursor Drawing Modes 
-  */ 
+/**
+  * @brief  Cursor Drawing Modes
+  */
 #define	CUR_DRAW_ALL 	        0x07
 #define	CUR_DRAW_BEH	        0x01
 #define	CUR_READ_BEH	        0x02
@@ -94,13 +94,13 @@ uint8_t	NumOfPix;
 #define	CUR_READ_BEH_MASK     0x02
 #define CUR_DRAW_CUR_MASK     0x04
 
-/** 
-  * @brief  Cursor Size 
-  */ 
+/**
+  * @brief  Cursor Size
+  */
 #define Cursor_Width          ((uint8_t)8)
 #define Cursor_Height         ((uint8_t)14)
 
-   
+
 /**
   * @}
   */
@@ -121,11 +121,11 @@ extern Cursor_TypeDef* Cursor;
 /**
   * @}
   */
-/* Exported functions ------------------------------------------------------- */ 
+/* Exported functions ------------------------------------------------------- */
 /** @defgroup Cursor_Exported_Functions
   * @{
   */
-ErrorStatus CursorInit(uint8_t *PointerMark);  
+void CursorInit(uint8_t *PointerMark);
 void CursorDraw(uint16_t X, uint16_t Y, uint8_t DrawPhase);
 void CursorShow(uint16_t Xpos, uint16_t Ypos);
 //void CursorReadJoystick(JOY_ReadMode mode);

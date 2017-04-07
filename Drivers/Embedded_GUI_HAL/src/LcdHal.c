@@ -27,18 +27,18 @@
 #include "LcdHal.h"
 //#include "font.h"
 
-#include "FreeRTOS.h"
-#include "task.h"
-
+//#include "FreeRTOS.h"
+//#include "task.h"
+#include "lcd_driver/ili9320.h"
 
 /** @addtogroup Embedded_GUI_Library
   * @{
   */
 
-/** @defgroup LcdHal 
+/** @defgroup LcdHal
   * @brief LcdHal main functions
   * @{
-  */ 
+  */
 
 /* External variables --------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
@@ -48,12 +48,12 @@
 
 /* Global variables to handle the right font */
 
-__IO uint16_t LCD_Height = 0;
-__IO uint16_t LCD_Width  = 0;
-static __IO LCD_Direction_TypeDef LCD_Direction = _0_degree; 
-static __IO color_t          GL_TextColor;
-static __IO color_t          GL_BackColor;
-static __IO uint32_t _ClearLen = 0;
+uint16_t LCD_Height = 0;
+uint16_t LCD_Width  = 0;
+static LCD_Direction_TypeDef LCD_Direction = _0_degree;
+static color_t          GL_TextColor;
+static color_t          GL_BackColor;
+
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -65,7 +65,7 @@ static __IO uint32_t _ClearLen = 0;
   *         and GL_DrawPicture functions.
   * @retval None
   */
-void GL_SetTextColor(__IO color_t GL_NewTextColor)
+void GL_SetTextColor(color_t GL_NewTextColor)
 {
   GL_TextColor = GL_NewTextColor;
 }
@@ -87,7 +87,7 @@ color_t GL_GetTextColor()
   *         GL_DrawChar and GL_DrawPicture functions.
   * @retval None
   */
-void GL_SetBackColor(__IO uint32_t GL_NewBackColor)
+void GL_SetBackColor(uint32_t GL_NewBackColor)
 {
   GL_BackColor = GL_NewBackColor;
 }
@@ -99,7 +99,7 @@ void GL_SetBackColor(__IO uint32_t GL_NewBackColor)
   */
 void GL_ClearWindow(color_t Color)
 {
-	lcddrv_WriteDataBlock((uint16_t*)&Color, _ClearLen, 0);
+	//lcddrv_WriteDataBlock((uint16_t*)&Color, _ClearLen, 0);
 }
 
 /**
@@ -109,9 +109,9 @@ void GL_ClearWindow(color_t Color)
   */
 void GL_ClearScreen(color_t Color)
 {
-	GL_SetDisplayWindow(0, 0, LCD_Width, LCD_Height, 0);	
+	GL_SetDisplayWindow(0, 0, LCD_Width, LCD_Height, 0);
 
-	lcddrv_WriteDataBlock((uint16_t*)&Color, _ClearLen, 0);
+	//lcddrv_WriteDataBlock((uint16_t*)&Color, _ClearLen, 0);
 }
 
 /**
@@ -127,30 +127,29 @@ void GL_LCD_DrawCharTransparent(uint16_t Xpos, uint16_t Ypos, const GUI_CHARINFO
   uint32_t line_index = 0, 	pixel_index = 0, cur_line_index = 0;
   uint16_t Xaddress = 0;
   uint16_t Yaddress = 0;
-  __IO uint16_t tmp_color = 0;
+  //uint16_t tmp_color = 0;
 
   Xaddress = Xpos;
   Yaddress = Ypos;
 
 	if (pChar->BytesPerLine == 1)
-	{		
+	{
 		for (line_index = 3; line_index < YSize; line_index++)
-		{						
+		{
 			for (pixel_index = 0; pixel_index <pChar->XSize ; pixel_index++)
 			{
 				if (pChar->pData[line_index] & (0x80 >> pixel_index))
 				{
-					LCD_PutPixel(Xaddress++, Yaddress, GL_TextColor, FirstPixel);
+					LCD_PutPixel(Xaddress, Yaddress, GL_TextColor, FirstPixel);
 				}
-				else
-				{
-					Xaddress++;
-				}
-			}			
+
+                Xaddress++;
+
+			}
 
 			Xaddress = Xpos;
 			Yaddress++;
-		}		
+		}
 	}
 	else if (pChar->BytesPerLine == 2)
 	{
@@ -189,7 +188,7 @@ void GL_LCD_DrawCharTransparent(uint16_t Xpos, uint16_t Ypos, const GUI_CHARINFO
 				{
 					cur_line_index = line_index + 2;
 				}
-				
+
 				if (pChar->pData[cur_line_index] & ( (0x80>>(pixel_index %8) )))
 				{
 					LCD_PutPixel(Xaddress++, Yaddress, GL_TextColor, FirstPixel);
@@ -233,7 +232,7 @@ void GL_LCD_DrawCharTransparent(uint16_t Xpos, uint16_t Ypos, const GUI_CHARINFO
 				{
 					cur_line_index = line_index + 5;
 				}
-				
+
 				if (pChar->pData[cur_line_index] & ( (0x80>>(pixel_index %8) )))
 				{
 					LCD_PutPixel(Xaddress++, Yaddress, GL_TextColor, FirstPixel);
@@ -265,15 +264,15 @@ void GL_LCD_DrawChar(uint16_t Xpos, uint16_t Ypos, const GUI_CHARINFO *pChar, ui
   uint32_t line_index = 0, 	pixel_index = 0, cur_line_index = 0;
   uint16_t Xaddress = 0;
   uint16_t Yaddress = 0;
-  __IO uint16_t tmp_color = 0;
+  //uint16_t tmp_color = 0;
 
   Xaddress = Xpos;
   Yaddress = Ypos;
 
 	if (pChar->BytesPerLine == 1)
-	{		
+	{
 		for (line_index = 3; line_index < YSize; line_index++)
-		{						
+		{
 			for (pixel_index =0 ; pixel_index < pChar->XSize ; pixel_index++)
 			{
 				if (pChar->pData[line_index] & (0x80 >> pixel_index))
@@ -284,11 +283,11 @@ void GL_LCD_DrawChar(uint16_t Xpos, uint16_t Ypos, const GUI_CHARINFO *pChar, ui
 				{
 					LCD_PutPixel(Xaddress++, Yaddress, GL_BackColor, FirstPixel);
 				}
-			}			
+			}
 
 			Xaddress = Xpos;
 			Yaddress++;
-		}		
+		}
 	}
 	else if (pChar->BytesPerLine == 2)
 	{
@@ -327,7 +326,7 @@ void GL_LCD_DrawChar(uint16_t Xpos, uint16_t Ypos, const GUI_CHARINFO *pChar, ui
 				{
 					cur_line_index = line_index + 2;
 				}
-				
+
 				if (pChar->pData[cur_line_index] & ( (0x80>>(pixel_index %8) )))
 				{
 					LCD_PutPixel(Xaddress++, Yaddress, GL_TextColor, FirstPixel);
@@ -335,7 +334,7 @@ void GL_LCD_DrawChar(uint16_t Xpos, uint16_t Ypos, const GUI_CHARINFO *pChar, ui
 				else
 				{
 					LCD_PutPixel(Xaddress++, Yaddress, GL_BackColor, FirstPixel);
-				}				
+				}
 			}
 			Xaddress = Xpos;
 			Yaddress++;
@@ -371,7 +370,7 @@ void GL_LCD_DrawChar(uint16_t Xpos, uint16_t Ypos, const GUI_CHARINFO *pChar, ui
 				{
 					cur_line_index = line_index + 5;
 				}
-				
+
 				if (pChar->pData[cur_line_index] & ( (0x80>>(pixel_index %8) )))
 				{
 					LCD_PutPixel(Xaddress++, Yaddress, GL_TextColor, FirstPixel);
@@ -379,7 +378,7 @@ void GL_LCD_DrawChar(uint16_t Xpos, uint16_t Ypos, const GUI_CHARINFO *pChar, ui
 				else
 				{
 					LCD_PutPixel(Xaddress++, Yaddress, GL_BackColor, FirstPixel);
-				}				
+				}
 			}
 			Xaddress = Xpos;
 			Yaddress++;
@@ -397,16 +396,16 @@ void GL_LCD_DrawChar(uint16_t Xpos, uint16_t Ypos, const GUI_CHARINFO *pChar, ui
   */
 void GL_SetDisplayWindow(uint16_t Xmin, uint16_t Ymin, uint16_t Xmax, uint16_t Ymax, uint32_t Dir)
 {
-    uint32_t h, w, x, y;
-    
-    x = Xmin;
-    y = Ymin;
-    h = Ymax - Ymin;
-    w = Xmax - Xmin;
-	_ClearLen = (w*h);
-    
+//    uint32_t h, w, x, y;
+//
+//    x = Xmin;
+//    y = Ymin;
+//    h = Ymax - Ymin;
+//    w = Xmax - Xmin;
+//	_ClearLen = (w*h);
 
-	lcddrv_SetDisplayWindow(x, y, h, w, Dir);
+
+	//lcddrv_SetDisplayWindow(x, y, h, w, Dir);
 }
 
 /**
@@ -422,7 +421,17 @@ void GL_SetDisplayWindow(uint16_t Xmin, uint16_t Ymin, uint16_t Xmax, uint16_t Y
   */
 void GL_DrawLine(uint16_t Xmin, uint16_t Ymin, uint16_t Length, uint8_t Direction)
 {
-  lcddrv_DrawLine(Xmin, Ymin, Length, Direction, GL_TextColor);
+  //lcddrv_DrawLine(Xmin, Ymin, Length, Direction, GL_TextColor);
+    if(Direction == GL_Vertical) {
+        for(uint32_t i = 0; i<Length; i++) {
+            ili9320_SetPoint(Xmin + i, Ymin, GL_TextColor);
+        }
+    } else {
+
+        for(uint32_t i = 0; i<Length; i++) {
+            ili9320_SetPoint(Xmin, Ymin + i, GL_TextColor);
+        }
+    }
 }
 
 /**
@@ -439,7 +448,7 @@ void GL_LCD_DrawRect(uint8_t Xpos, uint16_t Ypos, uint8_t Height, uint16_t Width
   GL_DrawLine((Xpos + Height), Ypos, Width, GL_Horizontal);
 
   GL_DrawLine(Xpos, Ypos, Height, GL_Vertical);
-  GL_DrawLine(Xpos, (Ypos - Width + 1), Height, GL_Vertical);
+  GL_DrawLine(Xpos, (Ypos + Width + 1), Height, GL_Vertical);
 }
 
 /**
@@ -453,14 +462,14 @@ void GL_BackLightSwitch(uint8_t u8_State)
 {
     static uint8_t curr_state = 0;
     int i;
-    
+
     if(u8_State < curr_state)
     {
 			/* Turning OFF the LCD Backlight */
 			for(i=curr_state; i>u8_State; i--)
 			{
-				vTaskDelay(5);
-				LCD_BackLight(i);
+				//vTaskDelay(5);
+				//LCD_BackLight(i);
 			}
     }
     else
@@ -468,8 +477,8 @@ void GL_BackLightSwitch(uint8_t u8_State)
 			/* Turning ON the LCD Backlight */
 			for(i=curr_state; i<u8_State; i+=2)
 			{
-				vTaskDelay(5);
-				LCD_BackLight(i);
+				//vTaskDelay(5);
+				//LCD_BackLight(i);
 			}
     }
     curr_state = u8_State;
@@ -484,8 +493,8 @@ void GL_LCD_Init(uint32_t Wigth, uint32_t Height)
 {
     LCD_Height = Height;
     LCD_Width  = Wigth;
-    LCD_Direction = _0_degree; 
-    _ClearLen = (uint32_t)(LCD_Height*LCD_Width);
+    LCD_Direction = _0_degree;
+    //_ClearLen = (uint32_t)(LCD_Height*LCD_Width);
 }
 
 /**
@@ -496,7 +505,7 @@ void GL_LCD_Init(uint32_t Wigth, uint32_t Height)
 void GL_LCD_WindowModeDisable(void)
 {
   //GL_SetDisplayWindow(239, 0x13F, 240, 320);
-  //LCD_WriteReg(0x0011,0x6058);    
+  //LCD_WriteReg(0x0011,0x6058);
 }
 
 /**
@@ -519,7 +528,8 @@ void GL_LCD_WindowModeDisable(void)
   */
 void LCD_PutPixel(uint16_t Xpos, uint16_t Ypos, uint16_t Color, uint8_t PixelSpec)
 {
-	lcddrv_PutPixel(Xpos, Ypos, Color);
+	//lcddrv_PutPixel(Xpos, Ypos, Color);
+    ili9320_SetPoint(Xpos, Ypos, Color);
 }
 
 /**
@@ -532,7 +542,7 @@ uint16_t LCD_GetPixel(uint16_t Xpos, uint16_t Ypos)
 {
 
 	return 0;//LCD_GetPoint(Xpos, Ypos);
-}	
+}
 
 
 
@@ -554,19 +564,19 @@ void LCD_Change_Direction(LCD_Direction_TypeDef Direction)
 
   if (LCD_Direction == _0_degree)
   {
-		lcddrv_SetDirection(DirX_LeftToRight, DirY_UpToDown);
+		//lcddrv_SetDirection(DirX_LeftToRight, DirY_UpToDown);
   }
   else if (LCD_Direction == _90_degree)
   {
-		lcddrv_SetDirection(DirX_RightToLeft,DirY_UpToDown);
+		//lcddrv_SetDirection(DirX_RightToLeft,DirY_UpToDown);
   }
   else if (LCD_Direction == _180_degree)
   {
-		lcddrv_SetDirection(DirX_RightToLeft,DirY_DownToUp);
+		//lcddrv_SetDirection(DirX_RightToLeft,DirY_DownToUp);
   }
   else if (LCD_Direction == _270_degree)
   {
-		lcddrv_SetDirection(DirX_LeftToRight,DirY_DownToUp);
+		//lcddrv_SetDirection(DirX_LeftToRight,DirY_DownToUp);
   }
 }
 
@@ -599,20 +609,20 @@ void LCD_DrawColorBMP(uint8_t* ptrBitmap, uint16_t Xmin, uint16_t Ymin, uint16_t
 {
     uint32_t uDataAddr = 0, uBmpSize = 0;
 
-    BmpBuffer32BitRead(&uBmpSize, ptrBitmap + 2);  
-    BmpBuffer32BitRead(&uDataAddr, ptrBitmap + 10);  
+    BmpBuffer32BitRead(&uBmpSize, ptrBitmap + 2);
+    BmpBuffer32BitRead(&uDataAddr, ptrBitmap + 10);
 
     GL_SetDisplayWindow(Xmin, Ymin, Xmax, Ymax, LCD_Direction);
 
-    lcddrv_WriteDataBlock((uint16_t*)((uint32_t)ptrBitmap + uDataAddr), (uBmpSize-uDataAddr)/2, 1);
+    //lcddrv_WriteDataBlock((uint16_t*)((uint32_t)ptrBitmap + uDataAddr), (uBmpSize-uDataAddr)/2, 1);
 }
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

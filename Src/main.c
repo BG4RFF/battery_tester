@@ -49,7 +49,7 @@ static void _debug_file_log(const uint8_t *data, uint32_t size) {
 }
 
 /* -------------------------------------------------------------------------- */
-
+#include "LcdHal.h"
 int main(void)
 {
 
@@ -62,6 +62,17 @@ int main(void)
     ili9320_Clear(Black);
 
     uint32_t x, y;
+
+    GL_LCD_Init(320, 240);
+
+    GL_SetTextColor(GL_Red);
+    GL_LCD_DrawRect(0, 0, 20, 30);
+
+
+    ili9320_Clear(Black);
+
+    FONT_SetFont(FONT_ARIAL_19);
+    GL_DisplayAdjStringLine(50, 50, "Battery testr", 0); bsp_delay_ms(700);
 
     if(bsp_is_button2_pressed()) {
 
@@ -120,7 +131,7 @@ int main(void)
     bsp_delay_ms(500);
 
 
-    ili9320_Clear(Blue);
+    //ili9320_Clear(Blue);
 
     INFO("\r\n-=Battery tester=-\r\n");
 

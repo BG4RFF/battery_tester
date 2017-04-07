@@ -18,37 +18,33 @@
   *
   * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
   ******************************************************************************
-  */ 
+  */
 
 /* Includes ------------------------------------------------------------------*/
 #include "graphicObject.h"
 #include "images.h"
-#include "touchscreen.h"
-#include "TscHal.h"
-#include "JoyHal.h"
+//#include "touchscreen.h"
+//#include "TscHal.h"
+//#include "JoyHal.h"
 #include "LcdHal.h"
 #include "cursor.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "FreeRTOS.h"
-#include "task.h"
-
-#include "data_struct.h"
 
 /** @addtogroup Embedded_GUI_Library
   * @{
   */
 
-/** @defgroup graphicObject 
+/** @defgroup graphicObject
   * @brief graphicObject functions
   * @{
-  */ 
+  */
 
 /* External variables --------------------------------------------------------*/
-extern __IO uint32_t u32_TSXCoordinate;
-extern __IO uint32_t u32_TSYCoordinate;
+extern  uint32_t u32_TSXCoordinate;
+extern  uint32_t u32_TSYCoordinate;
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private defines -----------------------------------------------------------*/
@@ -70,9 +66,10 @@ extern __IO uint32_t u32_TSYCoordinate;
 #define CHECKBOX_SIZE                   20
 #define PAGE_MAX_NUM                    50
 
+
 /**
   * @}
-  */ 
+  */
 /* Private macros ------------------------------------------------------------*/
 /** @defgroup graphicObject_Private_Macros
   * @{
@@ -86,11 +83,11 @@ extern __IO uint32_t u32_TSYCoordinate;
 /**
   * @}
   */
-  
+
 /* Private variables ---------------------------------------------------------*/
 /** @defgroup graphicObject_Private_Variables
   * @{
-  */    
+  */
 GL_Page_TypeDef* PagesList[PAGE_MAX_NUM];
 
 /*Header and bitmap image of cursor's symbol*/
@@ -103,22 +100,21 @@ static uint32_t SlidebarCursorPointer[] =
   };
 
 static uint16_t PageCount = 0;
-static __IO uint32_t TimingDelay;
 
-__IO uint32_t vu32_gTimeOutCount = 0;
-__IO uint8_t vu8_gTouchEnable = 1;
-__IO uint8_t vu8_gSleepState = 0;
+ uint32_t vu32_gTimeOutCount = 0;
+ uint8_t vu8_gTouchEnable = 1;
+ uint8_t vu8_gSleepState = 0;
 uint8_t ValidTouchDetected = 0;
-static uint32_t _light_timeout_off = 10000;  
+static uint32_t _light_timeout_off = 10000;
 static uint32_t _light_deep_off = 10;
 static uint32_t _light_deep_on = 100;
 /* Set to 0 to disable The Automatic Backlight Switch Off */
-__IO uint8_t vu8_gPowerSaveOption = 1;
+ uint8_t vu8_gPowerSaveOption = 1;
 
 /* touch_done global variable is used to handle the Touch event/interrupt.
    touch_done must be defined as external variable in main application using this library */
-__IO uint8_t touch_done = 0;
-__IO uint8_t joy_done = 0;
+ uint8_t touch_done = 0;
+ uint8_t joy_done = 0;
 
 /**
   * @}
@@ -445,12 +441,12 @@ static void GL_SetStringFieldValue(uint8_t * dBuf, uint8_t * sBuf, uint32_t MaxL
   * @retval pPageControlObj - The pointer to the graphic object
   */
 GL_PageControls_TypeDef* NewLabel (
-    uint16_t ID, 
-    const uint8_t* label, 
-    GL_Direction direction, 
-    font_list_t Font, 
-    __IO uint32_t FontColour, 
-    __IO uint32_t BackgroundColour)
+    uint16_t ID,
+    const uint8_t* label,
+    GL_Direction direction,
+    font_list_t Font,
+     uint32_t FontColour,
+     uint32_t BackgroundColour)
 {
   GL_Label_TypeDef *pControlObj = NULL;
   GL_PageControls_TypeDef * pPageControlObj = NULL;
@@ -822,7 +818,7 @@ GL_PageControls_TypeDef* NewIconBtn (uint16_t ID, const uint8_t* Image_PTR, cons
   {
     pControlObj->ID = ID;
     pControlObj->ImagePTR = (uint8_t*)Image_PTR;
-    pControlObj->ImagePressPTR = (uint8_t*)Image_Press_PTR;		
+    pControlObj->ImagePressPTR = (uint8_t*)Image_Press_PTR;
     pControlObj->ImageWidth = Width;
     pControlObj->ImageHeight = Height;
     pControlObj->EventHandler = pEventHandler;
@@ -856,14 +852,14 @@ GL_PageControls_TypeDef* NewIconBtn (uint16_t ID, const uint8_t* Image_PTR, cons
   * @retval GL_PageControls_TypeDef* - The created Object pointer
   */
 GL_PageControls_TypeDef* NewIconBtnText (
-			uint16_t ID, 
+			uint16_t ID,
 			const uint8_t* Image_PTR,
 			const uint8_t* Image_Press_PTR,
-			const uint8_t* pText, 
-			const font_list_t Font, 
-			const uint16_t FontColour, 
-			uint16_t Width, 
-			uint8_t Height, 
+			const uint8_t* pText,
+			const font_list_t Font,
+			const uint16_t FontColour,
+			uint16_t Width,
+			uint8_t Height,
 			void (*pEventHandler)(void))
 {
   GL_IconBtnText_TypeDef *pControlObj = NULL;
@@ -874,7 +870,7 @@ GL_PageControls_TypeDef* NewIconBtnText (
   {
     pControlObj->ID = ID;
     pControlObj->ImagePTR = (uint8_t*)Image_PTR;
-    pControlObj->ImagePressPTR = (uint8_t*)Image_Press_PTR;		
+    pControlObj->ImagePressPTR = (uint8_t*)Image_Press_PTR;
     pControlObj->ImageWidth = Width;
     pControlObj->ImageHeight = Height;
 		pControlObj->pText = pText;
@@ -910,13 +906,13 @@ GL_PageControls_TypeDef* NewIconBtnText (
   * @retval GL_PageControls_TypeDef* - The created Object pointer
   */
 GL_PageControls_TypeDef* NewIconBtnPushPullText (
-			uint16_t ID, 
+			uint16_t ID,
 			const uint8_t* Image_PTR,
 			const uint8_t* Image_Press_PTR,
-			const uint8_t* pText, 
-			const uint16_t PushPullState, 
-			uint16_t Width, 
-			uint8_t Height, 
+			const uint8_t* pText,
+			const uint16_t PushPullState,
+			uint16_t Width,
+			uint8_t Height,
 			void (*pEventHandler)(void))
 {
   GL_IconBtnPushPullText_TypeDef *pControlObj = NULL;
@@ -927,7 +923,7 @@ GL_PageControls_TypeDef* NewIconBtnPushPullText (
   {
     pControlObj->ID = ID;
     pControlObj->ImagePTR = (uint8_t*)Image_PTR;
-    pControlObj->ImagePressPTR = (uint8_t*)Image_Press_PTR;		
+    pControlObj->ImagePressPTR = (uint8_t*)Image_Press_PTR;
     pControlObj->ImageWidth = Width;
     pControlObj->ImageHeight = Height;
 		pControlObj->pText = pText;
@@ -1029,7 +1025,7 @@ GL_PageControls_TypeDef* NewSlidebar (uint16_t ID, const uint8_t* label, GL_Dire
   if (pControlObj)
   {
     pControlObj->ID = ID;
-    
+
 #ifndef USE_2D_OBJECTS
     pControlObj->ImageCursorPTR      = (uint8_t*)SlidebarCursor;
     pControlObj->ImageBackgroundPTR  = (uint8_t*)SlidebarCentral;
@@ -1189,7 +1185,7 @@ GL_PageControls_TypeDef* NewGraphChart ( uint16_t ID, const uint8_t* labelX, con
   *     @arg  FONT_SMALL
   * @retval pPageControlObj - The pointer to the graphic object
   */
-GL_PageControls_TypeDef* NewLine (uint32_t ID, __IO uint32_t Len, GL_Direction direction, __IO uint16_t Colour)
+GL_PageControls_TypeDef* NewLine (uint32_t ID,  uint32_t Len, GL_Direction direction,  uint16_t Colour)
 {
   GL_Line_TypeDef *pControlObj = NULL;
   GL_PageControls_TypeDef * pPageControlObj = NULL;
@@ -1202,7 +1198,7 @@ GL_PageControls_TypeDef* NewLine (uint32_t ID, __IO uint32_t Len, GL_Direction d
     pControlObj->Colour = Colour;
     pControlObj->Direction = direction;
 		pControlObj->Len  = Len;
-		
+
     /* Create the Label object */
     Create_Line(pControlObj);
 
@@ -1233,14 +1229,14 @@ GL_PageControls_TypeDef* NewLine (uint32_t ID, __IO uint32_t Len, GL_Direction d
   * @retval pPageControlObj - The pointer to the graphic object
   */
 GL_PageControls_TypeDef* NewCustomBtn (
-			uint16_t ID, 
+			uint16_t ID,
 			const uint32_t Color,
 			const uint32_t ColorPress,
-			const uint8_t* pText, 
-			const font_list_t Font, 
-			const uint16_t FontColour, 
-			uint16_t Width, 
-			uint8_t Height, 
+			const uint8_t* pText,
+			const font_list_t Font,
+			const uint16_t FontColour,
+			uint16_t Width,
+			uint8_t Height,
 			void (*pEventHandler)(void))
 {
   GL_CustomBtn_TypeDef *pControlObj = NULL;
@@ -1251,14 +1247,14 @@ GL_PageControls_TypeDef* NewCustomBtn (
   {
     pControlObj->ID = ID;
     pControlObj->Color = Color;
-    pControlObj->ColorPress = ColorPress;		
+    pControlObj->ColorPress = ColorPress;
     pControlObj->Width = Width;
     pControlObj->Height = Height;
 		pControlObj->pText = pText;
     pControlObj->EventHandler = pEventHandler;
 		pControlObj->Font = Font;
     pControlObj->FontColour = FontColour;
-		
+
     /* Create the Label object */
     Create_CustomBtn(pControlObj);
 
@@ -1287,7 +1283,7 @@ GL_PageControls_TypeDef* NewCustomBtn (
   *     @arg  FONT_SMALL
   * @retval pPageControlObj - The pointer to the graphic object
   */
-GL_PageControls_TypeDef* NewRect (uint16_t ID, __IO uint16_t LenX, __IO uint16_t LenY, __IO uint16_t Colour)
+GL_PageControls_TypeDef* NewRect (uint16_t ID,  uint16_t LenX,  uint16_t LenY,  uint16_t Colour)
 {
   GL_Rect_TypeDef *pControlObj = NULL;
   GL_PageControls_TypeDef * pPageControlObj = NULL;
@@ -1300,7 +1296,7 @@ GL_PageControls_TypeDef* NewRect (uint16_t ID, __IO uint16_t LenX, __IO uint16_t
     pControlObj->Colour = Colour;
 		pControlObj->LenX  = LenX;
 		pControlObj->LenY  = LenY;
-		
+
     /* Create the Label object */
     Create_Rect(pControlObj);
 
@@ -1331,7 +1327,7 @@ GL_PageControls_TypeDef* NewRect (uint16_t ID, __IO uint16_t LenX, __IO uint16_t
   *     @arg  FONT_SMALL
   * @retval pPageControlObj - The pointer to the graphic object
   */
-GL_PageControls_TypeDef* NewProgressBar (uint16_t ID, __IO uint16_t Len, __IO uint16_t Value, GL_Direction direction, __IO uint16_t Colour)
+GL_PageControls_TypeDef* NewProgressBar (uint16_t ID,  uint16_t Len,  uint16_t Value, GL_Direction direction,  uint16_t Colour)
 {
   GL_ProgressBar_TypeDef *pControlObj = NULL;
   GL_PageControls_TypeDef * pPageControlObj = NULL;
@@ -1345,7 +1341,7 @@ GL_PageControls_TypeDef* NewProgressBar (uint16_t ID, __IO uint16_t Len, __IO ui
     pControlObj->Direction = direction;
 		pControlObj->Len  = Len;
 		pControlObj->Value= Value;
-		
+
     /* Create the Label object */
     Create_ProgressBar(pControlObj);
 
@@ -1548,8 +1544,8 @@ GL_ErrStatus AddPageControlObj (uint32_t PosX, uint32_t PosY, GL_PageControls_Ty
 				objPTR->SetObjVisible = SetRectVisible;
 				objPTR->ID = pTmp->ID;
 				objCoordinates.MaxX = PosX; //+ pTmp->LenX;
-				objCoordinates.MaxY = PosY;// + pTmp->LenY;				
-			}			
+				objCoordinates.MaxY = PosY;// + pTmp->LenY;
+			}
 			else if (objPTR->objType == GL_PROGRESSBAR)
 			{
 				GL_ProgressBar_TypeDef* pTmp = ((GL_ProgressBar_TypeDef*)(objPTR->objPTR));
@@ -1615,7 +1611,7 @@ GL_ErrStatus Set_Label( GL_Page_TypeDef* pPage, uint16_t ID, const uint8_t* labe
       index++;
     }
   }
-	
+
   return GL_ERROR;
 }
 
@@ -1661,7 +1657,7 @@ GL_ErrStatus Get_Label ( GL_Page_TypeDef* pPage, uint16_t ID, uint8_t* label )
   * @param  label: Text on a Label Object
   * @retval GL_ErrStatus - GL_OK if successful, GL_ERROR otherwise
   */
-GL_ErrStatus Set_Label_Colour( GL_Page_TypeDef* pPage, uint16_t ID,__IO uint32_t FontColour, __IO uint32_t BackgroundColour )
+GL_ErrStatus Set_Label_Colour( GL_Page_TypeDef* pPage, uint16_t ID, uint32_t FontColour,  uint32_t BackgroundColour )
 {
   GL_Label_TypeDef* pTmp;
   uint32_t index = 0;
@@ -1732,9 +1728,9 @@ uint8_t Get_SlidebarValue ( GL_Page_TypeDef* pPage, uint16_t ID )
   */
 GL_ErrStatus CustomBtn_SetText (
 			GL_Page_TypeDef* pPage,
-			uint16_t ID, 
-			const uint8_t* pText, 
-			const font_list_t Font, 
+			uint16_t ID,
+			const uint8_t* pText,
+			const font_list_t Font,
 			const uint16_t FontColour)
 {
   GL_CustomBtn_TypeDef* pTmp;
@@ -2107,9 +2103,9 @@ GL_ErrStatus Create_PageObj (GL_Page_TypeDef* pThis, void (*TimerHandler)())
     pThis->GetObjCoordinates = GetObjCoordinates;
     pThis->ControlCount      = 0;
 		pThis->TimerHandler      = TimerHandler;
-  
+
     memset(pThis->PageControls,0x00,sizeof(GL_PageControls_TypeDef*)*MAX_CTRL_X_PAGE);
-  
+
     /* pThis->GetObjSize = GetObjSize; */
     pThis->SetPage(pThis, GL_FALSE);
     if ( PageCount < PAGE_MAX_NUM )
@@ -2560,7 +2556,7 @@ static GL_ErrStatus SetLabelVisible(GL_PageControls_TypeDef* pTmp, GL_Coordinate
         LCD_Change_Direction(_0_degree);
       }
 
-      FONT_SetFont(pThis->Font);	
+      FONT_SetFont(pThis->Font);
 		}
   }
 
@@ -2609,14 +2605,14 @@ static GL_ErrStatus SetButtonVisible(GL_PageControls_TypeDef* pTmp, GL_Coordinat
 #else
     GL_SetTextColor(GL_Black);
     if (LabelLength>MAX_BUTTON_LABEL_LENGTH)
-      GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX), 
-                             (uint16_t)(objCoordinates.MaxX-((MAX_BUTTON_LABEL_LENGTH-1)*FONT_LENGTH)), 
-                             (uint16_t)(objCoordinates.MaxY), 
+      GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX),
+                             (uint16_t)(objCoordinates.MaxX-((MAX_BUTTON_LABEL_LENGTH-1)*FONT_LENGTH)),
+                             (uint16_t)(objCoordinates.MaxY),
                              (uint16_t)(objCoordinates.MinY), GL_Blue);
     else
-      GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX), 
-                             (uint16_t)(objCoordinates.MaxX-((LabelLength+1)*FONT_LENGTH)), 
-                             (uint16_t)(objCoordinates.MaxY), 
+      GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX),
+                             (uint16_t)(objCoordinates.MaxX-((LabelLength+1)*FONT_LENGTH)),
+                             (uint16_t)(objCoordinates.MaxY),
                              (uint16_t)(objCoordinates.MinY), GL_Blue);
 #endif
   }
@@ -2638,14 +2634,14 @@ static GL_ErrStatus SetButtonVisible(GL_PageControls_TypeDef* pTmp, GL_Coordinat
 #else
     GL_SetTextColor(GL_Black);
     if (LabelLength>MAX_BUTTON_LABEL_LENGTH)
-      GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX), 
-                             (uint16_t)(objCoordinates.MaxX-((MAX_BUTTON_LABEL_LENGTH-1)*FONT_LENGTH)), 
-                             (uint16_t)(objCoordinates.MaxY), 
+      GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX),
+                             (uint16_t)(objCoordinates.MaxX-((MAX_BUTTON_LABEL_LENGTH-1)*FONT_LENGTH)),
+                             (uint16_t)(objCoordinates.MaxY),
                              (uint16_t)(objCoordinates.MinY), GL_Grey);
     else
-      GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX), 
-                             (uint16_t)(objCoordinates.MaxX-((LabelLength+1)*FONT_LENGTH)), 
-                             (uint16_t)(objCoordinates.MaxY), 
+      GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX),
+                             (uint16_t)(objCoordinates.MaxX-((LabelLength+1)*FONT_LENGTH)),
+                             (uint16_t)(objCoordinates.MaxY),
                              (uint16_t)(objCoordinates.MinY), GL_Grey);
 #endif
   }
@@ -2762,14 +2758,14 @@ static GL_ErrStatus SetSwitchVisible(GL_PageControls_TypeDef* pTmp, GL_Coordinat
 #else
     GL_SetTextColor(GL_Black);
     if (maxLabelLength>MAX_SWITCH_LABEL_LENGTH)
-      GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX), 
-                             (uint16_t)(objCoordinates.MaxX-((MAX_SWITCH_LABEL_LENGTH-1)*FONT_LENGTH)), 
-                             (uint16_t)(objCoordinates.MaxY), 
+      GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX),
+                             (uint16_t)(objCoordinates.MaxX-((MAX_SWITCH_LABEL_LENGTH-1)*FONT_LENGTH)),
+                             (uint16_t)(objCoordinates.MaxY),
                              (uint16_t)(objCoordinates.MinY), GL_Blue);
     else
-      GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX), 
-                             (uint16_t)(objCoordinates.MaxX-((maxLabelLength+1)*FONT_LENGTH)), 
-                             (uint16_t)(objCoordinates.MaxY), 
+      GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX),
+                             (uint16_t)(objCoordinates.MaxX-((maxLabelLength+1)*FONT_LENGTH)),
+                             (uint16_t)(objCoordinates.MaxY),
                              (uint16_t)(objCoordinates.MinY), GL_Blue);
 #endif
   }
@@ -2792,33 +2788,33 @@ static GL_ErrStatus SetSwitchVisible(GL_PageControls_TypeDef* pTmp, GL_Coordinat
 #else
     GL_SetTextColor(GL_Black);
     if (maxLabelLength>MAX_SWITCH_LABEL_LENGTH)
-      GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX), 
-                             (uint16_t)(objCoordinates.MaxX-((MAX_SWITCH_LABEL_LENGTH-1)*FONT_LENGTH)), 
-                             (uint16_t)(objCoordinates.MaxY), 
+      GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX),
+                             (uint16_t)(objCoordinates.MaxX-((MAX_SWITCH_LABEL_LENGTH-1)*FONT_LENGTH)),
+                             (uint16_t)(objCoordinates.MaxY),
                              (uint16_t)(objCoordinates.MinY), GL_Grey);
     else
-      GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX), 
-                             (uint16_t)(objCoordinates.MaxX-((maxLabelLength+1)*FONT_LENGTH)), 
-                             (uint16_t)(objCoordinates.MaxY), 
+      GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX),
+                             (uint16_t)(objCoordinates.MaxX-((maxLabelLength+1)*FONT_LENGTH)),
+                             (uint16_t)(objCoordinates.MaxY),
                              (uint16_t)(objCoordinates.MinY), GL_Grey);
 #endif
   }
-  
+
 #ifndef USE_2D_OBJECTS
-  GL_DrawButtonBMP( (uint16_t)(objCoordinates.MaxX), 
-                    (uint16_t)(objCoordinates.MaxX - BUTTON_SLICE_LENGTH), 
-                    (uint16_t)(objCoordinates.MaxY), 
+  GL_DrawButtonBMP( (uint16_t)(objCoordinates.MaxX),
+                    (uint16_t)(objCoordinates.MaxX - BUTTON_SLICE_LENGTH),
+                    (uint16_t)(objCoordinates.MaxY),
                     (uint16_t)(objCoordinates.MinY), ptrBitmapLeft );
   for ( ; n < maxLabelLength && n < MAX_SWITCH_LABEL_LENGTH; n++)
   {
-    GL_DrawButtonBMP( (uint16_t)(objCoordinates.MaxX - (n*BUTTON_SLICE_LENGTH)), 
-                      (uint16_t)(objCoordinates.MaxX - ((n + 1)*BUTTON_SLICE_LENGTH)), 
-                      (uint16_t)(objCoordinates.MaxY), 
+    GL_DrawButtonBMP( (uint16_t)(objCoordinates.MaxX - (n*BUTTON_SLICE_LENGTH)),
+                      (uint16_t)(objCoordinates.MaxX - ((n + 1)*BUTTON_SLICE_LENGTH)),
+                      (uint16_t)(objCoordinates.MaxY),
                       (uint16_t)(objCoordinates.MinY), ptrBitmapCenter );
   }
-  GL_DrawButtonBMP( (uint16_t)(objCoordinates.MaxX - (n*BUTTON_SLICE_LENGTH)), 
-                    (uint16_t)(objCoordinates.MaxX - ((n + 1)*BUTTON_SLICE_LENGTH)), 
-                    (uint16_t)(objCoordinates.MaxY), 
+  GL_DrawButtonBMP( (uint16_t)(objCoordinates.MaxX - (n*BUTTON_SLICE_LENGTH)),
+                    (uint16_t)(objCoordinates.MaxX - ((n + 1)*BUTTON_SLICE_LENGTH)),
+                    (uint16_t)(objCoordinates.MaxY),
                     (uint16_t)(objCoordinates.MinY), ptrBitmapRight );
 #endif
   GL_SetTextColor(GL_White);
@@ -2872,12 +2868,12 @@ static GL_ErrStatus SetRadioButtonVisible(GL_PageControls_TypeDef* pTmp, GL_Coor
 #else
     GL_SetTextColor( GL_Black );
     GL_DrawFilledCircle( (uint16_t)(objCoordinates.MaxX), (uint16_t)(objCoordinates.MaxY), RADIO_BUTTON_RADIUS, GL_White );
-    GL_DrawFilledCircle( (uint16_t)(objCoordinates.MaxX-(RADIO_BUTTON_RADIUS/2 -1)), 
-                         (uint16_t)(objCoordinates.MaxY-(RADIO_BUTTON_RADIUS/2 -1)), 
+    GL_DrawFilledCircle( (uint16_t)(objCoordinates.MaxX-(RADIO_BUTTON_RADIUS/2 -1)),
+                         (uint16_t)(objCoordinates.MaxY-(RADIO_BUTTON_RADIUS/2 -1)),
                          RADIO_BUTTON_RADIUS/2 +2, GL_Black);
-    GL_DrawFilledRectangle( (uint16_t)(objCoordinates.MaxX-(RADIO_BUTTON_RADIUS/2)-2), 
-                            (uint16_t)(objCoordinates.MinX+(RADIO_BUTTON_RADIUS/2)+4), 
-                            (uint16_t)(objCoordinates.MaxY-(RADIO_BUTTON_RADIUS/2)-2), 
+    GL_DrawFilledRectangle( (uint16_t)(objCoordinates.MaxX-(RADIO_BUTTON_RADIUS/2)-2),
+                            (uint16_t)(objCoordinates.MinX+(RADIO_BUTTON_RADIUS/2)+4),
+                            (uint16_t)(objCoordinates.MaxY-(RADIO_BUTTON_RADIUS/2)-2),
                             (uint16_t)(objCoordinates.MinY+(RADIO_BUTTON_RADIUS/2)+4), GL_Black);
 #endif
   }
@@ -2888,13 +2884,13 @@ static GL_ErrStatus SetRadioButtonVisible(GL_PageControls_TypeDef* pTmp, GL_Coor
 #else
     GL_SetTextColor( GL_Black );
     GL_DrawFilledCircle((uint16_t)(objCoordinates.MaxX), (uint16_t)(objCoordinates.MaxY), RADIO_BUTTON_RADIUS, GL_White);
-    GL_DrawFilledRectangle( (uint16_t)(objCoordinates.MaxX-(RADIO_BUTTON_RADIUS/2)-2), 
-                               (uint16_t)(objCoordinates.MinX+(RADIO_BUTTON_RADIUS/2)+4), 
-                               (uint16_t)(objCoordinates.MaxY-(RADIO_BUTTON_RADIUS/2)-2), 
+    GL_DrawFilledRectangle( (uint16_t)(objCoordinates.MaxX-(RADIO_BUTTON_RADIUS/2)-2),
+                               (uint16_t)(objCoordinates.MinX+(RADIO_BUTTON_RADIUS/2)+4),
+                               (uint16_t)(objCoordinates.MaxY-(RADIO_BUTTON_RADIUS/2)-2),
                                (uint16_t)(objCoordinates.MinY+(RADIO_BUTTON_RADIUS/2)+4), GL_White);
 #endif
   }
-  
+
 #ifndef USE_2D_OBJECTS
   GL_DrawButtonBMP( (uint16_t)(objCoordinates.MaxX),
                     (uint16_t)(objCoordinates.MinX),
@@ -2956,9 +2952,9 @@ static GL_ErrStatus SetComboBoxVisible(GL_PageControls_TypeDef* pTmp, GL_Coordin
                     ptrBitmap );
 #else
   GL_SetTextColor(GL_Black);
-  GL_DrawFilledRectangle( (uint16_t)(objCoordinates.MaxX), 
-                          (uint16_t)(objCoordinates.MaxX-COMBOBOX_SIZE), 
-                          (uint16_t)(objCoordinates.MaxY), 
+  GL_DrawFilledRectangle( (uint16_t)(objCoordinates.MaxX),
+                          (uint16_t)(objCoordinates.MaxX-COMBOBOX_SIZE),
+                          (uint16_t)(objCoordinates.MaxY),
                           (uint16_t)(objCoordinates.MinY+1), GL_Grey);
 #endif
 
@@ -2973,9 +2969,9 @@ static GL_ErrStatus SetComboBoxVisible(GL_PageControls_TypeDef* pTmp, GL_Coordin
     for (; index < pThis->ComboOptionCount && pThis->ComboOptions[index]->IsActive == GL_FALSE; index++)
     {}
 
-    GL_DrawFilledRectangle( (uint16_t)(objCoordinates.MinX-COMBOBOX_SIZE), 
-                            (uint16_t)(objCoordinates.MinX -(COMBOBOX_SIZE+(MAX_COMBO_LABEL_LENGTH-2)*FONT_LENGTH)), 
-                            (uint16_t)(objCoordinates.MaxY), 
+    GL_DrawFilledRectangle( (uint16_t)(objCoordinates.MinX-COMBOBOX_SIZE),
+                            (uint16_t)(objCoordinates.MinX -(COMBOBOX_SIZE+(MAX_COMBO_LABEL_LENGTH-2)*FONT_LENGTH)),
+                            (uint16_t)(objCoordinates.MaxY),
                             (uint16_t)(objCoordinates.MinY+1), GL_White );
     FONT_SetFont(FONT_DEFAULT);
     GL_SetTextColor(GL_Blue);
@@ -2996,12 +2992,12 @@ static GL_ErrStatus SetComboBoxVisible(GL_PageControls_TypeDef* pTmp, GL_Coordin
     GL_ComboBoxGrp_TypeDef* pTmp = (GL_ComboBoxGrp_TypeDef*)(pThis->PrimaryComboOpt->objPTR);
     for (; index < pTmp->ComboOptionCount-1 && pTmp->ComboOptions[index]->IsActive == GL_FALSE; index++)
     {}
-    
-    GL_DrawFilledRectangle( (uint16_t)(objCoordinates.MinX), 
-                            (uint16_t)(objCoordinates.MinX -((MAX_COMBO_LABEL_LENGTH-2)*FONT_LENGTH)), 
-                            (uint16_t)(objCoordinates.MaxY), 
-                            (uint16_t)(objCoordinates.MinY+1), 
-                            WHITE );
+
+    GL_DrawFilledRectangle( (uint16_t)(objCoordinates.MinX),
+                            (uint16_t)(objCoordinates.MinX -((MAX_COMBO_LABEL_LENGTH-2)*FONT_LENGTH)),
+                            (uint16_t)(objCoordinates.MaxY),
+                            (uint16_t)(objCoordinates.MinY+1),
+                            GL_White );
     FONT_SetFont(FONT_DEFAULT);
     GL_SetTextColor(GL_Blue);
     if ( pTmp->ComboOptionCount > 0)
@@ -3014,8 +3010,8 @@ static GL_ErrStatus SetComboBoxVisible(GL_PageControls_TypeDef* pTmp, GL_Coordin
   }
 
 //  FONT_SetFont(GL_FONT_BIG);
-  GL_SetBackColor(WHITE);
-  GL_SetTextColor(BLUE);
+  GL_SetBackColor(GL_White);
+  GL_SetTextColor(GL_Blue);
 
   return GL_OK;
 }
@@ -3047,14 +3043,14 @@ static GL_ErrStatus SetCheckboxVisible(GL_PageControls_TypeDef* pTmp, GL_Coordin
     ptrBitmap = pThis->ImageUnCheckedPTR;
 #else
     GL_SetTextColor(GL_Black);
-    GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX), 
-                           (uint16_t)(objCoordinates.MinX), 
-                           (uint16_t)(objCoordinates.MaxY), 
+    GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX),
+                           (uint16_t)(objCoordinates.MinX),
+                           (uint16_t)(objCoordinates.MaxY),
                            (uint16_t)(objCoordinates.MinY), GL_White);
     GL_SetTextColor(GL_Black);
-    GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX-1), 
-                           (uint16_t)(objCoordinates.MinX+1), 
-                           (uint16_t)(objCoordinates.MaxY-1), 
+    GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX-1),
+                           (uint16_t)(objCoordinates.MinX+1),
+                           (uint16_t)(objCoordinates.MaxY-1),
                            (uint16_t)(objCoordinates.MinY+1), GL_White);
 #endif
   }
@@ -3064,14 +3060,14 @@ static GL_ErrStatus SetCheckboxVisible(GL_PageControls_TypeDef* pTmp, GL_Coordin
     ptrBitmap = pThis->ImageCheckedPTR;
 #else
     GL_SetTextColor(GL_Black);
-    GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX), 
-                           (uint16_t)(objCoordinates.MinX), 
-                           (uint16_t)(objCoordinates.MaxY), 
+    GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX),
+                           (uint16_t)(objCoordinates.MinX),
+                           (uint16_t)(objCoordinates.MaxY),
                            (uint16_t)(objCoordinates.MinY), GL_White);
     GL_SetTextColor(GL_Black);
-    GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX-1), 
-                           (uint16_t)(objCoordinates.MinX+1), 
-                           (uint16_t)(objCoordinates.MaxY-1), 
+    GL_DrawFilledRectangle((uint16_t)(objCoordinates.MaxX-1),
+                           (uint16_t)(objCoordinates.MinX+1),
+                           (uint16_t)(objCoordinates.MaxY-1),
                            (uint16_t)(objCoordinates.MinY+1), GL_White);
     GL_SetTextColor(GL_Black);
     GL_DisplayAdjStringLine( (uint16_t)(objCoordinates.MaxY)-19, (uint16_t)(objCoordinates.MaxX-2), "X", GL_TRUE);
@@ -3165,7 +3161,7 @@ static GL_ErrStatus SetIconBtnVisible(GL_PageControls_TypeDef* pTmp, GL_Coordina
                     (uint16_t)(objCoordinates.MinX),
                     (uint16_t)(objCoordinates.MaxY),
                     (uint16_t)(objCoordinates.MinY),
-                    (uint8_t*)pThis->ImagePressPTR );	
+                    (uint8_t*)pThis->ImagePressPTR );
 		}
 	}
   return GL_OK;
@@ -3181,13 +3177,13 @@ static GL_ErrStatus SetIconBtnTextVisible(GL_PageControls_TypeDef* pTmp, GL_Coor
 {
   GL_IconBtnText_TypeDef* pThis = (GL_IconBtnText_TypeDef*)(pTmp->objPTR);
 	uint8_t temp_string[16];
-	uint32_t str_pix_size, 
-		n_pos = 0, 
+	uint32_t str_pix_size,
+		n_pos = 0,
 		total_pos = 0,
-		i = 0, 
-		offset=0, 
+		i = 0,
+		offset=0,
 		line_count=0;
-	
+
   if (!pThis)
   {
     return GL_ERROR;
@@ -3210,15 +3206,15 @@ static GL_ErrStatus SetIconBtnTextVisible(GL_PageControls_TypeDef* pTmp, GL_Coor
                     (uint16_t)(objCoordinates.MinY),
                     (uint16_t)(objCoordinates.MaxX),
                     (uint16_t)(objCoordinates.MaxY),
-                    (uint8_t*)pThis->ImagePressPTR );	
+                    (uint8_t*)pThis->ImagePressPTR );
 		}
 	}
-	
+
 	if (pThis->pText)
 	{
 		FONT_SetFont(pThis->Font);
-		GL_SetTextColor(pThis->FontColour);		
-		
+		GL_SetTextColor(pThis->FontColour);
+
 		/* Loking for newline */
 		while(pThis->pText[i] != 0 )
 		{
@@ -3227,21 +3223,21 @@ static GL_ErrStatus SetIconBtnTextVisible(GL_PageControls_TypeDef* pTmp, GL_Coor
 				line_count++;
 			}
 		}
-		
+
 		if (line_count >= 2)
 		{
 			line_count = 2;
-			offset = 2;		
+			offset = 2;
 		}
 		else if (line_count == 1)
 		{
-			offset = 10;		
+			offset = 10;
 		}
 		else
 		{
 			offset = 18;
 		}
-		
+
 		for (i=0;i<(line_count+1);i++)
 		{
 			n_pos = 0;
@@ -3253,21 +3249,21 @@ static GL_ErrStatus SetIconBtnTextVisible(GL_PageControls_TypeDef* pTmp, GL_Coor
 			temp_string[n_pos] = 0;
 			total_pos += (n_pos + 1);
 			str_pix_size = FONT_GetLineLenPix(pThis->Font,(uint8_t*)temp_string);
-			
+
 			GL_DisplayAdjStringLine(
 				objCoordinates.MinX + ((objCoordinates.MaxX - objCoordinates.MinX) - str_pix_size)/2,
-				objCoordinates.MinY + 16*i+offset,		
+				objCoordinates.MinY + 16*i+offset,
         (uint8_t*)temp_string,
         GL_TRUE);
-			
+
 			if(n_pos == 15)
 			{
 				break;
 			}
 		}
-//		FONT_SetFont(GL_FONT_BIG);		
+//		FONT_SetFont(GL_FONT_BIG);
 	}
-	
+
   return GL_OK;
 }
 
@@ -3282,15 +3278,15 @@ static GL_ErrStatus SetCustomBtnVisible(GL_PageControls_TypeDef* pTmp, GL_Coordi
 {
   GL_CustomBtn_TypeDef* pThis = (GL_CustomBtn_TypeDef*)(pTmp->objPTR);
 	uint8_t temp_string[16];
-	uint32_t str_pix_size, 
-		n_pos = 0, 
+	uint32_t str_pix_size,
+		n_pos = 0,
 		total_pos = 0,
-		i = 0, 
-		offset=0, 
+		i = 0,
+		offset=0,
 		line_count=1,
         line_count_max = 0,
         FontHeight = 0;
-	
+
   if (!pThis)
   {
     return GL_ERROR;
@@ -3298,9 +3294,9 @@ static GL_ErrStatus SetCustomBtnVisible(GL_PageControls_TypeDef* pTmp, GL_Coordi
   pThis->Control_Visible = GL_TRUE;
 
 	GL_SetDisplayWindow(
-		(uint16_t)objCoordinates.MinX, 
-		(uint16_t)objCoordinates.MinY + 3, 
-		objCoordinates.MaxX, 
+		(uint16_t)objCoordinates.MinX,
+		(uint16_t)objCoordinates.MinY + 3,
+		objCoordinates.MaxX,
 		objCoordinates.MaxY - 2, 0);
 
 	if (!pThis->isObjectTouched)
@@ -3309,25 +3305,25 @@ static GL_ErrStatus SetCustomBtnVisible(GL_PageControls_TypeDef* pTmp, GL_Coordi
 		GL_SetTextColor(pThis->Color);
 	}
 	else
-	{		
+	{
 		GL_ClearWindow(pThis->ColorPress);
 		GL_SetTextColor(pThis->ColorPress);
 	}
-		
+
 	GL_DrawLine(objCoordinates.MinX + 2, objCoordinates.MinY, pThis->Width - 4, GL_Horizontal);
 	GL_DrawLine(objCoordinates.MinX + 1, objCoordinates.MinY + 1, pThis->Width - 2, GL_Horizontal);
 	GL_DrawLine(objCoordinates.MinX + 1, objCoordinates.MinY + 2, pThis->Width - 2, GL_Horizontal);
 	GL_DrawLine(objCoordinates.MinX + 1, objCoordinates.MaxY - 2, pThis->Width - 2, GL_Horizontal);
 	GL_DrawLine(objCoordinates.MinX + 1, objCoordinates.MaxY - 1, pThis->Width - 2, GL_Horizontal);
 	GL_DrawLine(objCoordinates.MinX + 2, objCoordinates.MaxY, pThis->Width - 4, GL_Horizontal);
-	
-	
-	/* Print text */	
+
+
+	/* Print text */
 	if (pThis->pText)
 	{
 		FONT_SetFont(pThis->Font);
-		GL_SetTextColor(pThis->FontColour);		
-		
+		GL_SetTextColor(pThis->FontColour);
+
 		/* Loking for newline */
 		while(pThis->pText[i] != 0 )
 		{
@@ -3341,7 +3337,7 @@ static GL_ErrStatus SetCustomBtnVisible(GL_PageControls_TypeDef* pTmp, GL_Coordi
         line_count_max = pThis->Height / FontHeight ;
 
         line_count = MIN(line_count, line_count_max);
-        
+
         offset = (pThis->Height - FontHeight * line_count) / 2;
 
 		for (i=0;i<(line_count);i++)
@@ -3356,20 +3352,20 @@ static GL_ErrStatus SetCustomBtnVisible(GL_PageControls_TypeDef* pTmp, GL_Coordi
 			temp_string[n_pos] = 0;
 			total_pos += (n_pos + 1);
 			str_pix_size = FONT_GetLineLenPix(pThis->Font, (uint8_t*)temp_string);
-			
+
 			GL_DisplayAdjStringLine(
 				objCoordinates.MinX + ((objCoordinates.MaxX - objCoordinates.MinX) - str_pix_size)/2,
-				objCoordinates.MinY + FontHeight*i+offset,		
+				objCoordinates.MinY + FontHeight*i+offset,
                 (uint8_t*)temp_string,
                 GL_TRUE);
-			
+
 			if(n_pos == 15)
 			{
 				break;
 			}
-		}	
+		}
 	}
-	
+
   return GL_OK;
 }
 
@@ -3384,13 +3380,13 @@ static GL_ErrStatus SetIconBtnPushPullTextVisible(GL_PageControls_TypeDef* pTmp,
 {
   GL_IconBtnPushPullText_TypeDef* pThis = (GL_IconBtnPushPullText_TypeDef*)(pTmp->objPTR);
 	uint8_t temp_string[16];
-	uint32_t str_pix_size, 
-		n_pos = 0, 
+	uint32_t str_pix_size,
+		n_pos = 0,
 		total_pos = 0,
-		i = 0, 
-		offset=0, 
+		i = 0,
+		offset=0,
 		n_count=0;
-	
+
   if (!pThis)
   {
     return GL_ERROR;
@@ -3415,21 +3411,21 @@ static GL_ErrStatus SetIconBtnPushPullTextVisible(GL_PageControls_TypeDef* pTmp,
                     (uint16_t)(objCoordinates.MinX),
                     (uint16_t)(objCoordinates.MaxY),
                     (uint16_t)(objCoordinates.MinY),
-                    (uint8_t*)pThis->ImagePressPTR );	
+                    (uint8_t*)pThis->ImagePressPTR );
 			}
 		}
-		
+
 
 	}
 	else
 	{
-		pThis->PushPullState = !pThis->PushPullState ;		
+		pThis->PushPullState = !pThis->PushPullState ;
 	}
-	
+
 	if (pThis->pText)
 	{
-		GL_SetTextColor(GL_Blue);		
-		
+		GL_SetTextColor(GL_Blue);
+
 		while(pThis->pText[i] != 0 )
 		{
 			if(pThis->pText[i++] == '\n')
@@ -3437,21 +3433,21 @@ static GL_ErrStatus SetIconBtnPushPullTextVisible(GL_PageControls_TypeDef* pTmp,
 				n_count++;
 			}
 		}
-		
+
 		if (n_count >= 2)
 		{
 			n_count = 2;
-			offset = 2;		
+			offset = 2;
 		}
 		else if (n_count == 1)
 		{
-			offset = 10;		
+			offset = 10;
 		}
 		else
 		{
 			offset = 18;
 		}
-		
+
 		for (i=0;i<(n_count+1);i++)
 		{
 			n_pos = 0;
@@ -3472,9 +3468,9 @@ static GL_ErrStatus SetIconBtnPushPullTextVisible(GL_PageControls_TypeDef* pTmp,
 				break;
 			}
 		}
-		//FONT_SetFont(GL_FONT_BIG);		
+		//FONT_SetFont(GL_FONT_BIG);
 	}
-	
+
   return GL_OK;
 }
 
@@ -3495,7 +3491,7 @@ static GL_ErrStatus SetSlidebarVisible(GL_PageControls_TypeDef* pTmp, GL_Coordin
   uint16_t maxX = 0, minX = 0, maxY = 0, minY = 0;
   uint8_t btn_length = 0;
   uint8_t counter = 1;
-  __IO uint16_t TempColor = 0;
+   uint16_t TempColor = 0;
   uint32_t label_length = 0;
   GL_Slidebar_TypeDef* pThis = (GL_Slidebar_TypeDef*)(pTmp->objPTR);
 
@@ -3546,7 +3542,7 @@ static GL_ErrStatus SetSlidebarVisible(GL_PageControls_TypeDef* pTmp, GL_Coordin
 #else
     /* Drawing the SlideBar main body */
     GL_SetTextColor(GL_Black);
-    GL_DrawFilledRectangle(maxX, maxX - ((SLIDEBAR_CENTRAL_LENGTH+1)*SLIDEBAR_PIECE_LENGTH), 
+    GL_DrawFilledRectangle(maxX, maxX - ((SLIDEBAR_CENTRAL_LENGTH+1)*SLIDEBAR_PIECE_LENGTH),
                            maxY, minY+1, GL_Blue2);
 #endif
   }
@@ -3560,7 +3556,7 @@ static GL_ErrStatus SetSlidebarVisible(GL_PageControls_TypeDef* pTmp, GL_Coordin
                       pTmp->objCoordinates.MaxY - 1,
                       pTmp->objCoordinates.MinY );
     GL_SetTextColor(TempColor);
-    
+
     maxX = pTmp->objCoordinates.MaxY - SLIDEBAR_PIECE_LENGTH;
     minX = pTmp->objCoordinates.MinY - SLIDEBAR_PIECE_LENGTH;
     maxY = pTmp->objCoordinates.MaxX;
@@ -3586,8 +3582,8 @@ static GL_ErrStatus SetSlidebarVisible(GL_PageControls_TypeDef* pTmp, GL_Coordin
 #else
     /* Drawing the SlideBar main body */
     GL_SetTextColor(GL_Black);
-    GL_DrawFilledRectangle(maxY-1, minY-1, 
-                           maxX, maxX - ((SLIDEBAR_CENTRAL_LENGTH+1)*SLIDEBAR_PIECE_LENGTH), 
+    GL_DrawFilledRectangle(maxY-1, minY-1,
+                           maxX, maxX - ((SLIDEBAR_CENTRAL_LENGTH+1)*SLIDEBAR_PIECE_LENGTH),
                            GL_Blue2);
 #endif
   }
@@ -3601,7 +3597,7 @@ static GL_ErrStatus SetSlidebarVisible(GL_PageControls_TypeDef* pTmp, GL_Coordin
                       pTmp->objCoordinates.MaxY - SLIDEBAR_PIECE_LENGTH - 2,
                       pTmp->objCoordinates.MinY - SLIDEBAR_PIECE_LENGTH - 1 );
     GL_SetTextColor(TempColor);
-    
+
     maxX = pTmp->objCoordinates.MaxY - SLIDEBAR_PIECE_LENGTH;
     minX = pTmp->objCoordinates.MinY - SLIDEBAR_PIECE_LENGTH;
     maxY = pTmp->objCoordinates.MaxX;
@@ -3626,9 +3622,9 @@ static GL_ErrStatus SetSlidebarVisible(GL_PageControls_TypeDef* pTmp, GL_Coordin
 #else
     /* Drawing the SlideBar main body */
     GL_SetTextColor(GL_Black);
-    GL_DrawFilledRectangle(maxY, minY, 
-                           maxX - SLIDEBAR_OFFSET_LENGTH, 
-                           maxX - SLIDEBAR_OFFSET_LENGTH - ((SLIDEBAR_CENTRAL_LENGTH+1)*SLIDEBAR_PIECE_LENGTH), 
+    GL_DrawFilledRectangle(maxY, minY,
+                           maxX - SLIDEBAR_OFFSET_LENGTH,
+                           maxX - SLIDEBAR_OFFSET_LENGTH - ((SLIDEBAR_CENTRAL_LENGTH+1)*SLIDEBAR_PIECE_LENGTH),
                            GL_Blue2);
 #endif
   }
@@ -3649,8 +3645,8 @@ static GL_ErrStatus SetSlidebarVisible(GL_PageControls_TypeDef* pTmp, GL_Coordin
 #else
     GL_SetTextColor(GL_Red);
     /* Drawing the SlideBar cursor */
-    GL_DrawFilledRectangle(maxX - pThis->CurrentValue - SLIDEBAR_OFFSET_LENGTH, 
-                           maxX - pThis->CurrentValue - SLIDEBAR_OFFSET_LENGTH - SLIDEBAR_CURSOR_LENGTH, 
+    GL_DrawFilledRectangle(maxX - pThis->CurrentValue - SLIDEBAR_OFFSET_LENGTH,
+                           maxX - pThis->CurrentValue - SLIDEBAR_OFFSET_LENGTH - SLIDEBAR_CURSOR_LENGTH,
                            maxY+1, minY, GL_Grey);
     GL_SetTextColor(GL_Blue);
 #endif
@@ -3668,9 +3664,9 @@ static GL_ErrStatus SetSlidebarVisible(GL_PageControls_TypeDef* pTmp, GL_Coordin
 #else
     /* Drawing the SlideBar cursor */
     GL_SetTextColor(GL_Red);
-    GL_DrawFilledRectangle(maxY, minY-2, 
-                           maxX - pThis->CurrentValue - SLIDEBAR_OFFSET_LENGTH -1, 
-                           maxX - pThis->CurrentValue - SLIDEBAR_OFFSET_LENGTH - SLIDEBAR_CURSOR_LENGTH, 
+    GL_DrawFilledRectangle(maxY, minY-2,
+                           maxX - pThis->CurrentValue - SLIDEBAR_OFFSET_LENGTH -1,
+                           maxX - pThis->CurrentValue - SLIDEBAR_OFFSET_LENGTH - SLIDEBAR_CURSOR_LENGTH,
                            GL_Grey);
     GL_SetTextColor(GL_Blue);
 #endif
@@ -3688,9 +3684,9 @@ static GL_ErrStatus SetSlidebarVisible(GL_PageControls_TypeDef* pTmp, GL_Coordin
 #else
     /* Drawing the SlideBar cursor */
     GL_SetTextColor(GL_Red);
-    GL_DrawFilledRectangle(maxY+1, minY-1,  
+    GL_DrawFilledRectangle(maxY+1, minY-1,
                            minX + pThis->CurrentValue + SLIDEBAR_OFFSET_LENGTH + SLIDEBAR_CURSOR_LENGTH,
-                           minX + pThis->CurrentValue + SLIDEBAR_OFFSET_LENGTH + 1, 
+                           minX + pThis->CurrentValue + SLIDEBAR_OFFSET_LENGTH + 1,
                            GL_Grey);
     GL_SetTextColor(GL_Blue);
 #endif
@@ -3882,7 +3878,7 @@ static GL_ErrStatus SetGraphChartVisible( GL_PageControls_TypeDef* pTmp, GL_Coor
 {
   uint32_t index = 0;
   double height, width, offset_x, offset_y;
-  __IO uint16_t signal_color = GL_Red;
+   uint16_t signal_color = GL_Red;
   double base_y, y_step, x_step, max_value, y_resolution = 0, max_x;
   uint8_t value[7];
   GL_GraphChart_TypeDef* pThis = (GL_GraphChart_TypeDef*)(pTmp->objPTR);
@@ -3939,15 +3935,15 @@ static GL_ErrStatus SetGraphChartVisible( GL_PageControls_TypeDef* pTmp, GL_Coor
   //for (index = 0; index <= 10; index++)
 	for (index = 0; index <= 10; index+=2)
   {
-#if 1		
+#if 1
     if (index > 0)
     {
-#if 0	
+#if 0
       GL_SetTextColor(GL_Black);
 
-      GL_DrawLine( 
+      GL_DrawLine(
                    (uint16_t)offset_x,
-										(uint16_t)(offset_y - y_step*index),			
+										(uint16_t)(offset_y - y_step*index),
                    4,
                    GL_Horizontal );
 #endif
@@ -3958,7 +3954,7 @@ static GL_ErrStatus SetGraphChartVisible( GL_PageControls_TypeDef* pTmp, GL_Coor
                    (uint16_t)(width),
                    GL_Horizontal );
     }
-#if 0		
+#if 0
     /* Print the Y axis Label */
     //if ( index == 10)
     {
@@ -3983,18 +3979,18 @@ static GL_ErrStatus SetGraphChartVisible( GL_PageControls_TypeDef* pTmp, GL_Coor
                                  (uint16_t)(offset_x + FONT_LENGTH + GRAPH_MARGIN_LENGTH*2),
                                  (uint8_t*) value,
                                  GL_TRUE );
-      }		
+      }
     }
-#endif			
-#endif		
+#endif
+#endif
   }
 #if 1
   /* Print the X axis scale */
   for (index = 0; index < (pThis->n_points); index++)
   {
     max_x = max_x - x_step;
-#if 1		
-    GL_SetTextColor(GL_Black);				
+#if 1
+    GL_SetTextColor(GL_Black);
     //GL_DrawLine( (uint16_t)base_y, (uint16_t)(max_x + 1), 4, GL_Vertical );
     if (pThis->n_points <= 15)
     {
@@ -4028,26 +4024,27 @@ static GL_ErrStatus SetGraphChartVisible( GL_PageControls_TypeDef* pTmp, GL_Coor
 
       if ((index + 1) % (pThis->n_points / 5) == 0)
       {
-				
+
         x_point_val++;//=index + 1;
 				sprintf((char*)value, "%d", x_point_val);
         GL_DisplayAdjStringLine( (uint16_t)(base_y + 2), (uint16_t)(max_x + 6), (uint8_t*) value, GL_TRUE );
         GL_SetTextColor(GL_Black);
-        GL_DrawLine( (uint16_t)(max_x + 1), (uint16_t)(base_y - height), (uint16_t)height, GL_Vertical );    
+        GL_DrawLine( (uint16_t)(max_x + 1), (uint16_t)(base_y - height), (uint16_t)height, GL_Vertical );
 			}
 		}
-#endif  			
+#endif
+
     /* Draw the Grid*/
     if (index == 0)
     {
-			LCD_PutPixel(max_x, base_y, GL_Black, FirstPixel);
-#if 0	      
+			LCD_PutPixel((uint16_t)max_x, (uint16_t)base_y, GL_Black, FirstPixel);
+#if 0
 			GL_DrawObliqueLine( (uint16_t)(max_x + x_step),
                           (uint16_t)base_y,
                           (uint16_t)max_x,
                           (uint16_t)(base_y - (double)((pThis->points[index]) / y_resolution)),
                           signal_color );
-													
+
       GL_DrawObliqueLine( (uint16_t)(max_x + x_step),
                           (uint16_t)(base_y - 1),
                           (uint16_t)max_x,
@@ -4058,7 +4055,7 @@ static GL_ErrStatus SetGraphChartVisible( GL_PageControls_TypeDef* pTmp, GL_Coor
                           (uint16_t)(max_x - 1),
                           (uint16_t)(base_y - (double)((pThis->points[index]) / y_resolution)),
                           signal_color );
-#endif													
+#endif
     }
     else
     {
@@ -4067,7 +4064,7 @@ static GL_ErrStatus SetGraphChartVisible( GL_PageControls_TypeDef* pTmp, GL_Coor
                           (uint16_t)max_x,
                           (uint16_t)(base_y - (double)((pThis->points[index]) / y_resolution)),
                           signal_color );
-#if 0													
+#if 0
       GL_DrawObliqueLine( (uint16_t)(max_x + x_step),
                           (uint16_t)(base_y - (double)((pThis->points[index-1]) / y_resolution) - 1),
                           (uint16_t)(max_x - 1),
@@ -4078,7 +4075,7 @@ static GL_ErrStatus SetGraphChartVisible( GL_PageControls_TypeDef* pTmp, GL_Coor
                           (uint16_t)(max_x - 1),
                           (uint16_t)(base_y - (double)((pThis->points[index]) / y_resolution)),
                           signal_color );
-#endif													
+#endif
     }
     /* Print the X axis Label */
     if (index == pThis->n_points - 1)
@@ -4090,7 +4087,7 @@ static GL_ErrStatus SetGraphChartVisible( GL_PageControls_TypeDef* pTmp, GL_Coor
                               GL_TRUE );
     }
   }
-#endif	
+#endif
   //FONT_SetFont(GL_FONT_BIG);
 
   return GL_OK;
@@ -4144,9 +4141,9 @@ static GL_ErrStatus SetLineVisible(GL_PageControls_TypeDef* pTmp, GL_Coordinate_
     }
 		else
 		{
-			GL_DrawLine(objCoordinates.MinX,objCoordinates.MinY, pThis->Len, GL_LEFT_VERTICAL);			
+			GL_DrawLine(objCoordinates.MinX,objCoordinates.MinY, pThis->Len, GL_LEFT_VERTICAL);
 		}
-		
+
 		GL_SetTextColor(GL_Black);
   }
 
@@ -4176,9 +4173,9 @@ static GL_ErrStatus SetProgressBarVisible(GL_PageControls_TypeDef* pTmp, GL_Coor
 #ifdef USE_2D_OBJECTS
 
 #else
-	
+
 	GL_SetTextColor(GL_Black);
-	
+
 	GL_DrawRectangle(objCoordinates.MaxX, objCoordinates.MinX, objCoordinates.MaxY, objCoordinates.MinY);
 
 	/*set background color (white) */
@@ -4187,13 +4184,13 @@ static GL_ErrStatus SetProgressBarVisible(GL_PageControls_TypeDef* pTmp, GL_Coor
 		GL_SetDisplayWindow((uint16_t)objCoordinates.MaxY-1, (uint16_t)objCoordinates.MaxX - width_value-1,(uint16_t)(height-1), (uint16_t)width - width_value, 0);
 		GL_ClearWindow(GL_White);
 	}
-		
+
 	GL_SetDisplayWindow((uint16_t)objCoordinates.MaxY-1, (uint16_t)objCoordinates.MaxX-1, (uint16_t)(height-1), (uint16_t)width_value, 0);
-	GL_ClearWindow(pThis->Colour);	
-	
-	GL_SetDisplayWindow(LCD_Height - 1, LCD_Width - 1, LCD_Height, LCD_Width, 0);			
-	  
-#endif	
+	GL_ClearWindow(pThis->Colour);
+
+	GL_SetDisplayWindow(LCD_Height - 1, LCD_Width - 1, LCD_Height, LCD_Width, 0);
+
+#endif
 
  // FONT_SetFont(GL_FONT_BIG);
   GL_SetBackColor(GL_White);
@@ -4709,7 +4706,7 @@ static GL_Coordinate_TypeDef GetObjCoordinates(GL_Page_TypeDef* pPage, uint16_t 
 {
   GL_Coordinate_TypeDef null;
   uint32_t index = 0;
-  
+
   /* Init the structure with zeros */
   memset(&null,0x00,sizeof(GL_Coordinate_TypeDef));
 
@@ -4871,7 +4868,7 @@ static GL_ObjDimensions_TypeDef GetObjSize(GL_PageControls_TypeDef* pPageControl
     }
   }
 	else if (pPageControl->objType == GL_ICON)
-	{		
+	{
 		GL_Icon_TypeDef* pImage;
     pImage = (GL_Icon_TypeDef*)(pPageControl->objPTR);
 		if (pImage->Control_Visible)
@@ -4879,10 +4876,10 @@ static GL_ObjDimensions_TypeDef GetObjSize(GL_PageControls_TypeDef* pPageControl
 			dimensions.Length = pImage->ImageWidth;
 			dimensions.Height = pImage->ImageHeight;
 		}
-		
+
 	}
 	else if (pPageControl->objType == GL_ICONBTN)
-	{		
+	{
 		GL_IconBtn_TypeDef* pImage;
     pImage = (GL_IconBtn_TypeDef*)(pPageControl->objPTR);
 		if (pImage->Control_Visible)
@@ -4890,10 +4887,10 @@ static GL_ObjDimensions_TypeDef GetObjSize(GL_PageControls_TypeDef* pPageControl
 			dimensions.Length = pImage->ImageWidth;
 			dimensions.Height = pImage->ImageHeight;
 		}
-		
+
 	}
 	else if (pPageControl->objType == GL_ICON_BTN_TEXT)
-	{		
+	{
 		GL_IconBtnText_TypeDef* pImage;
     pImage = (GL_IconBtnText_TypeDef*)(pPageControl->objPTR);
 		if (pImage->Control_Visible)
@@ -4901,10 +4898,10 @@ static GL_ObjDimensions_TypeDef GetObjSize(GL_PageControls_TypeDef* pPageControl
 			dimensions.Length = pImage->ImageWidth;
 			dimensions.Height = pImage->ImageHeight;
 		}
-		
+
 	}
 	else if (pPageControl->objType == GL_ICON_BTN_PUSH_PULL_TEXT)
-	{		
+	{
 		GL_IconBtnPushPullText_TypeDef* pImage;
     pImage = (GL_IconBtnPushPullText_TypeDef*)(pPageControl->objPTR);
 		if (pImage->Control_Visible)
@@ -4912,10 +4909,10 @@ static GL_ObjDimensions_TypeDef GetObjSize(GL_PageControls_TypeDef* pPageControl
 			dimensions.Length = pImage->ImageWidth;
 			dimensions.Height = pImage->ImageHeight;
 		}
-		
+
 	}
 	else if (pPageControl->objType == GL_CUSTOM_BUTTON)
-	{		
+	{
 		GL_CustomBtn_TypeDef* pImage;
     pImage = (GL_CustomBtn_TypeDef*)(pPageControl->objPTR);
 		if (pImage->Control_Visible)
@@ -4923,10 +4920,10 @@ static GL_ObjDimensions_TypeDef GetObjSize(GL_PageControls_TypeDef* pPageControl
 			dimensions.Length = pImage->Width;
 			dimensions.Height = pImage->Height;
 		}
-		
+
 	}
-	
-		
+
+
   return dimensions;
 }
 
@@ -5044,7 +5041,7 @@ static void CallPreEvents(GL_PageControls_TypeDef* pControl)
   uint32_t active_index = 0; /* needed for ComboBox */
 #ifndef USE_2D_OBJECTS
   uint8_t* ptrBitmap = GL_NULL;
-#endif  
+#endif
   GL_Coordinate_TypeDef tmpCoord;
   void* pTmp;
   GL_RadioButtonGrp_TypeDef* pTmpGrp = GL_NULL;
@@ -5135,12 +5132,12 @@ static void CallPreEvents(GL_PageControls_TypeDef* pControl)
                         (uint16_t)(pControl->objCoordinates.MinY), ptrBitmap );
       GL_Delay(20);
 #else
-      GL_DrawFilledRectangle( (uint16_t)(pControl->objCoordinates.MaxX), 
-                              (uint16_t)(pControl->objCoordinates.MaxX-COMBOBOX_SIZE), 
-                              (uint16_t)(pControl->objCoordinates.MaxY), 
+      GL_DrawFilledRectangle( (uint16_t)(pControl->objCoordinates.MaxX),
+                              (uint16_t)(pControl->objCoordinates.MaxX-COMBOBOX_SIZE),
+                              (uint16_t)(pControl->objCoordinates.MaxY),
                               (uint16_t)(pControl->objCoordinates.MinY+1), GL_Cyan);
 #endif
-      
+
       if (((GL_ComboBoxGrp_TypeDef*)(pTmpComboGrp))->Secondary == GL_FALSE)
       {
 #ifdef USE_2D_OBJECTS
@@ -5168,8 +5165,8 @@ static void CallPreEvents(GL_PageControls_TypeDef* pControl)
 #ifdef USE_2D_OBJECTS
         GL_SetTextColor(GL_Grey);
         GL_DisplayAdjStringLine( (uint8_t)(pControl->objCoordinates.MinY),
-                                 (uint16_t)(pControl->objCoordinates.MaxX-3), 
-                                 "+", 
+                                 (uint16_t)(pControl->objCoordinates.MaxX-3),
+                                 "+",
                                  GL_TRUE);
         GL_Delay(20);
 #endif
@@ -5182,7 +5179,7 @@ static void CallPreEvents(GL_PageControls_TypeDef* pControl)
           }
           pTmpComboGrp2->ComboOptions[index]->IsActive = GL_FALSE;
         }
-    
+
         if ( active_index == pTmpComboGrp2->ComboOptionCount - 1 )
           pTmpComboGrp2->ComboOptions[active_index]->IsActive = GL_TRUE;
         else if ( active_index < pTmpComboGrp2->ComboOptionCount - 1 )
@@ -5529,17 +5526,6 @@ uint8_t CompareJoyCoordinates(uint16_t u16_XMax, uint16_t u16_XMin, uint16_t u16
   */
 void SetPowerSaveOption(void)
 {
-	if(AppCfg.BackLightTimeout == 0)
-	{
-		vu8_gPowerSaveOption = 0;
-	}
-	else
-	{
-		vu8_gPowerSaveOption = 1;
-		_light_timeout_off = AppCfg.BackLightTimeout * 600 * 40; // 1 min ~ 600 * .
-		_light_deep_off = AppCfg.BackLightDeepOff;
-		_light_deep_on = AppCfg.BackLightDeepOn * 2;
-	}
 	/* reset to active mode */
 	GL_BackLightSwitch(_light_deep_on);
 	vu8_gSleepState = 0;
@@ -5578,7 +5564,7 @@ void TimeOutCalculate(uint32_t spend_time)
   */
 void GL_Delay(uint32_t nTime)
 {
-	vTaskDelay(nTime);
+	//vTaskDelay(nTime);
 }
 
 void GL_SetBackLightTimeout_Off(uint32_t timeout)
@@ -5594,15 +5580,15 @@ void GL_SetBackLightDeep_Off(uint32_t deep)
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/
 

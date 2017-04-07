@@ -24,7 +24,6 @@
 */
 
 #include "font.h"
-#include "lcdhal.h"
 
 #ifdef USE_FONT_ARIAL16
 #include "fonts/Arial16.c"
@@ -51,48 +50,45 @@
 
 const void *_Fonts[FONT_COUNT] =
 {
-#ifdef USE_FONT_ARIAL16	
-	(void *)&GUI_FontArial16,
-#endif				
+#ifdef USE_FONT_ARIAL16
+	[FONT_ARIAL_16] = (void *)&GUI_FontArial16,
+#endif
 #ifdef USE_FONT_ARIAL17
-	(void *)&GUI_FontArial17,
-#endif					
+	[FONT_ARIAL_17] = (void *)&GUI_FontArial17,
+#endif
 #ifdef USE_FONT_ARIAL18
-	(void *)&GUI_FontArial18,
-#endif				
+	[FONT_ARIAL_18] = (void *)&GUI_FontArial18,
+#endif
 #ifdef USE_FONT_ARIAL19
-	(void *)&GUI_FontArial19,
-#endif				
+	[FONT_ARIAL_19] = (void *)&GUI_FontArial19,
+#endif
 #ifdef USE_FONT_ARIAL22
-	(void *)&GUI_FontArial22,
-#endif				
+	[FONT_ARIAL_22] = (void *)&GUI_FontArial22,
+#endif
 #ifdef USE_FONT_ARIAL24
-	(void *)&GUI_FontArial24,
-#endif				
+	[FONT_ARIAL_24] = (void *)&GUI_FontArial24,
+#endif
 #ifdef USE_FONT_ARIAL32
-	(void *)&GUI_FontArial32,
-#endif		
+	[FONT_ARIAL_32] = (void *)&GUI_FontArial32,
+#endif
 };
 
-static GUI_FONT *_CurrentFont = (GUI_FONT *)&_Fonts[0];
-
-
-
+static GUI_FONT *_CurrentFont = (GUI_FONT *)_Fonts;
 
 /**
-  * @brief  
-  * @param  
-  * @retval None
-  */
+* @brief
+* @param
+* @retval None
+*/
 uint32_t FONT_GetLineLenPix(font_list_t Font, uint8_t *Str)
 {
-  uint32_t index = 0;
+    uint32_t index = 0;
 	GUI_FONT_t *pFont = (GUI_FONT_t*)_Fonts[Font];
-  uint32_t PixCount = 0;	
-	
+    uint32_t PixCount = 0;
+
 	/* Send the string character by character on lCD */
 	while (*Str != 0)
-	{ 
+	{
 		/* Decrement the column position by GL_FontWidth */
 		PixCount+= pFont->p.pProp->paCharInfo[*Str - pFont->p.pProp->First].XSize;
 		/* Point on the next character */
@@ -100,16 +96,16 @@ uint32_t FONT_GetLineLenPix(font_list_t Font, uint8_t *Str)
 		/* Increment the character counter */
 		index++;
 	}
-	
+
 	return PixCount;
 }
 
 
 /**
-  * @brief  
-  * @param  
-  * @retval None
-  */
+* @brief
+* @param
+* @retval None
+*/
 uint32_t FONT_GetMaxHeight(font_list_t Font)
 {
 	GUI_FONT_t *pFont = (GUI_FONT_t*)_Fonts[Font];
@@ -119,10 +115,10 @@ uint32_t FONT_GetMaxHeight(font_list_t Font)
 
 
 /**
-  * @brief  Sets the Font (Big or Small).
-  * @param  uFont: specifies the Font (GL_FONT_BIG or GL_FONT_SMALL).
-  * @retval None
-  */
+* @brief  Sets the Font (Big or Small).
+* @param  uFont: specifies the Font (GL_FONT_BIG or GL_FONT_SMALL).
+* @retval None
+*/
 void FONT_SetFont(font_list_t Font)
 {
 	_CurrentFont = (GUI_FONT*)_Fonts[Font];
@@ -130,25 +126,25 @@ void FONT_SetFont(font_list_t Font)
 
 
 /**
-  * @brief  Displays a maximum of 20 char on the LCD.
-  * @param  Line: the Line where to display the character shape.
-  * @param  *ptr: pointer to the string to display on LCD.
-  * @param  Transparent_Flag: if TRUE the character is printed without changing the background
-  * @retval None
-  */
+* @brief  Displays a maximum of 20 char on the LCD.
+* @param  Line: the Line where to display the character shape.
+* @param  *ptr: pointer to the string to display on LCD.
+* @param  Transparent_Flag: if TRUE the character is printed without changing the background
+* @retval None
+*/
 void GL_DisplayAdjStringLine(uint16_t Xmin, uint16_t Ymin, uint8_t *ptr, uint32_t Transparent_Flag)
 {
-  uint32_t index = 0;
+    uint32_t index = 0;
 	GUI_FONT_t *pFont = (GUI_FONT_t*)_CurrentFont;
-  const uint32_t iMaxChar = 64;	
-	
-	
+    const uint32_t iMaxChar = 64;
+
+
 	if (Transparent_Flag)
 	{
 		/* Send the string character by character on lCD */
 		while ((*ptr != 0) & (index < iMaxChar))
-		{ 
-			/* Display one character on LCD */		    
+		{
+			/* Display one character on LCD */
 			GL_LCD_DrawCharTransparent(Xmin, Ymin, &pFont->p.pProp->paCharInfo[*ptr - pFont->p.pProp->First], pFont->YSize);
 			/* Decrement the column position by GL_FontWidth */
 			Xmin += pFont->p.pProp->paCharInfo[*(ptr) - pFont->p.pProp->First].XSize;
@@ -162,8 +158,8 @@ void GL_DisplayAdjStringLine(uint16_t Xmin, uint16_t Ymin, uint8_t *ptr, uint32_
 	{
 		/* Send the string character by character on lCD */
 		while ((*ptr != 0) & (index < iMaxChar))
-		{ 
-			/* Display one character on LCD */		    
+		{
+			/* Display one character on LCD */
 			GL_LCD_DrawChar(Xmin, Ymin,&pFont->p.pProp->paCharInfo[*ptr - pFont->p.pProp->First], pFont->YSize);
 			/* Decrement the column position by GL_FontWidth */
 			Xmin += pFont->p.pProp->paCharInfo[*(ptr) - pFont->p.pProp->First].XSize;
