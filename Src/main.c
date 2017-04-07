@@ -9,8 +9,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 static FL_FILE *_flog = NULL;
-static char _log_file_name[32] = "/bat_test.txt";
-
+#define FNAME_SIZE      32
+static char _log_file_name[FNAME_SIZE] = "/bat_test.txt";
 /* Private function prototypes -----------------------------------------------*/
 
 static int _media_read(uint32 sector, uint8 *buffer, uint32 sector_count) {
@@ -49,7 +49,55 @@ static void _debug_file_log(const uint8_t *data, uint32_t size) {
 }
 
 /* -------------------------------------------------------------------------- */
+<<<<<<< HEAD
 #include "LcdHal.h"
+=======
+
+static void _start_discharge(void) {
+
+    charger_enable(CHARGER_DISABLE);
+    bsp_switch_relay(RELAY_DISCHARGE_ON);
+}
+
+/* -------------------------------------------------------------------------- */
+
+static void _start_charge(void) {
+
+    charger_enable(CHARGER_ENABLE);
+    bsp_switch_relay(RELAY_DISCHARGE_OFF);
+}
+
+/* -------------------------------------------------------------------------- */
+
+static void _open_log_file() {
+
+    for(uint32_t i = 0; i < UINT32_MAX; i++) {
+
+        snprintf(_log_file_name, FNAME_SIZE,  "/bat_test_%d.txt", i);
+
+        _flog = fl_fopen(_log_file_name, "r");
+
+        if(_flog == NULL) {
+            fl_fclose(_flog);
+            _flog = fl_fopen(_log_file_name, "w");
+
+            INFO("Create file: %s\r\n", _log_file_name);
+
+            break;
+        }
+
+        fl_fclose(_flog);
+        _flog = NULL;
+    }
+
+    if(_flog) {
+        logger_init(_debug_file_log);
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+
+>>>>>>> origin/master
 int main(void)
 {
 
@@ -92,12 +140,14 @@ int main(void)
         }
     }
 
+    /* Check sd card */
     uint32_t timeout = 10;
     while (SD_Init() != 0 && timeout--) {
         INFO("SD Card Failed!\r\n");
         INFO("Please Check!\r\n");
         bsp_delay_ms(500);
     }
+
 
     if( timeout > 0 ) {
         INFO("SD Card Detected!\r\n");
@@ -114,21 +164,12 @@ int main(void)
         /* debug purposes */
         fl_listdirectory("/");
 
-        _flog = fl_fopen(_log_file_name, "w");
-
-        if(_flog) {
-            logger_init(_debug_file_log);
-        }
+        _open_log_file();
     }
 
-
-
     bsp_led1_enable(LED_DISABLE);
-    bsp_delay_ms(500);
     bsp_led2_enable(LED_DISABLE);
-    bsp_delay_ms(500);
     bsp_led3_enable(LED_DISABLE);
-    bsp_delay_ms(500);
 
 
     //ili9320_Clear(Blue);
@@ -138,21 +179,10 @@ int main(void)
     bsp_switch_relay(RELAY_DISCHARGE_OFF);
 
     charger_init();
-    charger_enable(CHARGER_DISABLE);
-    bsp_delay_ms(500);
-    charger_enable(CHARGER_ENABLE);
 
-
-    charger_send_swp_message(SWPC_AUTO_RECHARGE_ON);
-    bsp_delay_ms(100);
-
-    charger_send_swp_message(SWPC_AUTO_RECHARGE_OFF);
-    bsp_delay_ms(100);
-    charger_send_swp_message(SWPC_VFLOAT_BAT_AGING_OFF);
-    bsp_delay_ms(100);
-    INFO("VFLOAT = 4350\r\n");
+    INFO("Set VFLOAT = 4350\r\n");
     charger_send_swp_message(SWPC_INCREASE_150MV);
-    bsp_delay_ms(100);
+
 
     bool is_discharge = false;
     uint32_t start_time = bsp_get_tick_ms();
@@ -175,13 +205,11 @@ int main(void)
             INFO("Discharge\r\n");
 
             if(vbat < 3000) {
-                INFO("Discharge complete\r\n");
-                INFO("Time %d s, Capacity %d Ah\r\n",  duration, duration * 10 /60/60);
+                INFO("Discharge complete\r\nTime %d s, Capacity %d Ah\r\n",  duration, duration * 10 /60/60);
 
                 is_discharge = false;
-                charger_enable(CHARGER_ENABLE);
-                bsp_switch_relay(RELAY_DISCHARGE_OFF);
                 start_time = bsp_get_tick_ms();
+                _start_charge();
             }
         } else {
 
@@ -193,15 +221,10 @@ int main(void)
                 INFO("CHARGER_STATUS_VALID_INPUT \r\n");
                 break;
             case CHARGER_STATUS_END_OF_CHARGING:
-                INFO("CHARGE COMPLETE\r\n");
-                INFO("Duration %d S\r\n", duration);
-
-                INFO("Start discharge\r\n");
-
+                INFO("Charge complete\r\nDuration %d S\r\n", duration);
                 is_discharge = true;
-                charger_enable(CHARGER_DISABLE);
-                bsp_switch_relay(RELAY_DISCHARGE_ON);
                 start_time = bsp_get_tick_ms();
+                _start_discharge();
                 break;
             case CHARGER_STATUS_CHARGING_PHASE:
                 INFO("CHARGING\r\n");
@@ -229,31 +252,20 @@ int main(void)
 
         if(bsp_is_button1_pressed()) {
 
-            /* debug purposes */
-            if(_flog) {
-                fl_fclose(_flog);
-                _flog = NULL;
-            }
-
             if(is_discharge) {
-                INFO("Discharge stoped\r\n");
-                INFO("Time %d s, Capacity %d Ah\r\n",  duration, duration * 10 /60/60);
 
-                INFO("Start Charge\r\n");
-                charger_enable(CHARGER_ENABLE);
-                bsp_switch_relay(RELAY_DISCHARGE_OFF);
+                INFO("Force stop, Discharge time %d s, Capacity %d Ah\r\nStart Charge\r\n",  duration, duration * 10 /60/60);
+                _start_charge();
             } else {
 
-                INFO("charge stoped, time %d\r\n", duration);
-
-                INFO("Start discharge\r\n");
-                charger_enable(CHARGER_DISABLE);
-                bsp_switch_relay(RELAY_DISCHARGE_ON);
+                INFO("Forse stop, Charge time %d\r\nStart discharge\r\n", duration);
+                _start_discharge();
             }
 
             start_time = bsp_get_tick_ms();
             is_discharge = !is_discharge;
-            bsp_delay_ms(800);
+
+            while(bsp_is_button1_pressed());
         }
     }
 }
