@@ -6,6 +6,8 @@
 #include "touch_driver/touch_tsc2046.h"
 #include "mmc_sd/mmc_sd.h"
 #include "fs_fat/fat_filelib.h"
+#include "LcdHal.h"
+
 
 /* Private variables ---------------------------------------------------------*/
 static FL_FILE *_flog = NULL;
@@ -49,9 +51,6 @@ static void _debug_file_log(const uint8_t *data, uint32_t size) {
 }
 
 /* -------------------------------------------------------------------------- */
-<<<<<<< HEAD
-#include "LcdHal.h"
-=======
 
 static void _start_discharge(void) {
 
@@ -97,7 +96,6 @@ static void _open_log_file() {
 
 /* -------------------------------------------------------------------------- */
 
->>>>>>> origin/master
 int main(void)
 {
 
