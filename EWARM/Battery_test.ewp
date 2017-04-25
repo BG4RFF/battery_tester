@@ -325,6 +325,9 @@
           <state>$PROJ_DIR$\..\Drivers</state>
           <state>$PROJ_DIR$\..\Drivers\Embedded_GUI_Library\inc</state>
           <state>$PROJ_DIR$\..\Drivers\Embedded_GUI_HAL\inc</state>
+          <state>$PROJ_DIR$\..\user\ugfx_2.7</state>
+          <state>$PROJ_DIR$\..\user\ugfx_2.7\drivers\gdisp\ILI9320</state>
+          <state>$PROJ_DIR$\..\Drivers\freertos\include</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -582,7 +585,7 @@
         </option>
         <option>
           <name>AUserIncludes</name>
-          <state></state>
+          <state>$PROJ_DIR$\..\Inc</state>
         </option>
         <option>
           <name>AExtraOptionsCheckV2</name>
@@ -1010,7 +1013,19 @@
         </file>
       </group>
       <group>
+        <name>gfx</name>
+        <file>
+          <name>$PROJ_DIR$\..\user\ugfx_2.7\src\gfx_mk.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\user\ugfx_2.7\gfxconf.h</name>
+        </file>
+      </group>
+      <group>
         <name>logger</name>
+        <file>
+          <name>$PROJ_DIR$\..\user\ui\gui.h</name>
+        </file>
         <file>
           <name>$PROJ_DIR$\..\user\logger\logger.c</name>
         </file>
@@ -1018,6 +1033,24 @@
           <name>$PROJ_DIR$\..\user\logger\logger.h</name>
         </file>
       </group>
+      <group>
+        <name>ui</name>
+        <file>
+          <name>$PROJ_DIR$\..\user\ui\gui.c</name>
+        </file>
+      </group>
+      <file>
+        <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\gdisp\ILI9320\board_ILI9320.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\gdisp\SSD1289\board_SSD1289.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\gdisp\SSD1289\gdisp_lld_config.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\gdisp\SSD1289\gdisp_lld_SSD1289.c</name>
+      </file>
       <file>
         <name>$PROJ_DIR$\..\Src\main.c</name>
       </file>
@@ -1026,33 +1059,24 @@
   <group>
     <name>Drivers</name>
     <group>
-      <name>Embedded_GUI_HAL</name>
+      <name>freertos</name>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\Embedded_GUI_HAL\src\LcdHal.c</name>
-      </file>
-    </group>
-    <group>
-      <name>Embedded_GUI_Library</name>
-      <file>
-        <name>$PROJ_DIR$\..\Drivers\Embedded_GUI_Library\src\cursor.c</name>
-        <excluded>
-          <configuration>Battery_test</configuration>
-        </excluded>
+        <name>$PROJ_DIR$\..\Drivers\freertos\heap_4.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\Embedded_GUI_Library\src\gl_fonts.c</name>
-        <excluded>
-          <configuration>Battery_test</configuration>
-        </excluded>
+        <name>$PROJ_DIR$\..\Drivers\freertos\list.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\Embedded_GUI_Library\src\gl_testFonts.c</name>
+        <name>$PROJ_DIR$\..\Drivers\freertos\port.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\Embedded_GUI_Library\src\graphicObject.c</name>
+        <name>$PROJ_DIR$\..\Drivers\freertos\portasm.s</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\Embedded_GUI_Library\src\images.c</name>
+        <name>$PROJ_DIR$\..\Drivers\freertos\queue.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\freertos\tasks.c</name>
       </file>
     </group>
     <group>
@@ -1116,18 +1140,6 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_write.h</name>
-      </file>
-    </group>
-    <group>
-      <name>lcd</name>
-      <file>
-        <name>$PROJ_DIR$\..\Drivers\lcd_driver\ili9320.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\Drivers\lcd_driver\ili9320.h</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\Drivers\lcd_driver\ili9320_font.h</name>
       </file>
     </group>
     <group>

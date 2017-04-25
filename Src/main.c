@@ -2,12 +2,15 @@
 #include "bsp.h"
 #include "logger/logger.h"
 #include "charger/charger.h"
-#include "lcd_driver/ili9320.h"
 #include "touch_driver/touch_tsc2046.h"
 #include "mmc_sd/mmc_sd.h"
 #include "fs_fat/fat_filelib.h"
-#include "LcdHal.h"
 
+#include "gfx.h"
+#include "ui/gui.h"
+
+#include "freertos.h"
+#include "task.h"
 
 /* Private variables ---------------------------------------------------------*/
 static FL_FILE *_flog = NULL;
@@ -95,7 +98,86 @@ static void _open_log_file() {
 }
 
 /* -------------------------------------------------------------------------- */
+//
+//// Fonts
+//font_t dejavu_sans_20_anti_aliased;
+//
+//// GHandles
+//GHandle ghContainerPage0;
+//GHandle ghFirst;
+//GHandle ghUser;
+//GHandle ghButton1;
+//
+//static void createPagePage0(void)
+//{
+//	GWidgetInit wi;
+//	gwinWidgetClearInit(&wi);
+//
+//
+//	// create container widget: ghContainerPage0
+//	wi.g.show = FALSE;
+//	wi.g.x = 0;
+//	wi.g.y = 0;
+//	wi.g.width = 320;
+//	wi.g.height = 240;
+//	wi.g.parent = 0;
+//	wi.text = "Container";
+//	wi.customDraw = 0;
+//	wi.customParam = 0;
+//	wi.customStyle = 0;
+//	ghContainerPage0 = gwinContainerCreate(0, &wi, 0);
+//
+//
+//	// create button widget: ghButton1
+//	wi.g.show = TRUE;
+//	wi.g.x = 10;
+//	wi.g.y = 20;
+//	wi.g.width = 160;
+//	wi.g.height = 120;
+//	wi.g.parent = ghContainerPage0;
+//	wi.text = "Press me";
+//	wi.customDraw = gwinButtonDraw_Normal;
+//	wi.customParam = 0;
+//	wi.customStyle = 0;
+//	ghButton1 = gwinButtonCreate(0, &wi);
+//}
+//
+//void guiCreate(void)
+//{
+//	GWidgetInit wi;
+//
+//	// Prepare fonts
+//	dejavu_sans_20_anti_aliased = gdispOpenFont("DejaVuSans20_aa");
+//
+//	// Prepare images
+//
+//	// GWIN settings
+//	gwinWidgetClearInit(&wi);
+//	gwinSetDefaultFont(dejavu_sans_20_anti_aliased);
+//	gwinSetDefaultStyle(&WhiteWidgetStyle, FALSE);
+//	gwinSetDefaultColor(Black);
+//	gwinSetDefaultBgColor(White);
+//    gdispSetOrientation(GDISP_ROTATE_LANDSCAPE);
+//
+//	// Create all the display pages
+//	createPagePage0();
+//
+//	// Select the default display page
+//	gwinShow(ghContainerPage0);
+//
+//}
 
+/* -------------------------------------------------------------------------- */
+void _startup(void *context) {
+
+    gfxInit();
+
+    guiCreate();
+
+    while(1);
+
+}
+bool _rtos_started = false;
 int main(void)
 {
 
@@ -103,40 +185,20 @@ int main(void)
 
     logger_init(bsp_debug_write);
 
-    bsp_lcd_backlight_enable(LCD_BACKLIGHT_ENABLE);
-    ili9320_Initializtion();
-    ili9320_Clear(Black);
+    /* Create the task, storing the handle. */
+     xTaskCreate(
+                    _startup,       /* Function that implements the task. */
+                    "NAME",          /* Text name for the task. */
+                    200,      /* Stack size in words, not bytes. */
+                    ( void * ) 1,    /* Parameter passed into the task. */
+                    2,/* Priority at which the task is created. */
+                    NULL);      /* Used to pass out the created task's handle. */
 
-    uint32_t x, y;
+     /* todo relese systick handler */
+     _rtos_started = true;
+     vTaskStartScheduler();
 
-    GL_LCD_Init(320, 240);
-
-    GL_SetTextColor(GL_Red);
-    GL_LCD_DrawRect(0, 0, 20, 30);
-
-
-    ili9320_Clear(Black);
-
-    FONT_SetFont(FONT_ARIAL_19);
-    GL_DisplayAdjStringLine(50, 50, "Battery testr", 0); bsp_delay_ms(700);
-
-    if(bsp_is_button2_pressed()) {
-
-        while(!bsp_is_button1_pressed()) {
-
-            Touch_GetPos(&x, &y);
-            float fx = 320-(float)x / 4096.f * 2 * 320;
-            float fy = (float)y / 4096.f * 2 * 240;
-
-            //INFO("%d %d\r\n", x, y);
-
-            ili9320_SetPoint((uint32_t)fx, (uint32_t)fy + 1, Green);
-            ili9320_SetPoint((uint32_t)fx, (uint32_t)fy - 1, Green);
-            ili9320_SetPoint((uint32_t)fx + 1, (uint32_t)fy, Green);
-            ili9320_SetPoint((uint32_t)fx - 1, (uint32_t)fy, Green);
-            ili9320_SetPoint((uint32_t)fx, (uint32_t)fy, Green);
-        }
-    }
+     /* Todo move logic to tasks */
 
     /* Check sd card */
     uint32_t timeout = 10;
@@ -168,9 +230,6 @@ int main(void)
     bsp_led1_enable(LED_DISABLE);
     bsp_led2_enable(LED_DISABLE);
     bsp_led3_enable(LED_DISABLE);
-
-
-    //ili9320_Clear(Blue);
 
     INFO("\r\n-=Battery tester=-\r\n");
 
