@@ -42,7 +42,8 @@ extern DMA_HandleTypeDef hdma_adc1;
 
 /* External variables --------------------------------------------------------*/
 extern void (*bsp_charger_flag_cb)(void);
-extern void (*bsp_timer1_cb)(void);
+extern void (*bsp_timer2_cb)(void);
+extern void bsp_inc_tick(void);
 /******************************************************************************/
 /*            Cortex-M3 Processor Interruption and Exception Handlers         */
 /******************************************************************************/
@@ -50,8 +51,7 @@ extern void (*bsp_timer1_cb)(void);
 /**
 * @brief This function handles Non maskable interrupt.
 */
-void NMI_Handler(void)
-{
+void NMI_Handler(void) {
   /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
 
   /* USER CODE END NonMaskableInt_IRQn 0 */
@@ -63,8 +63,7 @@ void NMI_Handler(void)
 /**
 * @brief This function handles Hard fault interrupt.
 */
-void HardFault_Handler(void)
-{
+void HardFault_Handler(void) {
   /* USER CODE BEGIN HardFault_IRQn 0 */
 
   /* USER CODE END HardFault_IRQn 0 */
@@ -79,8 +78,7 @@ void HardFault_Handler(void)
 /**
 * @brief This function handles Memory management fault.
 */
-void MemManage_Handler(void)
-{
+void MemManage_Handler(void) {
   /* USER CODE BEGIN MemoryManagement_IRQn 0 */
 
   /* USER CODE END MemoryManagement_IRQn 0 */
@@ -95,8 +93,7 @@ void MemManage_Handler(void)
 /**
 * @brief This function handles Prefetch fault, memory access fault.
 */
-void BusFault_Handler(void)
-{
+void BusFault_Handler(void) {
   /* USER CODE BEGIN BusFault_IRQn 0 */
 
   /* USER CODE END BusFault_IRQn 0 */
@@ -111,8 +108,7 @@ void BusFault_Handler(void)
 /**
 * @brief This function handles Undefined instruction or illegal state.
 */
-void UsageFault_Handler(void)
-{
+void UsageFault_Handler(void) {
   /* USER CODE BEGIN UsageFault_IRQn 0 */
 
   /* USER CODE END UsageFault_IRQn 0 */
@@ -125,23 +121,9 @@ void UsageFault_Handler(void)
 }
 
 /**
-* @brief This function handles System service call via SWI instruction.
-*/
-//void SVC_Handler(void)
-//{
-//  /* USER CODE BEGIN SVCall_IRQn 0 */
-//
-//  /* USER CODE END SVCall_IRQn 0 */
-//  /* USER CODE BEGIN SVCall_IRQn 1 */
-//
-//  /* USER CODE END SVCall_IRQn 1 */
-//}
-
-/**
 * @brief This function handles Debug monitor.
 */
-void DebugMon_Handler(void)
-{
+void DebugMon_Handler(void) {
   /* USER CODE BEGIN DebugMonitor_IRQn 0 */
 
   /* USER CODE END DebugMonitor_IRQn 0 */
@@ -151,47 +133,11 @@ void DebugMon_Handler(void)
 }
 
 /**
-* @brief This function handles Pendable request for system service.
-*/
-//void PendSV_Handler(void)
-//{
-//  /* USER CODE BEGIN PendSV_IRQn 0 */
-//
-//  /* USER CODE END PendSV_IRQn 0 */
-//  /* USER CODE BEGIN PendSV_IRQn 1 */
-//
-//  /* USER CODE END PendSV_IRQn 1 */
-//}
-
-/**
-* @brief This function handles System tick timer.
-*/
-#include <stdbool.h>
-extern bool _rtos_started;
-void SysTick_Handler(void)
-{
-  /* USER CODE BEGIN SysTick_IRQn 0 */
-
-  /* USER CODE END SysTick_IRQn 0 */
-  HAL_IncTick();
-  HAL_SYSTICK_IRQHandler();
-
-  /* to fix */
-  if(_rtos_started) {
-      SysTick_Handler2();
-  }
-  /* USER CODE BEGIN SysTick_IRQn 1 */
-
-  /* USER CODE END SysTick_IRQn 1 */
-}
-
-/**
   * @brief  This function handles External line 9 to 5 interrupt request.
   * @param  None
   * @retval None
   */
-void EXTI9_5_IRQHandler(void)
-{
+void EXTI9_5_IRQHandler(void) {
     if (__HAL_GPIO_EXTI_GET_IT(CHARGER_STATUS_PIN)) {
 
         if(bsp_charger_flag_cb != NULL) {
@@ -205,11 +151,19 @@ void TIM2_IRQHandler(void) {
 
     if(TIM2->DIER & TIM_IT_UPDATE) {
 
-        if(bsp_timer1_cb != NULL) {
-            bsp_timer1_cb();
+        if(bsp_timer2_cb != NULL) {
+            bsp_timer2_cb();
         }
 
         TIM2->SR = ~TIM_FLAG_UPDATE;
+    }
+}
+
+void TIM3_IRQHandler(void) {
+
+    if(TIM3->DIER & TIM_IT_UPDATE) {
+        bsp_inc_tick();
+        TIM3->SR = ~TIM_FLAG_UPDATE;
     }
 }
 

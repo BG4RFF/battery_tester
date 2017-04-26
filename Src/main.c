@@ -98,104 +98,28 @@ static void _open_log_file() {
 }
 
 /* -------------------------------------------------------------------------- */
-//
-//// Fonts
-//font_t dejavu_sans_20_anti_aliased;
-//
-//// GHandles
-//GHandle ghContainerPage0;
-//GHandle ghFirst;
-//GHandle ghUser;
-//GHandle ghButton1;
-//
-//static void createPagePage0(void)
-//{
-//	GWidgetInit wi;
-//	gwinWidgetClearInit(&wi);
-//
-//
-//	// create container widget: ghContainerPage0
-//	wi.g.show = FALSE;
-//	wi.g.x = 0;
-//	wi.g.y = 0;
-//	wi.g.width = 320;
-//	wi.g.height = 240;
-//	wi.g.parent = 0;
-//	wi.text = "Container";
-//	wi.customDraw = 0;
-//	wi.customParam = 0;
-//	wi.customStyle = 0;
-//	ghContainerPage0 = gwinContainerCreate(0, &wi, 0);
-//
-//
-//	// create button widget: ghButton1
-//	wi.g.show = TRUE;
-//	wi.g.x = 10;
-//	wi.g.y = 20;
-//	wi.g.width = 160;
-//	wi.g.height = 120;
-//	wi.g.parent = ghContainerPage0;
-//	wi.text = "Press me";
-//	wi.customDraw = gwinButtonDraw_Normal;
-//	wi.customParam = 0;
-//	wi.customStyle = 0;
-//	ghButton1 = gwinButtonCreate(0, &wi);
-//}
-//
-//void guiCreate(void)
-//{
-//	GWidgetInit wi;
-//
-//	// Prepare fonts
-//	dejavu_sans_20_anti_aliased = gdispOpenFont("DejaVuSans20_aa");
-//
-//	// Prepare images
-//
-//	// GWIN settings
-//	gwinWidgetClearInit(&wi);
-//	gwinSetDefaultFont(dejavu_sans_20_anti_aliased);
-//	gwinSetDefaultStyle(&WhiteWidgetStyle, FALSE);
-//	gwinSetDefaultColor(Black);
-//	gwinSetDefaultBgColor(White);
-//    gdispSetOrientation(GDISP_ROTATE_LANDSCAPE);
-//
-//	// Create all the display pages
-//	createPagePage0();
-//
-//	// Select the default display page
-//	gwinShow(ghContainerPage0);
-//
-//}
 
 /* -------------------------------------------------------------------------- */
+
 void _startup(void *context) {
 
     gfxInit();
 
     guiCreate();
 
-    while(1);
-
+    vTaskDelete(NULL);
 }
-bool _rtos_started = false;
-int main(void)
-{
+
+int main(void) {
 
     bsp_init();
 
     logger_init(bsp_debug_write);
 
     /* Create the task, storing the handle. */
-     xTaskCreate(
-                    _startup,       /* Function that implements the task. */
-                    "NAME",          /* Text name for the task. */
-                    200,      /* Stack size in words, not bytes. */
-                    ( void * ) 1,    /* Parameter passed into the task. */
-                    2,/* Priority at which the task is created. */
-                    NULL);      /* Used to pass out the created task's handle. */
+     xTaskCreate(_startup, "STARTUP", 200, NULL, configMAX_PRIORITIES, NULL);
 
      /* todo relese systick handler */
-     _rtos_started = true;
      vTaskStartScheduler();
 
      /* Todo move logic to tasks */

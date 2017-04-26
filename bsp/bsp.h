@@ -78,6 +78,7 @@ uint16_t bsp_lcd_read_data(void);
 void bsp_lcd_backlight_enable(bsp_backlight_control_t control);
 void bsp_cs_touch_set_low(void);
 void bsp_cs_touch_set_high(void);
+bool bsp_is_touch_irq_active(void);
 bool bsp_is_button1_pressed(void);
 bool bsp_is_button2_pressed(void);
 void bsp_led1_enable(bsp_led_control_t control);

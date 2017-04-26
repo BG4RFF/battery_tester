@@ -12,22 +12,24 @@
 GListener glistener;
 
 // GHandles
-GHandle ghContainerPage0;
+GHandle ghContainerHome;
 GHandle ghlb_title;
-GHandle ghbtn_back;
-GHandle ghlb_demo;
-GHandle ghbtn_next;
+GHandle ghbtn_cycle;
+GHandle ghbtn_charge;
+GHandle ghbtn_settings;
+GHandle ghlb_vbat;
+GHandle ghlb_vfloat;
 
 // Fonts
 font_t dejavu_sans_16;
 
-static void createPagePage0(void)
+static void createPageHome(void)
 {
 	GWidgetInit wi;
 	gwinWidgetClearInit(&wi);
 
 
-	// create container widget: ghContainerPage0
+	// create container widget: ghContainerHome
 	wi.g.show = FALSE;
 	wi.g.x = 0;
 	wi.g.y = 0;
@@ -38,72 +40,101 @@ static void createPagePage0(void)
 	wi.customDraw = 0;
 	wi.customParam = 0;
 	wi.customStyle = 0;
-	ghContainerPage0 = gwinContainerCreate(0, &wi, 0);
+	ghContainerHome = gwinContainerCreate(0, &wi, 0);
 
 	// Create label widget: ghlb_title
 	wi.g.show = TRUE;
-	wi.g.x = 100;
-	wi.g.y = 30;
-	wi.g.width = 120;
+	wi.g.x = 20;
+	wi.g.y = 0;
+	wi.g.width = 300;
 	wi.g.height = 20;
-	wi.g.parent = ghContainerPage0;
+	wi.g.parent = ghContainerHome;
 	wi.text = "Battery tester";
-	wi.customDraw = gwinLabelDrawJustifiedLeft;
+	wi.customDraw = gwinLabelDrawJustifiedCenter;
 	wi.customParam = 0;
 	wi.customStyle = 0;
 	ghlb_title = gwinLabelCreate(0, &wi);
 	gwinLabelSetBorder(ghlb_title, FALSE);
+	gwinSetFont(ghlb_title, dejavu_sans_16);
+	gwinRedraw(ghlb_title);
 
-	// create button widget: ghbtn_back
+	// create button widget: ghbtn_cycle
 	wi.g.show = TRUE;
 	wi.g.x = 10;
-	wi.g.y = 210;
-	wi.g.width = 120;
-	wi.g.height = 20;
-	wi.g.parent = ghContainerPage0;
-	wi.text = "Back";
+	wi.g.y = 60;
+	wi.g.width = 300;
+	wi.g.height = 50;
+	wi.g.parent = ghContainerHome;
+	wi.text = "Start cycle test";
 	wi.customDraw = gwinButtonDraw_Normal;
 	wi.customParam = 0;
 	wi.customStyle = 0;
-	ghbtn_back = gwinButtonCreate(0, &wi);
+	ghbtn_cycle = gwinButtonCreate(0, &wi);
 
-	// Create label widget: ghlb_demo
+	// create button widget: ghbtn_charge
 	wi.g.show = TRUE;
-	wi.g.x = 100;
-	wi.g.y = 100;
-	wi.g.width = 120;
+	wi.g.x = 10;
+	wi.g.y = 120;
+	wi.g.width = 300;
+	wi.g.height = 50;
+	wi.g.parent = ghContainerHome;
+	wi.text = "Charge battery";
+	wi.customDraw = gwinButtonDraw_Normal;
+	wi.customParam = 0;
+	wi.customStyle = 0;
+	ghbtn_charge = gwinButtonCreate(0, &wi);
+
+	// create button widget: ghbtn_settings
+	wi.g.show = TRUE;
+	wi.g.x = 10;
+	wi.g.y = 180;
+	wi.g.width = 300;
+	wi.g.height = 50;
+	wi.g.parent = ghContainerHome;
+	wi.text = "Settings";
+	wi.customDraw = gwinButtonDraw_Normal;
+	wi.customParam = 0;
+	wi.customStyle = 0;
+	ghbtn_settings = gwinButtonCreate(0, &wi);
+
+	// Create label widget: ghlb_vbat
+	wi.g.show = TRUE;
+	wi.g.x = 10;
+	wi.g.y = 30;
+	wi.g.width = 140;
 	wi.g.height = 20;
-	wi.g.parent = ghContainerPage0;
-	wi.text = "Demo Screen";
+	wi.g.parent = ghContainerHome;
+	wi.text = "VBAT = 3800";
 	wi.customDraw = gwinLabelDrawJustifiedLeft;
 	wi.customParam = 0;
-	wi.customStyle = &white;
-	ghlb_demo = gwinLabelCreate(0, &wi);
-	gwinLabelSetBorder(ghlb_demo, FALSE);
+	wi.customStyle = 0;
+	ghlb_vbat = gwinLabelCreate(0, &wi);
+	gwinLabelSetBorder(ghlb_vbat, FALSE);
 
-	// create button widget: ghbtn_next
+	// Create label widget: ghlb_vfloat
 	wi.g.show = TRUE;
-	wi.g.x = 190;
-	wi.g.y = 210;
-	wi.g.width = 120;
+	wi.g.x = 170;
+	wi.g.y = 30;
+	wi.g.width = 140;
 	wi.g.height = 20;
-	wi.g.parent = ghContainerPage0;
-	wi.text = "Next";
-	wi.customDraw = gwinButtonDraw_Normal;
+	wi.g.parent = ghContainerHome;
+	wi.text = "Vfloat = 4200";
+	wi.customDraw = gwinLabelDrawJustifiedLeft;
 	wi.customParam = 0;
 	wi.customStyle = 0;
-	ghbtn_next = gwinButtonCreate(0, &wi);
+	ghlb_vfloat = gwinLabelCreate(0, &wi);
+	gwinLabelSetBorder(ghlb_vfloat, FALSE);
 }
 
 void guiShowPage(unsigned pageIndex)
 {
 	// Hide all pages
-	gwinHide(ghContainerPage0);
+	gwinHide(ghContainerHome);
 
 	// Show page selected page
 	switch (pageIndex) {
 	case 0:
-		gwinShow(ghContainerPage0);
+		gwinShow(ghContainerHome);
 		break;
 
 	default:
@@ -129,7 +160,7 @@ void guiCreate(void)
     gdispSetOrientation(GDISP_ROTATE_LANDSCAPE);
 
 	// Create all the display pages
-	createPagePage0();
+	createPageHome();
 
 	// Select the default display page
 	guiShowPage(0);

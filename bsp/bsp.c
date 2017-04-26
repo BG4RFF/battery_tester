@@ -22,11 +22,13 @@ static ADC_HandleTypeDef hadc1 = {0};
 static SPI_HandleTypeDef hspi1 = {0};
 static UART_HandleTypeDef huart1 = {0};
 static TIM_HandleTypeDef htim2 = {0};
+static TIM_HandleTypeDef htim3 = {0};
 DMA_HandleTypeDef hdma_adc1;
 
 void (*bsp_charger_flag_cb)(void) = NULL;
-void (*bsp_timer1_cb)(void) = NULL;
+void (*bsp_timer2_cb)(void) = NULL;
 static bool _adc_complete = false;
+static uint32_t _ticks = 0;
 
 #define ADC_CHANNEL_COUNT       (2U)
 
@@ -221,6 +223,9 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base) {
     if(htim_base->Instance==TIM2) {
         /* Peripheral clock enable */
         __TIM2_CLK_ENABLE();
+    }else if(htim_base->Instance==TIM3) {
+        /* Peripheral clock enable */
+        __TIM3_CLK_ENABLE();
     }
 }
 
@@ -231,6 +236,9 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base) {
     if(htim_base->Instance==TIM2) {
         /* Peripheral clock disable */
         __TIM2_CLK_DISABLE();
+    }else if(htim_base->Instance==TIM3) {
+        /* Peripheral clock disable */
+        __TIM3_CLK_DISABLE();
     }
 }
 /* -------------------------------------------------------------------------- */
@@ -248,6 +256,21 @@ static void _timer_init(void) {
 
     NVIC_SetPriority(TIM2_IRQn, 6);
     NVIC_EnableIRQ(TIM2_IRQn);
+
+    htim3.Instance = TIM3;
+    htim3.Init.Period            = 100;
+    htim3.Init.Prescaler         = 72;
+    htim3.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
+    htim3.Init.CounterMode       = TIM_COUNTERMODE_UP;
+    htim3.Init.RepetitionCounter = 0;
+
+    HAL_TIM_Base_Init(&htim3);
+
+    NVIC_SetPriority(TIM3_IRQn, 6);
+    NVIC_EnableIRQ(TIM3_IRQn);
+
+    __HAL_TIM_SET_AUTORELOAD(&htim3, 1000);
+    HAL_TIM_Base_Start_IT(&htim3);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -418,16 +441,6 @@ static void _clock_init(void) {
         //    Error_Handler();
     }
 
-    /**Configure the Systick interrupt time
-    */
-    HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
-
-    /**Configure the Systick
-    */
-    HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
-
-    /* SysTick_IRQn interrupt configuration */
-    HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -514,12 +527,12 @@ void bsp_init(void) {
     HAL_Init();
 
     _clock_init();
+    _timer_init();
 
     _gpio_init();
     _uart_init();
     _spi_init();
     _adc_init();
-    _timer_init();
 }
 
 /* -------------------------------------------------------------------------- */
@@ -542,6 +555,25 @@ void bsp_debug_write(const uint8_t *data, uint32_t size) {
 
 /* -------------------------------------------------------------------------- */
 
+HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
+
+    return HAL_OK;
+}
+
+/* -------------------------------------------------------------------------- */
+
+void bsp_inc_tick(void) {
+    _ticks++;
+}
+
+/* -------------------------------------------------------------------------- */
+
+uint32_t HAL_GetTick(void) {
+
+    return _ticks;
+}
+
+/* -------------------------------------------------------------------------- */
 
 void bsp_delay_ms(uint32_t ms) {
 
@@ -626,7 +658,7 @@ void bsp_register_charger_status_cb(void (*cb)(void)) {
 
 void bsp_charger_timer_set_period(uint32_t us, void (*cb)(void)) {
 
-    bsp_timer1_cb = cb;
+    bsp_timer2_cb = cb;
 
     __HAL_TIM_SET_AUTORELOAD(&htim2, us);
     HAL_TIM_Base_Start_IT(&htim2);
@@ -639,7 +671,7 @@ void bsp_charger_timer_disable(void) {
 
     HAL_TIM_Base_Stop_IT(&htim2);
 
-    bsp_timer1_cb = NULL;
+    bsp_timer2_cb = NULL;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -652,7 +684,6 @@ void HAL_ADC_ConvCpltCallback( ADC_HandleTypeDef * hadc) {
 /* -------------------------------------------------------------------------- */
 
 uint32_t bsp_get_voltage(bsp_voltage_source_t source) {
-
 
     _adc_complete = false;
     HAL_ADC_Start(&hadc1);
@@ -749,6 +780,17 @@ void bsp_cs_touch_set_low(void) {
 void bsp_cs_touch_set_high(void) {
 
     PIN_SET(CS_TS_PORT, CS_TS_PIN);
+}
+
+/* -------------------------------------------------------------------------- */
+
+bool bsp_is_touch_irq_active(void) {
+
+    if(INT_TS_PORT->IDR & INT_TS_PIN) {
+        return false;
+    }
+
+    return true;
 }
 
 /* -------------------------------------------------------------------------- */

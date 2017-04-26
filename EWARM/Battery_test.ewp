@@ -1015,10 +1015,25 @@
       <group>
         <name>gfx</name>
         <file>
+          <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\gdisp\SSD1289\board_SSD1289.h</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\gdisp\SSD1289\gdisp_lld_config.h</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\gdisp\SSD1289\gdisp_lld_SSD1289.c</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\user\ugfx_2.7\src\gfx_mk.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\user\ugfx_2.7\gfxconf.h</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\ginput\touch\ADS7843\gmouse_lld_ADS7843.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\ginput\touch\ADS7843\gmouse_lld_ADS7843_board.h</name>
         </file>
       </group>
       <group>
@@ -1039,18 +1054,6 @@
           <name>$PROJ_DIR$\..\user\ui\gui.c</name>
         </file>
       </group>
-      <file>
-        <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\gdisp\ILI9320\board_ILI9320.h</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\gdisp\SSD1289\board_SSD1289.h</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\gdisp\SSD1289\gdisp_lld_config.h</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\gdisp\SSD1289\gdisp_lld_SSD1289.c</name>
-      </file>
       <file>
         <name>$PROJ_DIR$\..\Src\main.c</name>
       </file>
