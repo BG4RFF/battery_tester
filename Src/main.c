@@ -99,6 +99,18 @@ static void _open_log_file() {
 
 /* -------------------------------------------------------------------------- */
 
+bool_t LoadMouseCalibration(unsigned instance, void *data, size_t sz) {
+
+	return FALSE;
+}
+
+/* -------------------------------------------------------------------------- */
+
+bool_t SaveMouseCalibration(unsigned instance, const void *data, size_t sz) {
+
+	return TRUE;
+}
+
 /* -------------------------------------------------------------------------- */
 
 void _startup(void *context) {
@@ -109,6 +121,8 @@ void _startup(void *context) {
 
     vTaskDelete(NULL);
 }
+
+/* -------------------------------------------------------------------------- */
 
 int main(void) {
 

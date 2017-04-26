@@ -67,7 +67,7 @@
 #define GDISP_NEED_STARTUP_LOGO                 FALSE
 #define GDISP_NEED_CIRCLE                       TRUE
 #define GDISP_NEED_MULTITHREAD                  TRUE
-#define GDISP_DEFAULT_ORIENTATION               GDISP_ROTATE_0
+#define GDISP_DEFAULT_ORIENTATION               GDISP_ROTATE_LANDSCAPE
 #define GDISP_STARTUP_COLOR                     Blue
 
 
@@ -133,7 +133,9 @@
 #define GFX_USE_GINPUT                          TRUE
 
 #define GINPUT_NEED_MOUSE                       TRUE
-#define GINPUT_TOUCH_USER_CALIBRATION_LOAD      FALSE
+#define GINPUT_TOUCH_USER_CALIBRATION_LOAD      TRUE
+#define GINPUT_TOUCH_USER_CALIBRATION_SAVE      TRUE
+#define GINPUT_MOUSE_MAX_CALIBRATION_ERROR      TRUE
 
 
 /********************************************************/

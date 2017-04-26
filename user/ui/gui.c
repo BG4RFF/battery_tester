@@ -157,7 +157,6 @@ void guiCreate(void)
 	gwinSetDefaultStyle(&white, FALSE);
 	gwinSetDefaultColor(black_studio);
 	gwinSetDefaultBgColor(white_studio);
-    gdispSetOrientation(GDISP_ROTATE_LANDSCAPE);
 
 	// Create all the display pages
 	createPageHome();

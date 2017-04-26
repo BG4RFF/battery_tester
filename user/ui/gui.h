@@ -13,11 +13,13 @@
 extern GListener glistener;
 
 // GHandles
-extern GHandle ghContainerPage0;
+extern GHandle ghContainerHome;
 extern GHandle ghlb_title;
-extern GHandle ghbtn_back;
-extern GHandle ghlb_demo;
-extern GHandle ghbtn_next;
+extern GHandle ghbtn_cycle;
+extern GHandle ghbtn_charge;
+extern GHandle ghbtn_settings;
+extern GHandle ghlb_vbat;
+extern GHandle ghlb_vfloat;
 
 // Function Prototypes
 void guiCreate(void);
