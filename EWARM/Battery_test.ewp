@@ -1208,12 +1208,6 @@
         <name>$PROJ_DIR$\..\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_uart.c</name>
       </file>
     </group>
-    <group>
-      <name>touch</name>
-      <file>
-        <name>$PROJ_DIR$\..\Drivers\touch_Driver\touch_tsc2046.c</name>
-      </file>
-    </group>
   </group>
 </project>
 

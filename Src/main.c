@@ -1,8 +1,9 @@
 /* Includes ------------------------------------------------------------------*/
+#include <stdio.h>
+
 #include "bsp.h"
 #include "logger/logger.h"
 #include "charger/charger.h"
-#include "touch_driver/touch_tsc2046.h"
 #include "mmc_sd/mmc_sd.h"
 #include "fs_fat/fat_filelib.h"
 
