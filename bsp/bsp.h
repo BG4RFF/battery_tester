@@ -24,6 +24,9 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include <stdint.h>
 #include <stdbool.h>
+
+#include "bsp_rtos.h"
+#include "bsp_spi.h"
 /* Exported types ------------------------------------------------------------*/
 
 typedef enum bsp_relay_swith_e {
@@ -58,7 +61,7 @@ typedef enum {
 /* Exported functions --------------------------------------------------------*/
 void bsp_switch_relay(const bsp_relay_swith_t select);
 void bsp_init(void);
-void bsp_debug_write(const uint8_t *data, uint32_t size);
+void bsp_uart1_write(const uint8_t *data, uint32_t size);
 void bsp_delay_ms(uint32_t ms);
 uint32_t bsp_get_tick_ms(void);
 void bsp_enable_irq(void);
@@ -86,10 +89,10 @@ void bsp_led2_enable(bsp_led_control_t control);
 void bsp_led3_enable(bsp_led_control_t control);
 void bsp_cs_sd_set_high(void);
 void bsp_cs_sd_set_low(void);
+void bsp_spi1_lock(void);
+void bsp_spi1_unlock(void);
 
-
-void bsp_touch_wr_rd(uint8_t *wr_data, uint8_t *rd_data, uint32_t size);
-void bsp_sd_wr_rd(uint8_t *wr_data, uint8_t *rd_data, uint32_t size);
+#include "bsp_alias.h"
 
 #ifdef __cplusplus
  }

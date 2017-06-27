@@ -16,8 +16,23 @@
 /* Private variables ---------------------------------------------------------*/
 static FL_FILE *_flog = NULL;
 #define FNAME_SIZE      32
-static char _log_file_name[FNAME_SIZE] = "/bat_test.txt";
+static char _log_file_name[FNAME_SIZE] = "/logs/bat_test_000.txt";
+const static char _file_touch_bin[] = "/settings/touch.bin";
 /* Private function prototypes -----------------------------------------------*/
+SemaphoreHandle_t  semaphore_fs;
+static void _fs_lock(void) {
+
+    xSemaphoreTake(semaphore_fs, portMAX_DELAY);
+}
+
+static void _fs_unlock(void) {
+
+    xSemaphoreGive(semaphore_fs);
+}
+
+
+
+/* -------------------------------------------------------------------------- */
 
 static int _media_read(uint32 sector, uint8 *buffer, uint32 sector_count) {
 
@@ -48,7 +63,9 @@ static void _debug_file_log(const uint8_t *data, uint32_t size) {
     disable_recursive_from_fl++;
 
     if(_flog  != NULL && disable_recursive_from_fl == 1) {
+        _fs_lock();
         fl_fwrite(data, 1, size, _flog);
+        _fs_unlock();
     }
 
     disable_recursive_from_fl--;
@@ -74,6 +91,8 @@ static void _start_charge(void) {
 
 static void _open_log_file() {
 
+    _fs_lock();
+
     for(uint32_t i = 0; i < UINT32_MAX; i++) {
 
         snprintf(_log_file_name, FNAME_SIZE,  "/bat_test_%d.txt", i);
@@ -81,10 +100,14 @@ static void _open_log_file() {
         _flog = fl_fopen(_log_file_name, "r");
 
         if(_flog == NULL) {
-            fl_fclose(_flog);
+           // fl_fclose(_flog);
             _flog = fl_fopen(_log_file_name, "w");
 
-            INFO("Create file: %s\r\n", _log_file_name);
+            if(_flog != NULL) {
+                LOG("Create file: %s\r\n", _log_file_name);
+            } else {
+                LOG("Cant create file: %s\r\n", _log_file_name);
+            }
 
             break;
         }
@@ -96,62 +119,77 @@ static void _open_log_file() {
     if(_flog) {
         logger_init(_debug_file_log);
     }
+
+    _fs_unlock();
 }
 
 /* -------------------------------------------------------------------------- */
 
 bool_t LoadMouseCalibration(unsigned instance, void *data, size_t sz) {
 
-	return FALSE;
+    LOG("load touch settings\r\n");
+
+    _fs_lock();
+
+    FL_FILE *tch_bin = fl_fopen(_file_touch_bin, "r");
+    if(tch_bin != NULL) {
+        fl_fread(data, sizeof(uint8_t), sz, tch_bin);
+        fl_fclose(tch_bin);
+    }
+    _fs_unlock();
+
+	return (tch_bin != NULL)? TRUE : FALSE;
 }
 
 /* -------------------------------------------------------------------------- */
 
 bool_t SaveMouseCalibration(unsigned instance, const void *data, size_t sz) {
 
+    LOG("Save touch settings\r\n");
+
+    _fs_lock();
+
+    FL_FILE *tch_bin = fl_fopen(_file_touch_bin, "w");
+    if(tch_bin != NULL) {
+        fl_fwrite(data, sizeof(uint8_t), sz, tch_bin);
+        fl_fclose(tch_bin);
+    }
+    _fs_unlock();
+
 	return TRUE;
 }
 
 /* -------------------------------------------------------------------------- */
 
-void _startup(void *context) {
+static void _logic (void *context) {
 
-    gfxInit();
+    char str[32];
 
-    guiCreate();
+    uint32_t vbat = 1000;
 
-    vTaskDelete(NULL);
+    for(;;) {
+        vTaskDelay(1000);
+        snprintf(str, sizeof(str), "VBAT=%4d", vbat++);
+        guiSetVBATValue(str);
+    }
 }
 
 /* -------------------------------------------------------------------------- */
 
-int main(void) {
-
-    bsp_init();
-
-    logger_init(bsp_debug_write);
-
-    /* Create the task, storing the handle. */
-     xTaskCreate(_startup, "STARTUP", 200, NULL, configMAX_PRIORITIES, NULL);
-
-     /* todo relese systick handler */
-     vTaskStartScheduler();
-
-     /* Todo move logic to tasks */
+static void _gxf_listener(void *context) {
 
     /* Check sd card */
     uint32_t timeout = 10;
     while (SD_Init() != 0 && timeout--) {
-        INFO("SD Card Failed!\r\n");
-        INFO("Please Check!\r\n");
-        bsp_delay_ms(500);
+        LOG("SD Card Failed! Attempt %d\r\n", timeout);
+        bsp_delay_ms(1000);
     }
 
 
     if( timeout > 0 ) {
-        INFO("SD Card Detected!\r\n");
+        LOG("SD Card Detected!\r\n");
         uint32_t sd_size = SD_GetCapacity();
-        INFO("SD Card Size: %d  b\r\n", sd_size);
+        LOG("SD Card Size: %d  b\r\n", sd_size);
 
         fl_init();
         // Attach media access functions to library
@@ -166,17 +204,55 @@ int main(void) {
         _open_log_file();
     }
 
+    gfxInit();
+
+    guiCreate();
+
+    /* Create the task, storing the handle. */
+    BaseType_t res = xTaskCreate(_logic, "logic", 150, NULL, configMAX_PRIORITIES-1, NULL);
+    if(res == NULL) {
+        res = 0;
+    }
+
+    for(;;) {
+        guiEventLoop();
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+
+int main(void) {
+
+    bsp_init();
+
+    bsp_rtos_init();
+
+    semaphore_fs = xSemaphoreCreateBinary();
+    vQueueAddToRegistry(semaphore_fs,"fs");
+
+    xSemaphoreGive(semaphore_fs);
+    logger_init(bsp_debug_write);
+
+    /* Create the task, storing the handle. */
+    xTaskCreate(_gxf_listener, "listener", 350, NULL, configMAX_PRIORITIES, NULL);
+
+    LOG("Start Scheduler\r\n");
+    /* todo relese systick handler */
+    vTaskStartScheduler();
+
+    /* Todo move logic to tasks */
+
     bsp_led1_enable(LED_DISABLE);
     bsp_led2_enable(LED_DISABLE);
     bsp_led3_enable(LED_DISABLE);
 
-    INFO("\r\n-=Battery tester=-\r\n");
+    LOG("\r\n-=Battery tester=-\r\n");
 
     bsp_switch_relay(RELAY_DISCHARGE_OFF);
 
     charger_init();
 
-    INFO("Set VFLOAT = 4350\r\n");
+    LOG("Set VFLOAT = 4350\r\n");
     charger_send_swp_message(SWPC_INCREASE_150MV);
 
 
@@ -194,14 +270,14 @@ int main(void) {
         const uint32_t vin = bsp_get_voltage(VOLTAGE_SOURCE_VIN);
         const uint32_t duration = (bsp_get_tick_ms() - start_time) / 1000;
 
-        INFO("%d:%d:%d\t%d\tVbat\t%d\tVin\t%d\t", duration / 60 / 60 %24, duration / 60 %60, duration %60
+        LOG("%d:%d:%d\t%d\tVbat\t%d\tVin\t%d\t", duration / 60 / 60 %24, duration / 60 %60, duration %60
              , duration, vbat, vin);
 
         if(is_discharge) {
-            INFO("Discharge\r\n");
+            LOG("Discharge\r\n");
 
             if(vbat < 3000) {
-                INFO("Discharge complete\r\nTime %d s, Capacity %d Ah\r\n",  duration, duration * 10 /60/60);
+                LOG("Discharge complete\r\nTime %d s, Capacity %d Ah\r\n",  duration, duration * 10 /60/60);
 
                 is_discharge = false;
                 start_time = bsp_get_tick_ms();
@@ -211,37 +287,37 @@ int main(void) {
 
             switch(charger_get_status()) {
             case CHARGER_STATUS_NOT_VALID_INPUT:
-                INFO("CHARGER_STATUS_NOT_VALID_INPUT \r\n");
+                LOG("CHARGER_STATUS_NOT_VALID_INPUT \r\n");
                 break;
             case CHARGER_STATUS_VALID_INPUT:
-                INFO("CHARGER_STATUS_VALID_INPUT \r\n");
+                LOG("CHARGER_STATUS_VALID_INPUT \r\n");
                 break;
             case CHARGER_STATUS_END_OF_CHARGING:
-                INFO("Charge complete\r\nDuration %d S\r\n", duration);
+                LOG("Charge complete\r\nDuration %d S\r\n", duration);
                 is_discharge = true;
                 start_time = bsp_get_tick_ms();
                 _start_discharge();
                 break;
             case CHARGER_STATUS_CHARGING_PHASE:
-                INFO("CHARGING\r\n");
+                LOG("CHARGING\r\n");
                 break;
             case CHARGER_STATUS_OVER_CHARGE_FAULT:
-                INFO("CHARGER_STATUS_OVER_CHARGE_FAULT \r\n");
+                LOG("CHARGER_STATUS_OVER_CHARGE_FAULT \r\n");
                 break;
             case CHARGER_STATUS_CHARGING_TIMEOUT:
-                INFO("CHARGER_STATUS_CHARGING_TIMEOUT \r\n");
+                LOG("CHARGER_STATUS_CHARGING_TIMEOUT \r\n");
                 break;
             case CHARGER_STATUS_BAT_VOLTAGE_BELOW_VPRE_AFTER_FAST_CHARGE:
-                INFO("CHARGER_STATUS_BAT_VOLTAGE_BELOW_VPRE_AFTER_FAST_CHARGE \r\n");
+                LOG("CHARGER_STATUS_BAT_VOLTAGE_BELOW_VPRE_AFTER_FAST_CHARGE \r\n");
                 break;
             case CHARGER_STATUS_CHARGING_THERMAL_LIMITATION:
-                INFO("CHARGER_STATUS_CHARGING_THERMAL_LIMITATION \r\n");
+                LOG("CHARGER_STATUS_CHARGING_THERMAL_LIMITATION \r\n");
                 break;
             case CHARGER_STATUS_BATTERY_TEMPERATURE_FAULT:
-                INFO("CHARGER_STATUS_BATTERY_TEMPERATURE_FAULT \r\n");
+                LOG("CHARGER_STATUS_BATTERY_TEMPERATURE_FAULT \r\n");
                 break;
             default:
-                INFO("Error \r\n");
+                LOG("Error \r\n");
                 break;
             }
         }
@@ -250,11 +326,11 @@ int main(void) {
 
             if(is_discharge) {
 
-                INFO("Force stop, Discharge time %d s, Capacity %d Ah\r\nStart Charge\r\n",  duration, duration * 10 /60/60);
+                LOG("Force stop, Discharge time %d s, Capacity %d Ah\r\nStart Charge\r\n",  duration, duration * 10 /60/60);
                 _start_charge();
             } else {
 
-                INFO("Forse stop, Charge time %d\r\nStart discharge\r\n", duration);
+                LOG("Forse stop, Charge time %d\r\nStart discharge\r\n", duration);
                 _start_discharge();
             }
 

@@ -19,7 +19,6 @@
     GPIOB->BSRR = d & 0xFF00
 
 static ADC_HandleTypeDef hadc1 = {0};
-static SPI_HandleTypeDef hspi1 = {0};
 static UART_HandleTypeDef huart1 = {0};
 static TIM_HandleTypeDef htim2 = {0};
 static TIM_HandleTypeDef htim3 = {0};
@@ -39,6 +38,19 @@ uint16_t volts[ADC_CHANNEL_COUNT];
 
 
 /* =====> Implementation ---------------------------------------------------- */
+
+
+__weak void bsp_uart1_lock(void) {
+
+}
+
+/* -------------------------------------------------------------------------- */
+
+__weak void bsp_uart1_unlock(void) {
+
+}
+
+/* -------------------------------------------------------------------------- */
 
 void HAL_MspInit(void) {
 
@@ -137,46 +149,6 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc) {
 
         HAL_GPIO_DeInit(ADC_VBAT_PORT, ADC_VBAT_PIN);
         HAL_GPIO_DeInit(ADC_VIN_PORT, ADC_VIN_PIN);
-    }
-}
-
-/* -------------------------------------------------------------------------- */
-
-void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi) {
-
-    GPIO_InitTypeDef GPIO_InitStruct;
-    if(hspi->Instance==SPI1) {
-
-        /* Peripheral clock enable */
-        __HAL_RCC_SPI1_CLK_ENABLE();
-
-        /**SPI1 GPIO Configuration
-        PA5     ------> SPI1_SCK
-        PA6     ------> SPI1_MISO
-        PA7     ------> SPI1_MOSI
-        */
-        GPIO_InitStruct.Pin = GPIO_PIN_5 | GPIO_PIN_7;
-        GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-        GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-        HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-        GPIO_InitStruct.Pin = GPIO_PIN_6;
-        GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-        GPIO_InitStruct.Pull = GPIO_NOPULL;
-        HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-    }
-}
-
-/* -------------------------------------------------------------------------- */
-
-void HAL_SPI_MspDeInit(SPI_HandleTypeDef* hspi) {
-
-    if(hspi->Instance==SPI1) {
-        /* Peripheral clock disable */
-        __HAL_RCC_SPI1_CLK_DISABLE();
-
-        HAL_GPIO_DeInit(GPIOA, GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7);
-
     }
 }
 
@@ -445,28 +417,6 @@ static void _clock_init(void) {
 
 /* -------------------------------------------------------------------------- */
 
-static void _spi_init(void) {
-
-    hspi1.Instance = SPI1;
-    hspi1.Init.Mode = SPI_MODE_MASTER;
-    hspi1.Init.Direction = SPI_DIRECTION_2LINES;
-    hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-    hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
-    hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
-    hspi1.Init.NSS = SPI_NSS_SOFT;
-    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_128;
-    hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
-    hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
-    hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-    hspi1.Init.CRCPolynomial = 10;
-
-    if (HAL_SPI_Init(&hspi1) != HAL_OK) {
-        //    Error_Handler();
-    }
-}
-
-/* -------------------------------------------------------------------------- */
-
 static void _uart_init(void) {
 
     huart1.Instance = USART1;
@@ -531,7 +481,7 @@ void bsp_init(void) {
 
     _gpio_init();
     _uart_init();
-    _spi_init();
+    spi_init();
     _adc_init();
 }
 
@@ -548,9 +498,11 @@ void bsp_switch_relay(const bsp_relay_swith_t select) {
 
 /* -------------------------------------------------------------------------- */
 
-void bsp_debug_write(const uint8_t *data, uint32_t size) {
+void bsp_uart1_write(const uint8_t *data, uint32_t size) {
 
+    bsp_uart1_lock();
     HAL_UART_Transmit(&huart1, (uint8_t*)data, size, 1000);
+    bsp_uart1_unlock();
 }
 
 /* -------------------------------------------------------------------------- */
@@ -770,42 +722,6 @@ void bsp_lcd_backlight_enable(bsp_backlight_control_t control) {
 
 /* -------------------------------------------------------------------------- */
 
-void bsp_cs_touch_set_low(void) {
-
-    PIN_RESET(CS_TS_PORT, CS_TS_PIN);
-}
-
-/* -------------------------------------------------------------------------- */
-
-void bsp_cs_touch_set_high(void) {
-
-    PIN_SET(CS_TS_PORT, CS_TS_PIN);
-}
-
-/* -------------------------------------------------------------------------- */
-
-bool bsp_is_touch_irq_active(void) {
-
-    if(INT_TS_PORT->IDR & INT_TS_PIN) {
-        return false;
-    }
-
-    return true;
-}
-
-/* -------------------------------------------------------------------------- */
-
-void bsp_touch_wr_rd(uint8_t *wr_data, uint8_t *rd_data, uint32_t size) {
-    HAL_SPI_TransmitReceive(&hspi1, wr_data, rd_data, size, 1000);
-}
-/* -------------------------------------------------------------------------- */
-
-void bsp_sd_wr_rd(uint8_t *wr_data, uint8_t *rd_data, uint32_t size) {
-    HAL_SPI_TransmitReceive(&hspi1, wr_data, rd_data, size, 1000);
-}
-
-/* -------------------------------------------------------------------------- */
-
 bool bsp_is_button1_pressed(void) {
 
     if(BUTTON1_PORT->IDR & BUTTON1_PIN) {
@@ -857,20 +773,6 @@ void bsp_led3_enable(bsp_led_control_t control) {
     } else {
         PIN_SET(LED3_PORT, LED3_PIN);
     }
-}
-
-/* -------------------------------------------------------------------------- */
-
-void bsp_cs_sd_set_low(void) {
-
-    PIN_RESET(CS_SD_PORT, CS_SD_PIN);
-}
-
-/* -------------------------------------------------------------------------- */
-
-void bsp_cs_sd_set_high(void) {
-
-    PIN_SET(CS_SD_PORT, CS_SD_PIN);
 }
 
 /* -------------------------------------------------------------------------- */

@@ -9,10 +9,6 @@
  * @file    src/gfx.c
  * @brief   GFX common routines.
  */
-
-/* Display various warnings from gfx_rules.h */
-#define GFX_DISPLAY_RULE_WARNINGS	TRUE
-
 #include "../gfx.h"
 
 static bool_t gfxInitDone = FALSE;

@@ -44,7 +44,7 @@
 //    #define GFX_COMPILER                             GFX_COMPILER_KEIL
     #define GFX_CPU                                  GFX_CPU_CORTEX_M3
 	#define GFX_CPU_ENDIAN                           GFX_CPU_ENDIAN_LITTLE
-    #define GFX_OS_HEAP_SIZE                         20480
+    #define GFX_OS_HEAP_SIZE                         20480/2
     #define GFX_OS_NO_INIT                           TRUE
     #define GFX_OS_INIT_NO_WARNING                   TRUE
 //    #define GFX_OS_EXTRA_INIT_FUNCTION               myOSInitRoutine
@@ -65,7 +65,7 @@
 #define GDISP_NEED_CONVEX_POLYGON               TRUE
 #define GDISP_NEED_IMAGE                        FALSE
 #define GDISP_NEED_STARTUP_LOGO                 FALSE
-#define GDISP_NEED_CIRCLE                       TRUE
+#define GDISP_NEED_CIRCLE                       FALSE//TRUE
 #define GDISP_NEED_MULTITHREAD                  TRUE
 #define GDISP_DEFAULT_ORIENTATION               GDISP_ROTATE_LANDSCAPE
 #define GDISP_STARTUP_COLOR                     Blue
@@ -102,12 +102,12 @@
 
 #define GWIN_NEED_WIDGET                        TRUE
     #define GWIN_NEED_LABEL                     TRUE
-    #define GWIN_NEED_CHECKBOX                  TRUE
+    #define GWIN_NEED_CHECKBOX                  FALSE//TRUE
     #define GWIN_NEED_BUTTON                    TRUE
         #define GWIN_BUTTON_LAZY_RELEASE        FALSE
-    #define GWIN_NEED_RADIO                     TRUE
-    #define GWIN_NEED_SLIDER                    TRUE
-    #define GWIN_NEED_LIST                      TRUE
+    #define GWIN_NEED_RADIO                     FALSE//TRUE
+    #define GWIN_NEED_SLIDER                    FALSE//TRUE
+    #define GWIN_NEED_LIST                      FALSE//TRUE
         #define GWIN_NEED_LIST_IMAGES           FALSE
 
     #define GWIN_NEED_KEYBOARD                  FALSE
@@ -121,7 +121,8 @@
 /********************************************************/
 /* GTIMER stuff                                         */
 /********************************************************/
-#define GFX_USE_GTIMER                          TRUE
+#define GFX_DISPLAY_RULE_WARNINGS               FALSE
+#define GFX_USE_GTIMER                          FALSE//TRUE
 
 #define GTIMER_THREAD_PRIORITY                  NORMAL_PRIORITY
 #define GTIMER_THREAD_WORKAREA_SIZE             2048

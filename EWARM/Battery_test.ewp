@@ -247,7 +247,7 @@
         <option>
           <name>CCAllowList</name>
           <version>1</version>
-          <state>00000000</state>
+          <state>11111110</state>
         </option>
         <option>
           <name>CCDebugInfo</name>
@@ -347,16 +347,16 @@
         </option>
         <option>
           <name>CCOptLevel</name>
-          <state>0</state>
+          <state>3</state>
         </option>
         <option>
           <name>CCOptStrategy</name>
           <version>0</version>
-          <state>1</state>
+          <state>2</state>
         </option>
         <option>
           <name>CCOptLevelSlave</name>
-          <state>0</state>
+          <state>3</state>
         </option>
         <option>
           <name>CompilerMisraRules98</name>
@@ -427,7 +427,7 @@
         <option>
           <name>CCOptStrategySlave</name>
           <version>0</version>
-          <state>1</state>
+          <state>2</state>
         </option>
         <option>
           <name>CCGuardCalls</name>
@@ -989,6 +989,18 @@
         <name>$PROJ_DIR$\..\bsp\bsp.h</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\bsp\bsp_rtos.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\bsp\bsp_rtos.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\bsp\bsp_spi.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\bsp\bsp_spi.h</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\bsp\stm32f1xx_it.c</name>
       </file>
       <file>
@@ -1013,30 +1025,6 @@
         </file>
       </group>
       <group>
-        <name>gfx</name>
-        <file>
-          <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\gdisp\SSD1289\board_SSD1289.h</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\gdisp\SSD1289\gdisp_lld_config.h</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\gdisp\SSD1289\gdisp_lld_SSD1289.c</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\user\ugfx_2.7\src\gfx_mk.c</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\user\ugfx_2.7\gfxconf.h</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\ginput\touch\ADS7843\gmouse_lld_ADS7843.c</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\ginput\touch\ADS7843\gmouse_lld_ADS7843_board.h</name>
-        </file>
-      </group>
-      <group>
         <name>logger</name>
         <file>
           <name>$PROJ_DIR$\..\user\ui\gui.h</name>
@@ -1054,6 +1042,9 @@
           <name>$PROJ_DIR$\..\user\ui\gui.c</name>
         </file>
       </group>
+      <file>
+        <name>$PROJ_DIR$\..\Inc\FreeRTOSConfig.h</name>
+      </file>
       <file>
         <name>$PROJ_DIR$\..\Src\main.c</name>
       </file>
@@ -1143,6 +1134,30 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\Drivers\fs_fat\fat_write.h</name>
+      </file>
+    </group>
+    <group>
+      <name>gfx</name>
+      <file>
+        <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\gdisp\SSD1289\board_SSD1289.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\gdisp\SSD1289\gdisp_lld_config.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\gdisp\SSD1289\gdisp_lld_SSD1289.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\user\ugfx_2.7\src\gfx_mk.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\user\ugfx_2.7\gfxconf.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\ginput\touch\ADS7843\gmouse_lld_ADS7843.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\user\ugfx_2.7\drivers\ginput\touch\ADS7843\gmouse_lld_ADS7843_board.h</name>
       </file>
     </group>
     <group>

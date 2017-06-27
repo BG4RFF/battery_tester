@@ -25,6 +25,6 @@ extern GHandle ghlb_vfloat;
 void guiCreate(void);
 void guiShowPage(unsigned pageIndex);
 void guiEventLoop(void);
-
+void guiSetVBATValue(char *str);
 #endif /* _GUI_H_ */
 
